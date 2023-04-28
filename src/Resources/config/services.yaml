@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    # Ensure is loaded as a service.
+    App\Api\Controller\:
+        resource: '%kernel.project_dir%/src/Api/Controller/*'
+        tags: ['controller.service_arguments']
