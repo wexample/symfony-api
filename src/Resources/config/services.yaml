@@ -8,3 +8,6 @@ services:
     App\Api\Controller\:
         resource: '%kernel.project_dir%/src/Api/Controller/*'
         tags: ['controller.service_arguments']
+
+    Wexample\SymfonyApi\EventSubscriber\ApiEventSubscriber:
+        tags: ['kernel.event_subscriber']

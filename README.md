@@ -2,11 +2,15 @@
 
 ## Install
 
-- The src/Api/Controller directory will be accessible as service.
+- Note that the src/Api/Controller directory will be accessible as service.
+
+### Create API Controller directory
+
+Create a new directory in `src/Api/Controller/`.
 
 ### Update routing.yaml
 
-Add the folder to your routing.yaml for loading routes.
+Add the folder to your routes.yaml for loading routes.
 
 api_controllers:
     resource: '../src/Api/Controller/'
