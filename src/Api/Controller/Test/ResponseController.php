@@ -7,8 +7,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Route(path: '_test/api/', name: '_test_api_')]
-class TestController extends AbstractApiController
+#[Route(path: '_test/api/response/', name: '_test_api_')]
+class ResponseController extends AbstractApiController
 {
     final public const ROUTE_SUCCESS = VariableHelper::SUCCESS;
     final public const ROUTE_ERROR = VariableHelper::ERROR;

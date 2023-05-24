@@ -3,10 +3,10 @@
 namespace Wexample\SymfonyApi\Api\Controller;
 
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Helper\ApiHelper;
+use Wexample\SymfonyHelpers\Controller\AbstractController;
 
 abstract class AbstractApiController extends AbstractController
 {
