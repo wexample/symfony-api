@@ -19,3 +19,13 @@ api_controllers:
 ## Usage
 
 Create a controller extending the AbstractApiController class.
+
+## Testing
+
+Integrate the tests into your current PhpUnit project. Adding this to your phpunit.xml file : 
+
+    <testsuites>
+        <testsuite name="Api Test Suite">
+            <directory>vendor/symfony-api/tests</directory>
+        </testsuite>
+    </testsuites>
