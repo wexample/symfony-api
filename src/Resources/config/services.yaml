@@ -9,5 +9,10 @@ services:
         resource: '%kernel.project_dir%/src/Api/Controller/*'
         tags: ['controller.service_arguments']
 
+    # Used to validate api urls requests arguments.
     Wexample\SymfonyApi\EventSubscriber\ApiEventSubscriber:
         tags: ['kernel.event_subscriber']
+
+    Wexample\SymfonyApi\Api\Controller\Test\:
+        resource: '../../Api/Controller/Test/*'
+        tags: ['controller.service_arguments']

@@ -1,0 +1,3 @@
+api_controllers:
+    resource: '@WexampleSymfonyApiBundle/Api/Controller/'
+    type: annotation
