@@ -33,8 +33,6 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $controllerData = $event->getController();
-        $errorMessage = null;
-        $errorData = [];
 
         if (!is_array($controllerData) || !is_subclass_of($controllerData[0], AbstractApiController::class)) {
             return;
@@ -48,59 +46,60 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         );
 
         $optionsAttributes = [];
+        $queryParameters = $request->query->all();
 
         foreach ($apiQueryAttributes as $attribute) {
             $optionsAttributes[$attribute->newInstance()->key] = $attribute->newInstance();
         }
 
-        foreach ($request->query->all() as $key => $value) {
-            if (!$errorMessage) {
-                $value = RequestHelper::parseRequestValue($value);
+        foreach ($queryParameters as $key => $value) {
+            if (!isset($optionsAttributes[$key])) {
+                $this->createError($event, 'Unknown given query option '
+                    .$key.'. '
+                    .(!empty($optionsAttributes)
+                        ? 'Allowed query options are : '.implode(', ', array_keys($optionsAttributes)).'.'
+                        : 'No query option allowed.'
+                    ), ['got' => $key.RequestHelper::URL_QUERY_STRING_EQUAL.$value]);
+                return;
+            }
 
-                $errorData = [
-                    'got' => $value,
-                ];
+            $value = RequestHelper::parseRequestValue($value);
+            /** @var AbstractQueryOption $queryOption */
+            $queryOption = $optionsAttributes[$key];
+            $constraint = $queryOption->getConstraint();
+            $violations = $this->validator->validate($value, $constraint);
 
-                if (!isset($optionsAttributes[$key])) {
-                    $errorMessage = 'Unknown given query option '
-                        .$key.'. '
-                        .(!empty($optionsAttributes)
-                            ? 'Allowed query options are : '.implode(', ', array_keys($optionsAttributes)).'.'
-                            : 'No query option allowed.'
-                        );
-                } else {
-                    /** @var AbstractQueryOption $queryOption */
-                    $queryOption = $optionsAttributes[$key];
-                    $constraint = $queryOption->getConstraint();
-                    $violations = $this->validator->validate(
-                        $value,
-                        $constraint
-                    );
-
-                    if ($violations->count()) {
-                        $errorMessage = 'Query option '.$key.' does not match constraints.';
-
-                        $errorData['type'] = $constraint::class;
-                    }
-                }
+            if ($violations->count()) {
+                $this->createError($event, 'Query option '.$key.' does not match constraints.', ['got' => $value, 'type' => $constraint::class]);
+                return;
             }
         }
 
-        if ($errorMessage) {
-            $event->setController(
-                function() use
-                (
-                    $errorMessage,
-                    $errorData
-                ) {
-                    return AbstractApiController::apiResponseError(
-                        $errorMessage,
-                        [
-                            VariableHelper::DATA => $errorData,
-                        ]
-                    );
-                }
-            );
+        // Check if required attributes are present in query strings
+        foreach ($optionsAttributes as $key => $attribute) {
+            if ($attribute->required === true && !array_key_exists($key, $queryParameters)) {
+                $this->createError($event, 'Required query option '.$key.' is missing.', ['required' => $key]);
+                return;
+            }
         }
+    }
+
+    private function createError(
+        ControllerArgumentsEvent $event,
+        string $errorMessage,
+        array $errorData
+    ): void {
+        $event->setController(
+            function() use
+            (
+                $errorMessage,
+                $errorData
+            ) {
+                return AbstractApiController::apiResponseError(
+                    $errorMessage,
+                    [VariableHelper::DATA => $errorData]
+                );
+            }
+        );
     }
 }
