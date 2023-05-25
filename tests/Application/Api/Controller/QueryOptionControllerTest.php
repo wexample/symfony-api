@@ -2,17 +2,70 @@
 
 namespace Wexample\SymfonyApi\Tests\Application\Api\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Controller\Test\QueryOptionController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyApi\Tests\Class\AbstractApiApplicationTestCase;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\TextManipulationTestCaseTrait;
+use Wexample\SymfonyHelpers\Helper\ArrayHelper;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
+use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class QueryOptionControllerTest extends AbstractApiApplicationTestCase
 {
     use TextManipulationTestCaseTrait;
+
+    public function testCustom()
+    {
+        $this->createGlobalClient();
+
+        $failingCombinations = ArrayHelper::generateAllIncompleteCombinations(
+            QueryOptionController::TEST_CUSTOM_TYPES
+        );
+
+        $routeName = QueryOptionController::buildRouteName(
+            QueryOptionController::ROUTE_CUSTOM
+        );
+
+        $testValidValues = [
+            TypesHelper::BOOLEAN => true,
+            TypesHelper::INTEGER => 123,
+            TypesHelper::STRING => 'lorem-ipsum'
+        ];
+
+        foreach ($failingCombinations as $combination) {
+            $data = [];
+
+            foreach ($combination as $combinationType) {
+                $data[VariableHelper::CUSTOM.'-'.$combinationType] = $testValidValues[$combinationType];
+            }
+
+            $this->goToRoute(
+                $routeName,
+                $data
+            );
+
+            // It should fail as every parameter is expected.
+            $this->assertStatusCodeEquals(
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        // Success
+        $data = [];
+        foreach ($testValidValues as $type => $value) {
+            $data[VariableHelper::CUSTOM.'-'.$type] = $value;
+        }
+
+        $this->goToRoute(
+            $routeName,
+            $data
+        );
+
+        $this->assertStatusCodeOk();
+    }
 
     public function testDisplayFormat()
     {
@@ -78,6 +131,7 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
             15
         );
     }
+
     public function testLength()
     {
         $this->createGlobalClient();
@@ -90,6 +144,7 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
             15
         );
     }
+
     public function testPage()
     {
         $this->createGlobalClient();

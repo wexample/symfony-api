@@ -5,6 +5,8 @@ namespace Wexample\SymfonyApi\Api\Controller\Test;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Type;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\CustomQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\DisplayFormatQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\FilterTagQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\IdQueryOption;
@@ -14,17 +16,42 @@ use Wexample\SymfonyApi\Api\Attribute\QueryOption\YearQueryOption;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
+use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 #[Route(path: '_test/api/query-option/', name: '_test_query_option_')]
 class QueryOptionController extends AbstractApiController
 {
+    final public const ROUTE_CUSTOM = VariableHelper::CUSTOM;
     final public const ROUTE_DISPLAY_FORMAT = ApiHelper::DISPLAY_FORMAT;
     final public const ROUTE_FILTER_TAG = ApiHelper::FILTER_TAG;
     final public const ROUTE_ID = VariableHelper::ID;
     final public const ROUTE_LENGTH = VariableHelper::LENGTH;
     final public const ROUTE_PAGE = VariableHelper::PAGE;
     final public const ROUTE_YEAR = VariableHelper::YEAR;
+
+    final public const TEST_CUSTOM_TYPES = [
+        TypesHelper::BOOLEAN,
+        TypesHelper::INTEGER,
+        TypesHelper::STRING
+    ];
+
+    #[Route(path: VariableHelper::CUSTOM, name: self::ROUTE_CUSTOM)]
+    #[CustomQueryOption(key: VariableHelper::CUSTOM.'-'.TypesHelper::BOOLEAN, constraint: new Type(TypesHelper::BOOLEAN), required: true)]
+    #[CustomQueryOption(key: VariableHelper::CUSTOM.'-'.TypesHelper::INTEGER, constraint: new Type(TypesHelper::INTEGER), required: true)]
+    #[CustomQueryOption(key: VariableHelper::CUSTOM.'-'.TypesHelper::STRING, constraint: new Type(TypesHelper::STRING), required: true)]
+    public function custom(Request $request): JsonResponse
+    {
+        $data = [];
+
+        foreach (self::TEST_CUSTOM_TYPES as $type) {
+            $data[VariableHelper::CUSTOM . '_' . $type] = $request->get(
+                VariableHelper::CUSTOM. '-' . $type
+            );
+        }
+
+        return self::apiResponseSuccess($data);
+    }
 
     #[Route(path: ApiHelper::_KEBAB_DISPLAY_FORMAT, name: self::ROUTE_DISPLAY_FORMAT)]
     #[DisplayFormatQueryOption(required: true)]

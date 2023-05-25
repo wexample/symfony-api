@@ -5,6 +5,7 @@ namespace Wexample\SymfonyApi\EventSubscriber;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
@@ -54,7 +55,8 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
 
         foreach ($queryParameters as $key => $value) {
             if (!isset($optionsAttributes[$key])) {
-                $this->createError($event, 'Unknown given query option '
+                $this->createError($event,
+                    'Unknown given query option '
                     .$key.'. '
                     .(!empty($optionsAttributes)
                         ? 'Allowed query options are : '.implode(', ', array_keys($optionsAttributes)).'.'
@@ -63,10 +65,21 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
                 return;
             }
 
-            $value = RequestHelper::parseRequestValue($value);
             /** @var AbstractQueryOption $queryOption */
             $queryOption = $optionsAttributes[$key];
             $constraint = $queryOption->getConstraint();
+
+            // Parse value if constraint is on type.
+            if ($constraint instanceof Type) {
+                $value = RequestHelper::parseRequestValue(
+                    $value,
+                    $constraint->type
+                );
+
+                // Replace by parsed value.
+                $queryParameters[$key] = $value;
+            }
+
             $violations = $this->validator->validate($value, $constraint);
 
             if ($violations->count()) {
@@ -89,6 +102,8 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
                 return;
             }
         }
+
+        $request->query->replace($queryParameters);
     }
 
     private function createError(
