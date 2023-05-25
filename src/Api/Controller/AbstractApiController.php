@@ -2,11 +2,15 @@
 
 namespace Wexample\SymfonyApi\Api\Controller;
 
+use DateTimeInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
+use Wexample\SymfonyHelpers\Helper\DateHelper;
+use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 abstract class AbstractApiController extends AbstractController
 {
@@ -58,5 +62,27 @@ abstract class AbstractApiController extends AbstractController
             $type,
             $data
         );
+    }
+
+    protected function getQueryOptionDateFilter(
+        Request $request,
+        string $keyYear = VariableHelper::YEAR,
+        string $keyMonth = VariableHelper::MONTH,
+        string $keyDay = VariableHelper::DAY
+    ): DateTimeInterface {
+        try {
+            return new \DateTime(
+                implode(
+                    '-',
+                    [
+                        $request->get($keyYear) ?? DateHelper::getCurrentYearInt(),
+                        $request->get($keyMonth) ?? '01',
+                        $request->get($keyDay) ?? '01',
+                    ]
+                )
+            );
+        } catch (\Exception) {
+            return DateHelper::getCurrentYearDate();
+        }
     }
 }

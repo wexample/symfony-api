@@ -11,7 +11,7 @@ class ResponseControllerTest extends AbstractApiApplicationTestCase
 {
     use ApiTestCaseTrait;
 
-    public function testFunctionality()
+    public function testSuccess()
     {
         $this->createGlobalClient();
 
@@ -20,6 +20,11 @@ class ResponseControllerTest extends AbstractApiApplicationTestCase
         );
 
         $this->assertStatusCodeOk();
+    }
+
+    public function testError()
+    {
+        $this->createGlobalClient();
 
         $this->goToRoute(
             ResponseController::buildRouteName(ResponseController::ROUTE_ERROR)

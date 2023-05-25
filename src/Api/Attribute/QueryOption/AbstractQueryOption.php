@@ -9,7 +9,8 @@ abstract class AbstractQueryOption
     use QueryOptionTrait;
 
     public function __construct(
-        public bool $required = false
+        bool $required = false
     ) {
+        $this->required = $required;
     }
 }
