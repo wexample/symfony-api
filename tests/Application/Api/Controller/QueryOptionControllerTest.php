@@ -3,12 +3,33 @@
 namespace Wexample\SymfonyApi\Tests\Application\Api\Controller;
 
 use Wexample\SymfonyApi\Api\Controller\Test\QueryOptionController;
+use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyApi\Tests\Class\AbstractApiApplicationTestCase;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class QueryOptionControllerTest extends AbstractApiApplicationTestCase
 {
+    public function testFilterTag()
+    {
+        $this->createGlobalClient();
+
+        $this->goToAndAssertError(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_FILTER_TAG,
+            ApiHelper::FILTER_TAG
+        );
+
+        // Test valid request.
+        $this->goToAndAssertSuccess(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_FILTER_TAG,
+            ApiHelper::_KEBAB_FILTER_TAG,
+            'test-filter-tag',
+            'test-filter-tag',
+        );
+    }
+
     public function testId()
     {
         $this->createGlobalClient();

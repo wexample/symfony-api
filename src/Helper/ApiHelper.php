@@ -4,13 +4,17 @@ namespace Wexample\SymfonyApi\Helper;
 
 class ApiHelper
 {
-    public const RESPONSE_TYPE_FAILURE = 'error';
+    public final const _KEBAB_FILTER_TAG = 'filter-tag';
 
-    public const KEY_RESPONSE_MESSAGE = 'message';
+    public final const RESPONSE_TYPE_FAILURE = 'error';
 
-    public const KEY_RESPONSE_STATUS = 'status';
+    public final const KEY_RESPONSE_MESSAGE = 'message';
 
-    public const RESPONSE_TYPE_SUCCESS = 'success';
+    public final const KEY_RESPONSE_STATUS = 'status';
 
-    public const KEY_RESPONSE_TYPE = 'type';
+    public final const RESPONSE_TYPE_SUCCESS = 'success';
+
+    public final const KEY_RESPONSE_TYPE = 'type';
+
+    public final const FILTER_TAG = 'filter_tag';
 }
