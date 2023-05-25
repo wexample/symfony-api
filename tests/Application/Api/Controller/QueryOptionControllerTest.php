@@ -9,6 +9,18 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class QueryOptionControllerTest extends AbstractApiApplicationTestCase
 {
+    public function testId()
+    {
+        $this->createGlobalClient();
+
+        $this->checkApiQueryOptionIntType(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_ID,
+            VariableHelper::ID,
+            15,
+            15
+        );
+    }
     public function testLength()
     {
         $this->createGlobalClient();

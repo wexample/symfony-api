@@ -16,17 +16,18 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 #[Route(path: '_test/api/query-option/', name: '_test_query_option_')]
 class QueryOptionController extends AbstractApiController
 {
+    final public const ROUTE_ID = VariableHelper::ID;
     final public const ROUTE_LENGTH = VariableHelper::LENGTH;
     final public const ROUTE_PAGE = VariableHelper::PAGE;
     final public const ROUTE_YEAR = VariableHelper::YEAR;
 
-    #[Route(path: VariableHelper::LENGTH, name: self::ROUTE_LENGTH)]
-    #[LengthQueryOption(required: true)]
-    public function length(Request $request): JsonResponse
+    #[Route(path: VariableHelper::ID, name: self::ROUTE_ID)]
+    #[IdQueryOption(required: true)]
+    public function id(Request $request): JsonResponse
     {
         return self::apiResponseSuccess([
-            VariableHelper::LENGTH => $request->get(
-                VariableHelper::LENGTH
+            VariableHelper::ID => $request->get(
+                VariableHelper::ID
             ),
         ]);
     }
