@@ -2,25 +2,61 @@
 
 namespace Wexample\SymfonyApi\Tests\Application\Api\Controller;
 
+use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Controller\Test\QueryOptionController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyApi\Tests\Class\AbstractApiApplicationTestCase;
+use Wexample\SymfonyApi\Tests\Traits\TestCase\TextManipulationTestCaseTrait;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class QueryOptionControllerTest extends AbstractApiApplicationTestCase
 {
+    use TextManipulationTestCaseTrait;
+
+    public function testDisplayFormat()
+    {
+        $this->createGlobalClient();
+
+        $this->goToAndAssertErrorWhenMissing(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_DISPLAY_FORMAT,
+            ApiHelper::FILTER_TAG
+        );
+
+        $this->goToAndAssertSuccess(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_DISPLAY_FORMAT,
+            ApiHelper::_KEBAB_DISPLAY_FORMAT,
+            AbstractApiResponseMember::DISPLAY_FORMAT_FULL,
+            AbstractApiResponseMember::DISPLAY_FORMAT_FULL,
+        );
+
+        $this->goToAndAssertFailedTypeRestriction(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_DISPLAY_FORMAT,
+            ApiHelper::_KEBAB_DISPLAY_FORMAT,
+            'wrong-display-format'
+        );
+
+        $this->goToAndAssertFailedTypeRestriction(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_DISPLAY_FORMAT,
+            ApiHelper::_KEBAB_DISPLAY_FORMAT,
+            $this->fuzzerString()
+        );
+    }
+
     public function testFilterTag()
     {
         $this->createGlobalClient();
 
-        $this->goToAndAssertError(
+        $this->goToAndAssertErrorWhenMissing(
             QueryOptionController::class,
             QueryOptionController::ROUTE_FILTER_TAG,
             ApiHelper::FILTER_TAG
         );
 
-        // Test valid request.
         $this->goToAndAssertSuccess(
             QueryOptionController::class,
             QueryOptionController::ROUTE_FILTER_TAG,

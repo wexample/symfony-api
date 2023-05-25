@@ -19,7 +19,7 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
         );
     }
 
-    protected function goToAndAssertIntTypeRestriction(
+    protected function goToAndAssertFailedTypeRestriction(
         string|AbstractController $controller,
         string $route,
         string $queryStringKey,
@@ -68,7 +68,7 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
      * Using a simple tests mechanism,
      * checks that an error is return when query string is missing.
      */
-    protected function goToAndAssertError(
+    protected function goToAndAssertErrorWhenMissing(
         string|AbstractController $controller,
         string $route,
         string $messageKey
@@ -97,13 +97,13 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
         string|int|float|bool $sentValue,
         string|int|float|bool $expectedValue
     ): void {
-        $this->goToAndAssertError(
+        $this->goToAndAssertErrorWhenMissing(
             $controller,
             $route,
             $queryStringKey
         );
 
-        $this->goToAndAssertIntTypeRestriction(
+        $this->goToAndAssertFailedTypeRestriction(
             $controller,
             $route,
             $queryStringKey,
