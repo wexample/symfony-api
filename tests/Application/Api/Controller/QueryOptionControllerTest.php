@@ -9,6 +9,32 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class QueryOptionControllerTest extends AbstractApiApplicationTestCase
 {
+    public function testLength()
+    {
+        $this->createGlobalClient();
+
+        $this->goToAndAssertError(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_LENGTH,
+            VariableHelper::LENGTH
+        );
+
+        $this->goToAndAssertIntTypeRestriction(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_LENGTH,
+            VariableHelper::LENGTH,
+            'wrong-value-type'
+        );
+
+        // Test valid request.
+        $this->goToAndAssertSuccess(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_LENGTH,
+            VariableHelper::LENGTH,
+            1,
+            1
+        );
+    }
     public function testPage()
     {
         $this->createGlobalClient();
@@ -17,6 +43,13 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
             QueryOptionController::class,
             QueryOptionController::ROUTE_PAGE,
             VariableHelper::PAGE
+        );
+
+        $this->goToAndAssertIntTypeRestriction(
+            QueryOptionController::class,
+            QueryOptionController::ROUTE_PAGE,
+            VariableHelper::PAGE,
+            'wrong-value-type'
         );
 
         // Test valid request.

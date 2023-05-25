@@ -18,6 +18,23 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
         );
     }
 
+    protected function goToAndAssertIntTypeRestriction(
+        string|AbstractController $controller,
+        string $route,
+        string $messageKey,
+        string|int|float|bool $sentValue
+    ): void {
+        $this->goToRoute(
+            $controller::buildRouteName($route), [
+                $messageKey => $sentValue,
+            ]
+        );
+
+        $this->assertStatusCodeEquals(
+            Response::HTTP_BAD_REQUEST
+        );
+    }
+
     /**
      * Using a simple tests mechanism,
      * checks that sent query string returns expected value in response.

@@ -5,6 +5,7 @@ namespace Wexample\SymfonyApi\Api\Controller\Test;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\PageQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\YearQueryOption;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
@@ -14,8 +15,20 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 #[Route(path: '_test/api/query-option/', name: '_test_query_option_')]
 class QueryOptionController extends AbstractApiController
 {
+    final public const ROUTE_LENGTH = VariableHelper::LENGTH;
     final public const ROUTE_PAGE = VariableHelper::PAGE;
     final public const ROUTE_YEAR = VariableHelper::YEAR;
+
+    #[Route(path: VariableHelper::LENGTH, name: self::ROUTE_LENGTH)]
+    #[LengthQueryOption(required: true)]
+    public function length(Request $request): JsonResponse
+    {
+        return self::apiResponseSuccess([
+            VariableHelper::LENGTH => $request->get(
+                VariableHelper::LENGTH
+            ),
+        ]);
+    }
 
     #[Route(path: VariableHelper::PAGE, name: self::ROUTE_PAGE)]
     #[PageQueryOption(required: true)]
