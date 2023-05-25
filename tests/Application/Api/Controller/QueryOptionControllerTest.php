@@ -13,52 +13,24 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
     {
         $this->createGlobalClient();
 
-        $this->goToAndAssertError(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_LENGTH,
-            VariableHelper::LENGTH
-        );
-
-        $this->goToAndAssertIntTypeRestriction(
+        $this->checkApiQueryOptionIntType(
             QueryOptionController::class,
             QueryOptionController::ROUTE_LENGTH,
             VariableHelper::LENGTH,
-            'wrong-value-type'
-        );
-
-        // Test valid request.
-        $this->goToAndAssertSuccess(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_LENGTH,
-            VariableHelper::LENGTH,
-            1,
-            1
+            15,
+            15
         );
     }
     public function testPage()
     {
         $this->createGlobalClient();
 
-        $this->goToAndAssertError(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_PAGE,
-            VariableHelper::PAGE
-        );
-
-        $this->goToAndAssertIntTypeRestriction(
+        $this->checkApiQueryOptionIntType(
             QueryOptionController::class,
             QueryOptionController::ROUTE_PAGE,
             VariableHelper::PAGE,
-            'wrong-value-type'
-        );
-
-        // Test valid request.
-        $this->goToAndAssertSuccess(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_PAGE,
-            VariableHelper::PAGE,
-            1,
-            1
+            15,
+            15
         );
     }
 
@@ -66,14 +38,8 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
     {
         $this->createGlobalClient();
 
-        $this->goToAndAssertError(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_YEAR,
-            VariableHelper::YEAR
-        );
-
         $yearNowInt = DateHelper::getCurrentYearInt();
-        $this->goToAndAssertSuccess(
+        $this->checkApiQueryOptionIntType(
             QueryOptionController::class,
             QueryOptionController::ROUTE_YEAR,
             VariableHelper::YEAR,

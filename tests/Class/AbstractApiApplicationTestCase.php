@@ -85,4 +85,34 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
             'Missing : '.$messageKey
         );
     }
+
+    protected function checkApiQueryOptionIntType(
+        string|AbstractController $controller,
+        string $route,
+        string $messageKey,
+        string|int|float|bool $sentValue,
+        string|int|float|bool $expectedValue
+    ): void {
+        $this->goToAndAssertError(
+            $controller,
+            $route,
+            $messageKey
+        );
+
+        $this->goToAndAssertIntTypeRestriction(
+            $controller,
+            $route,
+            $messageKey,
+            'wrong-value-type'
+        );
+
+        // Test valid request.
+        $this->goToAndAssertSuccess(
+            $controller,
+            $route,
+            $messageKey,
+            $sentValue,
+            $expectedValue
+        );
+    }
 }
