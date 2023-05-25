@@ -70,7 +70,14 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
             $violations = $this->validator->validate($value, $constraint);
 
             if ($violations->count()) {
-                $this->createError($event, 'Query option '.$key.' does not match constraints.', ['got' => $value, 'type' => $constraint::class]);
+                $this->createError(
+                    $event,
+                    'Query option **'.$key.'** does not match constraints.',
+                    [
+                        'got' => $value,
+                        'type' => $constraint::class,
+                    ]
+                );
                 return;
             }
         }
@@ -78,7 +85,7 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         // Check if required attributes are present in query strings
         foreach ($optionsAttributes as $key => $attribute) {
             if ($attribute->required === true && !array_key_exists($key, $queryParameters)) {
-                $this->createError($event, 'Required query option '.$key.' is missing.', ['required' => $key]);
+                $this->createError($event, 'Required query option **'.$key.'** is missing.', ['required' => $key]);
                 return;
             }
         }
