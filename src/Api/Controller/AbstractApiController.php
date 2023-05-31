@@ -29,25 +29,26 @@ abstract class AbstractApiController extends AbstractController
     public static function apiResponse(
         $message = null,
         $type = ApiHelper::RESPONSE_TYPE_SUCCESS,
-        $data = []
+        $data = null
     ): JsonResponse {
         $status = ApiHelper::RESPONSE_TYPE_FAILURE === $type
             ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK;
 
-        $dataDefault = [
+        $content = [
             ApiHelper::KEY_RESPONSE_TYPE => $type,
             ApiHelper::KEY_RESPONSE_STATUS => $status,
         ];
 
         if (!is_null($message)) {
-            $dataDefault[ApiHelper::KEY_RESPONSE_MESSAGE] = $message;
+            $content[ApiHelper::KEY_RESPONSE_MESSAGE] = $message;
+        }
+
+        if (!is_null($data)) {
+            $content[ApiHelper::KEY_RESPONSE_DATA] = $data;
         }
 
         return new JsonResponse(
-            array_merge(
-                $dataDefault,
-                $data
-            ),
+            $content,
             $status
         );
     }
