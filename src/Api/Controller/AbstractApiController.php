@@ -49,7 +49,7 @@ abstract class AbstractApiController extends AbstractController
 
         return new JsonResponse(
             $content,
-            $status
+            $status,
         );
     }
 
