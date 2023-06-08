@@ -97,9 +97,15 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
 
         // Check if required attributes are present in query strings
         foreach ($optionsAttributes as $key => $attribute) {
-            if ($attribute->required === true && !array_key_exists($key, $queryParameters)) {
-                $this->createError($event, 'Required query option **'.$key.'** is missing.', ['required' => $key]);
-                return;
+            // Not sent.
+            if (!array_key_exists($key, $queryParameters)) {
+                if ($attribute->required === true) {
+                    $this->createError($event, 'Required query option **'.$key.'** is missing.', ['required' => $key]);
+                    return;
+                } else {
+                    // Replace by default.
+                    $queryParameters[$key] = $attribute->default;
+                }
             }
         }
 

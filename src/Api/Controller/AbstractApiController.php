@@ -18,18 +18,21 @@ abstract class AbstractApiController extends AbstractController
         $message = null,
         $data = [],
         $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
+        bool $prettyPrint = false
     ): JsonResponse {
         return self::apiResponse(
             $message,
             $status,
-            $data
+            $data,
+            $prettyPrint
         );
     }
 
     public static function apiResponse(
         $message = null,
         $type = ApiHelper::RESPONSE_TYPE_SUCCESS,
-        $data = null
+        $data = null,
+        bool $prettyPrint = false
     ): JsonResponse {
         $status = ApiHelper::RESPONSE_TYPE_FAILURE === $type
             ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK;
@@ -47,21 +50,31 @@ abstract class AbstractApiController extends AbstractController
             $content[ApiHelper::KEY_RESPONSE_DATA] = $data;
         }
 
-        return new JsonResponse(
+        $response = new JsonResponse(
             $content,
             $status,
         );
+
+        if ($prettyPrint) {
+            $response->setEncodingOptions(
+                $response->getEncodingOptions() | JSON_PRETTY_PRINT
+            );
+        }
+
+        return $response;
     }
 
     public static function apiResponseError(
         string|Exception $message,
         $data = [],
         $type = ApiHelper::RESPONSE_TYPE_FAILURE,
+        bool $prettyPrint = false
     ): JsonResponse {
         return self::apiResponse(
             $message instanceof Exception ? $message->getMessage() : $message,
             $type,
-            $data
+            $data,
+            $prettyPrint
         );
     }
 
