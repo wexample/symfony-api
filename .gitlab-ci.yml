@@ -1,0 +1,27 @@
+stages:
+  - setup
+  - test
+
+setup:
+  stage: setup
+    # Create dir
+    - cd /var/tmp
+    - rm -rf symfony-composer
+    - mkdir symfony-composer
+    - cd symfony-composer
+    - git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-composer.git .
+    # Copy vendor to local
+    - mkdir vendor-local/wexample
+    - cp -r ${CI_PROJECT_DIR} vendor-local/wexample/symfony-api
+    # Create env file
+    - wex config/write
+    - echo "APP_ENV=dev" > ".wex/.env"
+    - echo "VENDOR_LOCAL_PATH=${CI_PROJECT_DIR}" > ".wex/.env"
+
+setup:
+  stage: test
+  script:
+    - cd /var/tmp
+    - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/docker/.ci.env build --no-cache
+    - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/docker/.ci.env up -d
+    - docker exec -t composer_dev_symfony_5 /bin/bash -c "cd /var/www/html && vendor/bin/phpunit --stop-on-failure"
