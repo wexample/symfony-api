@@ -33,7 +33,7 @@ class QueryOptionController extends AbstractApiController
     final public const TEST_CUSTOM_TYPES = [
         TypesHelper::BOOLEAN,
         TypesHelper::INTEGER,
-        TypesHelper::STRING
+        TypesHelper::STRING,
     ];
 
     #[Route(path: VariableHelper::CUSTOM, name: self::ROUTE_CUSTOM)]
