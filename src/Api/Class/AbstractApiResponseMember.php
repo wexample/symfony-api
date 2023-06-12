@@ -21,7 +21,8 @@ abstract class AbstractApiResponseMember
 
     public final const DISPLAY_FORMAT_FULL = VariableHelper::FULL;
 
-    public static function getDisplayFormats():array {
+    public static function getDisplayFormats(): array
+    {
         return [
             self::DISPLAY_FORMAT_DEFAULT,
             self::DISPLAY_FORMAT_LARGE,
