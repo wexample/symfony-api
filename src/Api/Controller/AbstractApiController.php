@@ -14,6 +14,9 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 abstract class AbstractApiController extends AbstractController
 {
+    final public const ROUTES_PATH_PREFIX = VariableHelper::API;
+    final public const ROUTES_NAME_PREFIX = VariableHelper::API;
+
     public static function apiResponseSuccess(
         $message = null,
         $data = [],
