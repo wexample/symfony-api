@@ -4,6 +4,7 @@ stages:
 
 setup:
   stage: setup
+  script:
     # Create dir
     - cd /var/tmp
     - rm -rf symfony-composer
