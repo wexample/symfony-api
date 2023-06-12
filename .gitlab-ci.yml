@@ -7,7 +7,7 @@ setup:
   script:
     # Create dir
     - cd /var/tmp
-    - rm -rf symfony-composer
+    - sudo rm -rf symfony-composer
     - mkdir symfony-composer
     - cd symfony-composer
     - git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-composer.git .
