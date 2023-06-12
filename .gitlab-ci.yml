@@ -19,8 +19,10 @@ setup:
     - echo "APP_ENV=dev" > ".wex/.env"
     - echo "VENDOR_LOCAL_PATH=${CI_PROJECT_DIR}" > ".wex/.env"
 
-setup:
+test:
   stage: test
+  needs:
+    - setup
   script:
     - cd /var/tmp/symfony-composer
     - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/tmp/config.build build --no-cache
