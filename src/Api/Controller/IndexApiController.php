@@ -14,19 +14,24 @@ class IndexApiController extends AbstractController
 {
     final public const ROUTE_INDEX = VariableHelper::INDEX;
 
-    #[Route(path: '', name: self::ROUTE_INDEX)]
+    #[Route(name: self::ROUTE_INDEX)]
     public function index(RouterInterface $router): Response
     {
-        $output = '<h1>API</h1><table>';
+        $output = '<h1>API</h1>';
 
         foreach ($router->getRouteCollection() as $route) {
             $path = $route->getPath();
             if (str_starts_with($path, '/api/')) {
-                $output .= '<tr><td><a href="'.$path.'">'.$path.'</a></td></tr>';
+                $requirements = $route->getRequirements();
+                $requirementsString = implode(', ', array_map(
+                    function ($v, $k) { return sprintf("%s: %s", $k, $v); },
+                    $requirements,
+                    array_keys($requirements)
+                ));
+
+                $output .= '<p><h2><a href="'.$path.'">'.$path.'</a></h2></td><td>'.$requirementsString.'</p>';
             }
         }
-
-        $output .= '</table>';
 
         return new Response($output);
     }
