@@ -15,8 +15,8 @@ setup:
     - mkdir -p vendor-local/wexample
     - cp -r ${CI_PROJECT_DIR} vendor-local/wexample/symfony-api
     # Create env file
-    - wex config/write
     - echo "APP_ENV=dev" > ".wex/.env"
+    - wex config/write
     - echo "VENDOR_LOCAL_PATH=${CI_PROJECT_DIR}" > ".wex/.env"
 
 test:
