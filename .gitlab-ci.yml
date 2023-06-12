@@ -28,6 +28,8 @@ test:
   script:
     - cd /var/tmp/symfony-composer
     - wex config/write
+    - cat .wex/tmp/docker-compose.build.yml
     - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/tmp/config.build build --no-cache
     - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/tmp/config.build up -d
     - docker exec -t composer_dev_symfony_5 /bin/bash -c "cd /var/www/html && vendor/bin/phpunit --stop-on-failure"
+
