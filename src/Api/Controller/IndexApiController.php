@@ -24,7 +24,12 @@ class IndexApiController extends AbstractController
             if (str_starts_with($path, '/api/')) {
                 $requirements = $route->getRequirements();
                 $requirementsString = implode(', ', array_map(
-                    function ($v, $k) { return sprintf("%s: %s", $k, $v); },
+                    function(
+                        $v,
+                        $k
+                    ) {
+                        return sprintf("%s: %s", $k, $v);
+                    },
                     $requirements,
                     array_keys($requirements)
                 ));

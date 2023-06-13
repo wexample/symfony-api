@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\Api\Controller;
 
+use DateTime;
 use DateTimeInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -88,7 +89,7 @@ abstract class AbstractApiController extends AbstractController
         string $keyDay = VariableHelper::DAY
     ): DateTimeInterface {
         try {
-            return new \DateTime(
+            return new DateTime(
                 implode(
                     '-',
                     [
@@ -98,7 +99,7 @@ abstract class AbstractApiController extends AbstractController
                     ]
                 )
             );
-        } catch (\Exception) {
+        } catch (Exception) {
             return DateHelper::getCurrentYearDate();
         }
     }
