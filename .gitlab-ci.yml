@@ -17,6 +17,8 @@ setup:
     # Create env file
     - echo "APP_ENV=dev" > ".wex/.env"
     - echo "VENDOR_LOCAL_PATH=/var/tmp/vendor-local/wexample" >> ".wex/.env"
+    # Create local env
+    - cp .env.dist .env
 
 test:
   stage: test
