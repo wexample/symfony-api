@@ -13,27 +13,27 @@ setup:
     - git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-composer.git .
     # Copy vendor to local
     - ls -la
-    - rm -rf vendor-local
-#    - mkdir -p vendor-local/wexample
-#    - echo ${CI_PROJECT_DIR}
-#    - cp -r ${CI_PROJECT_DIR} vendor-local/wexample/symfony-api
-#    # Create env file
-#    - echo "APP_ENV=dev" > ".wex/.env"
-#    - echo "VENDOR_LOCAL_PATH=/var/tmp/vendor-local/wexample" >> ".wex/.env"
-#    # Create local env
-#    - cp .env.dist .env
+    - cd /var/tmp
+    - rm -rf symfony-composer-vendor
+    - mkdir -p symfony-composer-vendor/wexample
+    - cp -r ${CI_PROJECT_DIR} symfony-composer-vendor/wexample/symfony-api
+    # Create env file
+    - echo "APP_ENV=dev" > ".wex/.env"
+    - echo "VENDOR_LOCAL_PATH=/var/tmp/symfony-composer-vendor" >> ".wex/.env"
+    # Create local env
+    - cp .env.dist .env
 
-#test:
-#  stage: test
-#  needs:
-#    - setup
-#  script:
-#    - cd /var/tmp/symfony-composer
-#    - wex config/write
-#    - cat .wex/tmp/docker-compose.build.yml
-#    - docker stop composer_dev_symfony_5 || true
-#    - docker rm composer_dev_symfony_5 || true
-#    - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/tmp/config.build build --no-cache
-#    - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/tmp/config.build up -d
-#    - docker exec -t composer_dev_symfony_5 /bin/bash -c "cd /var/www/html && composer install"
-#    - docker exec -t composer_dev_symfony_5 /bin/bash -c "cd /var/www/html && vendor/bin/phpunit --stop-on-failure; exit $?"
+test:
+  stage: test
+  needs:
+    - setup
+  script:
+    - cd /var/tmp/symfony-composer
+    - wex config/write
+    - cat .wex/tmp/docker-compose.build.yml
+    - docker stop composer_dev_symfony_5 || true
+    - docker rm composer_dev_symfony_5 || true
+    - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/tmp/config.build build --no-cache
+    - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/tmp/config.build up -d
+    - docker exec -t composer_dev_symfony_5 /bin/bash -c "cd /var/www/html && composer install"
+    - docker exec -t composer_dev_symfony_5 /bin/bash -c "cd /var/www/html && vendor/bin/phpunit --stop-on-failure; exit $?"
