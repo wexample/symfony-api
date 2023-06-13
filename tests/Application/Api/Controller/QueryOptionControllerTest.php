@@ -21,9 +21,6 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
     {
         $this->createGlobalClient();
 
-        # TODO Testing failure in CI.
-        $this->assertTrue(false);
-
         $failingCombinations = ArrayHelper::generateAllIncompleteCombinations(
             QueryOptionController::TEST_CUSTOM_TYPES
         );

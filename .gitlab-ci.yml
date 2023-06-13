@@ -29,7 +29,6 @@ test:
   script:
     - cd /var/tmp/symfony-composer
     - wex config/write
-    - cat .wex/tmp/docker-compose.build.yml
     - docker stop composer_dev_symfony_5 || true
     - docker rm composer_dev_symfony_5 || true
     - docker compose -f .wex/tmp/docker-compose.build.yml --env-file .wex/tmp/config.build build --no-cache
