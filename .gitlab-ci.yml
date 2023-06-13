@@ -12,15 +12,16 @@ setup:
     - cd symfony-composer
     - git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-composer.git .
     # Copy vendor to local
+    - ls -la
     - rm -rf vendor-local
-    - mkdir -p vendor-local/wexample
-    - echo ${CI_PROJECT_DIR}
-    - cp -r ${CI_PROJECT_DIR} vendor-local/wexample/symfony-api
-    # Create env file
-    - echo "APP_ENV=dev" > ".wex/.env"
-    - echo "VENDOR_LOCAL_PATH=/var/tmp/vendor-local/wexample" >> ".wex/.env"
-    # Create local env
-    - cp .env.dist .env
+#    - mkdir -p vendor-local/wexample
+#    - echo ${CI_PROJECT_DIR}
+#    - cp -r ${CI_PROJECT_DIR} vendor-local/wexample/symfony-api
+#    # Create env file
+#    - echo "APP_ENV=dev" > ".wex/.env"
+#    - echo "VENDOR_LOCAL_PATH=/var/tmp/vendor-local/wexample" >> ".wex/.env"
+#    # Create local env
+#    - cp .env.dist .env
 
 #test:
 #  stage: test
