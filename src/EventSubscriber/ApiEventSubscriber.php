@@ -50,7 +50,8 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         $queryParameters = $request->query->all();
 
         foreach ($apiQueryAttributes as $attribute) {
-            $optionsAttributes[$attribute->newInstance()->key] = $attribute->newInstance();
+            $instance = $attribute->newInstance();
+            $optionsAttributes[$instance->key] = $instance;
         }
 
         foreach ($queryParameters as $key => $value) {
