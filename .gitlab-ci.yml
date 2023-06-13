@@ -12,6 +12,7 @@ setup:
     - cd symfony-composer
     - git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-composer.git .
     # Copy vendor to local
+    - rm -rf vendor-local
     - mkdir -p vendor-local/wexample
     - cp -r ${CI_PROJECT_DIR} vendor-local/wexample/symfony-api
     # Create env file
