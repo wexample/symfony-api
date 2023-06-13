@@ -20,6 +20,10 @@ setup:
     - echo "VENDOR_LOCAL_PATH=/var/tmp/vendor-local/wexample" >> ".wex/.env"
     # Create local env
     - cp .env.dist .env
+  artifacts:
+    paths:
+      - /var/tmp/symfony-composer/
+      - /var/tmp/vendor-local/
 
 test:
   stage: test
