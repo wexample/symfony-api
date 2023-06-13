@@ -5,7 +5,9 @@ namespace Wexample\SymfonyApi\Api\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
+use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 
@@ -21,7 +23,19 @@ class IndexApiController extends AbstractController
 
         foreach ($router->getRouteCollection() as $route) {
             $path = $route->getPath();
+
             if (str_starts_with($path, '/api/')) {
+                $apiQueryAttributes = ClassHelper::getChildrenAttributes(
+                    $route->getDefaults()['_controller'],
+                    QueryOptionTrait::class
+                );
+
+                $queryParametersString = [];
+                foreach ($apiQueryAttributes as $queryOption) {
+                    $queryParametersString[] = $queryOption->newInstance()->key;
+                }
+                $queryParametersString = implode(',', $queryParametersString);
+
                 $requirements = $route->getRequirements();
                 $requirementsString = implode(', ', array_map(
                     function(
@@ -34,7 +48,11 @@ class IndexApiController extends AbstractController
                     array_keys($requirements)
                 ));
 
-                $output .= '<p><h2><a href="'.$path.'">'.$path.'</a></h2></td><td>'.$requirementsString.'</p>';
+                $output .= '<p>'.
+                    '<h2><a href="'.$path.'">'.$path.'</a></h2>'.
+                    $requirementsString.'<br>'.
+                    $queryParametersString.
+                    '</p>';
             }
         }
 
