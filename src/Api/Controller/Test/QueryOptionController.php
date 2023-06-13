@@ -45,8 +45,8 @@ class QueryOptionController extends AbstractApiController
         $data = [];
 
         foreach (self::TEST_CUSTOM_TYPES as $type) {
-            $data[VariableHelper::CUSTOM . '_' . $type] = $request->get(
-                VariableHelper::CUSTOM. '-' . $type
+            $data[VariableHelper::CUSTOM.'_'.$type] = $request->get(
+                VariableHelper::CUSTOM.'-'.$type
             );
         }
 
