@@ -16,8 +16,6 @@ check:
 
 setup:
   stage: setup
-  only:
-    - tags
   rules:
     - if: '$SKIP_BUILD != "true"'
   script:
@@ -28,8 +26,6 @@ setup:
 
 pass:
   stage: pass
-  only:
-    - tags
   rules:
     - if: '$SKIP_BUILD != "true"'
   needs:
