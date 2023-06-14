@@ -1,9 +1,25 @@
 stages:
+  - check
   - setup
   - pass
 
+check:
+  stage: check
+  only:
+    - tags
+  script:
+    - wex script/exec -c=ciCheck
+
+  artifacts:
+    reports:
+      dotenv: .env.skip
+
 setup:
   stage: setup
+  only:
+    - tags
+  rules:
+    - if: '$SKIP_BUILD != "true"'
   script:
     - cd /var/tmp
     - rm -rf symfony-composer-vendor
@@ -12,6 +28,10 @@ setup:
 
 pass:
   stage: pass
+  only:
+    - tags
+  rules:
+    - if: '$SKIP_BUILD != "true"'
   needs:
     - setup
   trigger:
