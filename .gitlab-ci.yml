@@ -32,10 +32,10 @@ check:
 
 deploy:
   stage: deploy
-  rules:
-    - changes:
-        - composer.json
-      if: '$SKIP_BUILD != "true"'
+#  rules:
+#    - changes:
+#        - composer.json
+#      if: '$SKIP_BUILD != "true"'
   needs:
 #    - test
     - check
