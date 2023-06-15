@@ -5,6 +5,7 @@ stages:
 
 before_script:
   - export FILE_CHANGED=$(git diff --name-only ${CI_COMMIT_SHORT_SHA} ${CI_COMMIT_SHORT_SHA}~1 | grep composer.json || echo "false")
+  - echo "Changes ${FILE_CHANGED}"
 
 check:
   stage: check
