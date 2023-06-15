@@ -17,4 +17,5 @@ if [ "$CURRENT_VERSION" != "$LATEST_TAG" ]; then
     echo "SKIP_BUILD=true" >> .env.skip
 else
     echo "The CURRENT_VERSION ($CURRENT_VERSION) is the latest tag.. continue"
+    echo "SKIP_BUILD=false" >> .env.skip
 fi
