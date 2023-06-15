@@ -8,7 +8,7 @@ check:
 #    - tags
   script:
     - bash .wex/script/ciCheck.sh
-    - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > .env.symfony-composer
+    - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
   artifacts:
     reports:
       dotenv: .env.skip
