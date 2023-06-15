@@ -24,7 +24,6 @@ test:
     - if: '$FILE_CHANGED != "false" && $SKIP_BUILD != "true"'
   needs:
     - check
-  script:
   trigger:
       project: wexample/symfony-composer
       branch: master
