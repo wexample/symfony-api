@@ -4,7 +4,6 @@ stages:
 
 check:
   stage: check
-  interruptible: true
   only:
     - tags
   script:
@@ -16,11 +15,10 @@ check:
 
 test:
   stage: test
-  interruptible: true
   rules:
     - if: '$SKIP_BUILD != "true"'
   needs:
-    - setup
+    - check
   trigger:
       project: wexample/symfony-composer
       branch: master
