@@ -36,9 +36,9 @@ deploy:
 #    - changes:
 #        - composer.json
 #      if: '$SKIP_BUILD != "true"'
-  needs:
-#    - test
-    - check
+#  needs:
+##    - test
+#    - check
   script:
     - sudo mkdir tmp
 #    - sudo chown -R www-data:www-data tmp
