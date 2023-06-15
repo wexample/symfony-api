@@ -6,8 +6,8 @@ stages:
 check:
   stage: check
   rules:
-    changes:
-      - composer.json
+    - changes:
+        - composer.json
   script:
     - bash .wex/script/ciCheck.sh
     - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
@@ -18,9 +18,9 @@ check:
 test:
   stage: test
   rules:
-    changes:
-      - composer.json
-    - if: '$SKIP_BUILD != "true"'
+    - changes:
+        - composer.json
+      if: '$SKIP_BUILD != "true"'
   needs:
     - check
   script:
@@ -35,9 +35,9 @@ test:
 deploy:
   stage: deploy
   rules:
-    changes:
-      - composer.json
-    - if: '$SKIP_BUILD != "true"'
+    - changes:
+        - composer.json
+      if: '$SKIP_BUILD != "true"'
   needs:
     - test
   script:
