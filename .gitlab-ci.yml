@@ -1,3 +1,6 @@
+before_script:
+  - export COMPOSER_PACKAGE_3=$CI_PROJECT_DIR
+
 variables:
   COMPOSER_PACKAGE_2: $CI_PROJECT_DIR
 
