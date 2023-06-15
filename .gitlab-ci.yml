@@ -1,5 +1,6 @@
 before_script:
   - export COMPOSER_PACKAGE_3=$CI_PROJECT_DIR
+  - export COMPOSER_PACKAGE_4=TOTO
 
 variables:
   COMPOSER_PACKAGE_2: $CI_PROJECT_DIR
@@ -14,7 +15,7 @@ check:
 #    - tags
   script:
     - wex script/exec -c=ciCheck
-
+    - echo $COMPOSER_PACKAGE_4
   artifacts:
     reports:
       dotenv: .env.skip
