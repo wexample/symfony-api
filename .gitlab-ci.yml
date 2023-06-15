@@ -47,6 +47,6 @@ deploy:
     - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
     - VERSION=$(grep -oP '"version": \"\K[^\"]+' composer.json)
     - echo "Adding tag ${VERSION}"
-    - sudo -u www-data git tag v${VERSION} || true
-    - sudo -u www-data git push origin
-    - sudo -u www-data git push github
+#    - sudo -u www-data git tag v${VERSION} || true
+#    - sudo -u www-data git push origin
+#    - sudo -u www-data git push github
