@@ -15,6 +15,7 @@ check:
     - echo "Changed $FILE_CHANGED"
     - bash .wex/script/ciCheck.sh
     - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
+    - echo "Skip $SKIP_BUILD"
   artifacts:
     reports:
       dotenv: .env.skip
@@ -27,6 +28,7 @@ test:
     - check
   script:
     - echo "Changed $FILE_CHANGED"
+    - echo "Skip $SKIP_BUILD"
 #  trigger:
 #      project: wexample/symfony-composer
 #      branch: master
@@ -40,13 +42,14 @@ deploy:
     - test
   script:
     - echo "Changed $FILE_CHANGED"
-    - sudo mkdir tmp
-    - sudo chown -R www-data:www-data tmp
-    - cd tmp
-    - sudo -u www-data git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-api.git .
-    - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
-    - VERSION=$(python3 -c "import json; print(json.load(open('composer.json'))['version'])")
-    - echo "Adding tag v${VERSION}"
-    - sudo -u www-data git tag v${VERSION} || true
-    - sudo -u www-data git push origin --tags
-    - sudo -u www-data git push github --tags
+    - echo "Skip $SKIP_BUILD"
+#    - sudo mkdir tmp
+#    - sudo chown -R www-data:www-data tmp
+#    - cd tmp
+#    - sudo -u www-data git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-api.git .
+#    - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
+#    - VERSION=$(python3 -c "import json; print(json.load(open('composer.json'))['version'])")
+#    - echo "Adding tag v${VERSION}"
+#    - sudo -u www-data git tag v${VERSION} || true
+#    - sudo -u www-data git push origin --tags
+#    - sudo -u www-data git push github --tags
