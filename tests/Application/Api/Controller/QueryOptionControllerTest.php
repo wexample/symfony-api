@@ -32,7 +32,7 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
         $testValidValues = [
             TypesHelper::BOOLEAN => true,
             TypesHelper::INTEGER => 123,
-            TypesHelper::STRING => 'lorem-ipsum'
+            TypesHelper::STRING => 'lorem-ipsum',
         ];
 
         foreach ($failingCombinations as $combination) {
