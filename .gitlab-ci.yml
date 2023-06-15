@@ -1,10 +1,10 @@
 stages:
   - check
-  - setup
-  - pass
+  - test
 
 check:
   stage: check
+  interruptible: true
   only:
     - tags
   script:
@@ -14,18 +14,9 @@ check:
     reports:
       dotenv: .env.skip
 
-setup:
-  stage: setup
-  rules:
-    - if: '$SKIP_BUILD != "true"'
-  script:
-    - cd /var/tmp
-    - rm -rf symfony-composer-vendor
-    - mkdir -p symfony-composer-vendor/wexample
-    - cp -r ${CI_PROJECT_DIR} symfony-composer-vendor/wexample/symfony-api
-
-pass:
-  stage: pass
+test:
+  stage: test
+  interruptible: true
   rules:
     - if: '$SKIP_BUILD != "true"'
   needs:
@@ -33,3 +24,6 @@ pass:
   trigger:
       project: wexample/symfony-composer
       branch: master
+      strategy: depend
+  variables:
+    COMPOSER_PACKAGE: $PROJECT_A_DIR
