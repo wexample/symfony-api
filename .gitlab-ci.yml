@@ -1,40 +1,7 @@
-workflow:
-  name: Deploy
-  rules:
-    - changes:
-        - composer.json
+variables:
+  SYMFONY_PACKAGE_NAME: symfony-api
 
-stages:
-  - setup
-  - test
-  - deploy
-
-setup:
-  stage: setup
-  script:
-    - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
-
-test:
-  stage: test
-  needs:
-    - setup
-  trigger:
-      project: wexample/symfony-composer
-      branch: master
-      strategy: depend
-
-deploy:
-  stage: deploy
-  needs:
-    - test
-  script:
-    - sudo mkdir tmp
-    - sudo chown -R www-data:www-data tmp
-    - cd tmp
-    - sudo -u www-data git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-api.git .
-    - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
-    - VERSION=$(python3 -c "import json; print(json.load(open('composer.json'))['version'])")
-    - echo "Adding tag v${VERSION}"
-    - sudo -u www-data git tag v${VERSION} || true
-    - sudo -u www-data git push origin --tags
-    - sudo -u www-data git push github --tags
+include:
+  - project: 'wexample/symfony-packages-templates'
+    ref: master
+    file: '.gitlab-cy.deploy.yml'
