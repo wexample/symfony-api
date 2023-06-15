@@ -45,7 +45,7 @@ deploy:
     - cd tmp
     - sudo -u www-data git clone ${CI_REPOSITORY_URL} .
     - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
-    - VERSION=$(python -c "import json; print(json.load(open('composer.json'))['version'])")
+    - VERSION=$(python3 -c "import json; print(json.load(open('composer.json'))['version'])")
     - echo "Adding tag ${VERSION}"
 #    - sudo -u www-data git tag v${VERSION} || true
 #    - sudo -u www-data git push origin
