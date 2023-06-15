@@ -1,6 +1,7 @@
 stages:
   - check
   - test
+  - deploy
 
 check:
   stage: check
@@ -21,9 +22,27 @@ test:
     - if: '$SKIP_BUILD != "true"'
   needs:
     - check
-  trigger:
-      project: wexample/symfony-composer
-      branch: master
-      strategy: depend
-  variables:
-    COMPOSER_PACKAGE: $PROJECT_A_DIR
+  script:
+    - echo "ok"
+#  trigger:
+#      project: wexample/symfony-composer
+#      branch: master
+#      strategy: depend
+#  variables:
+#    COMPOSER_PACKAGE: $PROJECT_A_DIR
+
+deploy:
+  stage: deploy
+#  only:
+#    - tags
+  rules:
+    - if: '$SKIP_BUILD != "true"'
+  needs:
+    - test
+  script:
+    - sudo mkdir tmp
+    - sudo chown -R www-data:www-data tmp
+    - cd tmp
+    - sudo -u www-data git clone ${CI_REPOSITORY_URL} .
+    - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
+    - sudo -u www-data git push github
