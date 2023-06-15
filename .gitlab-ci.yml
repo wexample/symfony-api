@@ -30,17 +30,6 @@ test:
   variables:
     COMPOSER_PACKAGE: $PROJECT_A_DIR
 
-tag:
-  stage: deploy
-  rules:
-    - changes:
-        - composer.json
-      if: '$SKIP_BUILD != "true"'
-  needs:
-    - test
-  script:
-    - VERSION=$(grep -oP '"version": "\K[^"]+' composer.json)
-
 deploy:
   stage: deploy
   rules:
