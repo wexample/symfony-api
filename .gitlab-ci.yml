@@ -17,7 +17,7 @@ setup:
 test:
   stage: test
   rules:
-    - if: '$FILE_CHANGED != "false"'
+    - if: '$FILE_CHANGED != "false" && echo "AAAA$FILE_CHANGED"'
   needs:
     - setup
   script:
