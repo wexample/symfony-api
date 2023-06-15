@@ -5,8 +5,9 @@ stages:
 
 check:
   stage: check
-#  only:
-#    - tags
+  only:
+    changes:
+      - composer.json
   script:
     - bash .wex/script/ciCheck.sh
     - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
@@ -16,25 +17,27 @@ check:
 
 test:
   stage: test
-#  only:
-#    - tags
+  only:
+    changes:
+      - composer.json
   rules:
     - if: '$SKIP_BUILD != "true"'
   needs:
     - check
   script:
     - echo "ok"
-#  trigger:
-#      project: wexample/symfony-composer
-#      branch: master
-#      strategy: depend
-#  variables:
-#    COMPOSER_PACKAGE: $PROJECT_A_DIR
+  trigger:
+      project: wexample/symfony-composer
+      branch: master
+      strategy: depend
+  variables:
+    COMPOSER_PACKAGE: $PROJECT_A_DIR
 
 deploy:
   stage: deploy
-#  only:
-#    - tags
+  only:
+    changes:
+      - composer.json
   rules:
     - if: '$SKIP_BUILD != "true"'
   needs:
