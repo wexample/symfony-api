@@ -48,5 +48,5 @@ deploy:
     - VERSION=$(python3 -c "import json; print(json.load(open('composer.json'))['version'])")
     - echo "Adding tag v${VERSION}"
     - sudo -u www-data git tag v${VERSION} || true
-    - sudo -u www-data git push origin
-    - sudo -u www-data git push github
+    - sudo -u www-data git push origin --tags
+    - sudo -u www-data git push github --tags
