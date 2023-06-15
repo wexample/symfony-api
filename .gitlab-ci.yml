@@ -1,5 +1,5 @@
 stages:
-  - check
+  - setup
   - test
   - deploy
 
@@ -7,29 +7,21 @@ before_script:
   - export FILE_CHANGED=$(git diff --name-only ${CI_COMMIT_SHORT_SHA} ${CI_COMMIT_SHORT_SHA}~1 | grep composer.json || echo "false")
   - echo "composer.json changed ${FILE_CHANGED}"
 
-check:
-  stage: check
+setup:
+  stage: setup
   rules:
     - if: '$FILE_CHANGED != "false"'
   script:
-    - echo "Changed $FILE_CHANGED"
-    - bash .wex/script/ciCheck.sh
     - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
-    - echo "Skip $SKIP_BUILD"
-  artifacts:
-    reports:
-      dotenv: .env.skip
 
 test:
   stage: test
   rules:
-    - if: '$FILE_CHANGED != "false" && $SKIP_BUILD != "true"'
+    - if: '$FILE_CHANGED != "false"'
   needs:
-    - check
+    - setup
   script:
     - echo "Changed $FILE_CHANGED"
-    - echo "Skip $SKIP_BUILD"
-    - cat .wex/script/ciCheck.sh
 #  trigger:
 #      project: wexample/symfony-composer
 #      branch: master
@@ -38,12 +30,11 @@ test:
 deploy:
   stage: deploy
   rules:
-    - if: '$FILE_CHANGED != "false" && $SKIP_BUILD != "true"'
+    - if: '$FILE_CHANGED != "false"'
   needs:
     - test
   script:
     - echo "Changed $FILE_CHANGED"
-    - echo "Skip $SKIP_BUILD"
 #    - sudo mkdir tmp
 #    - sudo chown -R www-data:www-data tmp
 #    - cd tmp
