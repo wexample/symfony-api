@@ -30,6 +30,17 @@ test:
   variables:
     COMPOSER_PACKAGE: $PROJECT_A_DIR
 
+tag:
+  stage: deploy
+  rules:
+    - changes:
+        - composer.json
+      if: '$SKIP_BUILD != "true"'
+  needs:
+    - test
+  script:
+    - VERSION=$(grep -oP '"version": "\K[^"]+' composer.json)
+
 deploy:
   stage: deploy
   rules:
@@ -44,4 +55,7 @@ deploy:
     - cd tmp
     - sudo -u www-data git clone ${CI_REPOSITORY_URL} .
     - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
+    - VERSION=$(grep -oP '"version": "\K[^"]+' composer.json)
+    - sudo -u www-data git tag v${VERSION} || true
+    - sudo -u www-data git push origin
     - sudo -u www-data git push github
