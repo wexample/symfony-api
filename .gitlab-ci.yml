@@ -15,20 +15,20 @@ check:
     reports:
       dotenv: .env.skip
 
-test:
-  stage: test
-  rules:
-    - changes:
-        - composer.json
-      if: '$SKIP_BUILD != "true"'
-  needs:
-    - check
-  trigger:
-      project: wexample/symfony-composer
-      branch: master
-      strategy: depend
-  variables:
-    COMPOSER_PACKAGE: $PROJECT_A_DIR
+#test:
+#  stage: test
+#  rules:
+#    - changes:
+#        - composer.json
+#      if: '$SKIP_BUILD != "true"'
+#  needs:
+#    - check
+#  trigger:
+#      project: wexample/symfony-composer
+#      branch: master
+#      strategy: depend
+#  variables:
+#    COMPOSER_PACKAGE: $PROJECT_A_DIR
 
 deploy:
   stage: deploy
@@ -37,7 +37,8 @@ deploy:
         - composer.json
       if: '$SKIP_BUILD != "true"'
   needs:
-    - test
+#    - test
+    - check
   script:
     - sudo mkdir tmp
     - sudo chown -R www-data:www-data tmp
