@@ -4,4 +4,4 @@ variables:
 include:
   - project: 'wexample/symfony-packages-templates'
     ref: main
-    file: '.gitlab-cy.deploy.yml'
+    file: '.gitlab-ci.deploy.yml'
