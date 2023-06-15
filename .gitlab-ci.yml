@@ -43,7 +43,7 @@ deploy:
     - sudo mkdir tmp
     - sudo chown -R www-data:www-data tmp
     - cd tmp
-    - sudo -u www-data git clone ${CI_REPOSITORY_URL} .
+    - sudo -u www-data git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-api.git .
     - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
     - VERSION=$(python3 -c "import json; print(json.load(open('composer.json'))['version'])")
     - echo "Adding tag v${VERSION}"
