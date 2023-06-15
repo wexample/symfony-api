@@ -10,9 +10,6 @@ setup:
         - composer.json
   script:
     - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
-  artifacts:
-    reports:
-      dotenv: .env.skip
 
 test:
   stage: test
@@ -25,8 +22,6 @@ test:
       project: wexample/symfony-composer
       branch: master
       strategy: depend
-  variables:
-    COMPOSER_PACKAGE: $PROJECT_A_DIR
 
 deploy:
   stage: deploy
