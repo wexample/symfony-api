@@ -12,9 +12,9 @@ Create a new directory in `src/Api/Controller/`.
 
 Add the folder to your routes.yaml for loading routes.
 
-api_controllers:
-    resource: '../src/Api/Controller/'
-    type: annotation
+    api_controllers:
+        resource: '../src/Api/Controller/'
+        type: annotation
 
 ## Usage
 
