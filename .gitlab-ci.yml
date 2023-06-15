@@ -41,10 +41,10 @@ deploy:
     - check
   script:
     - sudo mkdir tmp
-    - sudo chown -R www-data:www-data tmp
-    - cd tmp
-    - sudo -u www-data git clone ${CI_REPOSITORY_URL} .
-    - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
+#    - sudo chown -R www-data:www-data tmp
+#    - cd tmp
+#    - sudo -u www-data git clone ${CI_REPOSITORY_URL} .
+#    - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
 #    - VERSION=$(grep -oP '"version": \"\K[^\"]+' composer.json)
 #    - echo "Adding tag ${VERSION}"
 #    - sudo -u www-data git tag v${VERSION} || true
