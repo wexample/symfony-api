@@ -1,40 +1,38 @@
 stages:
-  - setup
   - test
-  - deploy
 
 before_script:
   - export FILE_CHANGED=$(git diff --name-only ${CI_COMMIT_SHORT_SHA} ${CI_COMMIT_SHORT_SHA}~1 | grep composer.json || echo "false")
   - echo "composer.json changed ${FILE_CHANGED}"
 
-setup:
-  stage: setup
-  rules:
-    - if: '$FILE_CHANGED != "false"'
-  script:
-    - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
-
 test:
   stage: test
   rules:
-    - if: '$FILE_CHANGED != "false" && echo "AAAA$FILE_CHANGED"'
-  needs:
-    - setup
+    - if: '$FILE_CHANGED != "false"'
   script:
     - echo "Changed $FILE_CHANGED"
+
+#setup:
+#  stage: setup
+#  rules:
+#    - if: '$FILE_CHANGED != "false"'
+#  script:
+#    - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
+
+
 #  trigger:
 #      project: wexample/symfony-composer
 #      branch: master
 #      strategy: depend
 
-deploy:
-  stage: deploy
-  rules:
-    - if: '$FILE_CHANGED != "false"'
-  needs:
-    - test
-  script:
-    - echo "Changed $FILE_CHANGED"
+#deploy:
+#  stage: deploy
+#  rules:
+#    - if: '$FILE_CHANGED != "false"'
+#  needs:
+#    - test
+#  script:
+#    - echo "Changed $FILE_CHANGED"
 #    - sudo mkdir tmp
 #    - sudo chown -R www-data:www-data tmp
 #    - cd tmp
