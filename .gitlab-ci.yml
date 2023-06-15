@@ -23,8 +23,6 @@ test:
       if: '$SKIP_BUILD != "true"'
   needs:
     - check
-  script:
-    - echo "ok"
   trigger:
       project: wexample/symfony-composer
       branch: master
