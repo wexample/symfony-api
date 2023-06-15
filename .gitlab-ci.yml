@@ -25,10 +25,12 @@ test:
     - if: '$FILE_CHANGED != "false" && $SKIP_BUILD != "true"'
   needs:
     - check
-  trigger:
-      project: wexample/symfony-composer
-      branch: master
-      strategy: depend
+  script:
+    - echo "Changed $FILE_CHANGED"
+#  trigger:
+#      project: wexample/symfony-composer
+#      branch: master
+#      strategy: depend
 
 deploy:
   stage: deploy
@@ -37,6 +39,7 @@ deploy:
   needs:
     - test
   script:
+    - echo "Changed $FILE_CHANGED"
     - sudo mkdir tmp
     - sudo chown -R www-data:www-data tmp
     - cd tmp
