@@ -1,45 +1,48 @@
 stages:
+  - setup
   - test
+  - deploy
 
-before_script:
-  - export FILE_CHANGED=$(git diff --name-only ${CI_COMMIT_SHORT_SHA} ${CI_COMMIT_SHORT_SHA}~1 | grep composer.json || echo "false")
-  - echo "composer.json changed ${FILE_CHANGED}"
+setup:
+  stage: setup
+  rules:
+    - changes:
+        - composer.json
+  script:
+    - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
+  artifacts:
+    reports:
+      dotenv: .env.skip
 
 test:
   stage: test
   rules:
-    - if: '$FILE_CHANGED != "false"'
+    - changes:
+        - composer.json
+  needs:
+    - setup
+  trigger:
+      project: wexample/symfony-composer
+      branch: master
+      strategy: depend
+  variables:
+    COMPOSER_PACKAGE: $PROJECT_A_DIR
+
+deploy:
+  stage: deploy
+  rules:
+    - changes:
+        - composer.json
+  needs:
+    - test
   script:
-    - echo "Changed $FILE_CHANGED"
-
-#setup:
-#  stage: setup
-#  rules:
-#    - if: '$FILE_CHANGED != "false"'
-#  script:
-#    - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
-
-
-#  trigger:
-#      project: wexample/symfony-composer
-#      branch: master
-#      strategy: depend
-
-#deploy:
-#  stage: deploy
-#  rules:
-#    - if: '$FILE_CHANGED != "false"'
-#  needs:
-#    - test
-#  script:
-#    - echo "Changed $FILE_CHANGED"
-#    - sudo mkdir tmp
-#    - sudo chown -R www-data:www-data tmp
-#    - cd tmp
-#    - sudo -u www-data git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-api.git .
-#    - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
-#    - VERSION=$(python3 -c "import json; print(json.load(open('composer.json'))['version'])")
-#    - echo "Adding tag v${VERSION}"
-#    - sudo -u www-data git tag v${VERSION} || true
-#    - sudo -u www-data git push origin --tags
-#    - sudo -u www-data git push github --tags
+    - sudo mkdir tmp
+    - sudo chown -R www-data:www-data tmp
+    - cd tmp
+    - sudo -u www-data git clone ssh://git@gitlab.wexample.com:4567/wexample/symfony-api.git .
+    - sudo -u www-data git remote add github git@github.com:wexample/symfony-api.git
+    - VERSION=$(python3 -c "import json; print(json.load(open('composer.json'))['version'])")
+    - echo "Adding tag v${VERSION}"
+    - sudo -u www-data git tag v${VERSION} || true
+    - sudo -u www-data git push origin --tags
+    - sudo -u www-data git push github --tags
