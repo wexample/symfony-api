@@ -1,3 +1,6 @@
+variables:
+  COMPOSER_PACKAGE_2: $CI_PROJECT_DIR
+
 stages:
   - check
   - test
