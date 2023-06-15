@@ -12,6 +12,7 @@ check:
   rules:
     - if: '$FILE_CHANGED != "false"'
   script:
+    - echo "Changed $FILE_CHANGED"
     - bash .wex/script/ciCheck.sh
     - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
   artifacts:
