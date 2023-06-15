@@ -4,8 +4,8 @@ stages:
 
 check:
   stage: check
-  only:
-    - tags
+#  only:
+#    - tags
   script:
     - wex script/exec -c=ciCheck
 
@@ -15,6 +15,8 @@ check:
 
 test:
   stage: test
+#  only:
+#    - tags
   rules:
     - if: '$SKIP_BUILD != "true"'
   needs:
