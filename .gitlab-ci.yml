@@ -5,7 +5,7 @@ stages:
 
 check:
   stage: check
-  only:
+  rules:
     changes:
       - composer.json
   script:
@@ -17,10 +17,9 @@ check:
 
 test:
   stage: test
-  only:
+  rules:
     changes:
       - composer.json
-  rules:
     - if: '$SKIP_BUILD != "true"'
   needs:
     - check
@@ -35,10 +34,9 @@ test:
 
 deploy:
   stage: deploy
-  only:
+  rules:
     changes:
       - composer.json
-  rules:
     - if: '$SKIP_BUILD != "true"'
   needs:
     - test
