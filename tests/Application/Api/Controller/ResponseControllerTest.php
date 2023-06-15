@@ -15,6 +15,8 @@ class ResponseControllerTest extends AbstractApiApplicationTestCase
     {
         $this->createGlobalClient();
 
+        $this->assertTrue(false);
+
         $this->goToRoute(
             ResponseController::buildRouteName(ResponseController::ROUTE_SUCCESS)
         );
