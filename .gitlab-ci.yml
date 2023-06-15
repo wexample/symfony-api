@@ -1,3 +1,9 @@
+workflow:
+  name: Deploy
+  rules:
+    - changes:
+        - composer.json
+
 stages:
   - setup
   - test
@@ -5,17 +11,11 @@ stages:
 
 setup:
   stage: setup
-  rules:
-    - changes:
-        - composer.json
   script:
     - echo "COMPOSER_PACKAGE_DIR=${CI_PROJECT_DIR}" > ../.env.symfony-composer
 
 test:
   stage: test
-  rules:
-    - changes:
-        - composer.json
   needs:
     - setup
   trigger:
@@ -25,9 +25,6 @@ test:
 
 deploy:
   stage: deploy
-  rules:
-    - changes:
-        - composer.json
   needs:
     - test
   script:
