@@ -4,7 +4,7 @@ stages:
   - deploy
 
 before_script:
-  - export FILE_CHANGED=$(git diff --name-only HEAD HEAD~1 | grep composer.json || echo "false")
+  - export FILE_CHANGED=$(git diff --name-only ${CI_COMMIT_SHORT_SHA} ${CI_COMMIT_SHORT_SHA}~1 | grep composer.json || echo "false")
 
 check:
   stage: check
