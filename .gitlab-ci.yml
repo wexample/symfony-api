@@ -3,6 +3,9 @@ stages:
   - test
   - deploy
 
+before_script:
+  - export FILE_CHANGED=$(git diff --name-only HEAD HEAD~1 | grep composer.json || echo "false")
+
 check:
   stage: check
   rules:
@@ -18,9 +21,7 @@ check:
 test:
   stage: test
   rules:
-    - changes:
-        - composer.json
-      if: '$SKIP_BUILD != "true"'
+    - if: '$FILE_CHANGED != "false" && $SKIP_BUILD != "true"'
   needs:
     - check
   trigger:
@@ -33,9 +34,7 @@ test:
 deploy:
   stage: deploy
   rules:
-    - changes:
-        - composer.json
-      if: '$SKIP_BUILD != "true"'
+    - if: '$FILE_CHANGED != "false" && $SKIP_BUILD != "true"'
   needs:
     - test
   script:
