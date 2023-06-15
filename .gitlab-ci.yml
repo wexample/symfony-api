@@ -29,6 +29,7 @@ test:
   script:
     - echo "Changed $FILE_CHANGED"
     - echo "Skip $SKIP_BUILD"
+    - cat .wex/script/ciCheck.sh
 #  trigger:
 #      project: wexample/symfony-composer
 #      branch: master
