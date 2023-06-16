@@ -71,13 +71,13 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
     {
         $this->createGlobalClient();
 
-        $this->goToAndAssertErrorWhenMissing(
+        $this->goToSimpleRouteAndAssertErrorWhenMissing(
             QueryOptionController::class,
             QueryOptionController::ROUTE_DISPLAY_FORMAT,
             ApiHelper::FILTER_TAG
         );
 
-        $this->goToAndAssertSuccess(
+        $this->goToSimpleRouteAndAssertSuccess(
             QueryOptionController::class,
             QueryOptionController::ROUTE_DISPLAY_FORMAT,
             ApiHelper::_KEBAB_DISPLAY_FORMAT,
@@ -85,14 +85,14 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
             AbstractApiResponseMember::DISPLAY_FORMAT_FULL,
         );
 
-        $this->goToAndAssertFailedTypeRestriction(
+        $this->goToSimpleRouteAndAssertFailedTypeRestriction(
             QueryOptionController::class,
             QueryOptionController::ROUTE_DISPLAY_FORMAT,
             ApiHelper::_KEBAB_DISPLAY_FORMAT,
             'wrong-display-format'
         );
 
-        $this->goToAndAssertFailedTypeRestriction(
+        $this->goToSimpleRouteAndAssertFailedTypeRestriction(
             QueryOptionController::class,
             QueryOptionController::ROUTE_DISPLAY_FORMAT,
             ApiHelper::_KEBAB_DISPLAY_FORMAT,
@@ -104,13 +104,13 @@ class QueryOptionControllerTest extends AbstractApiApplicationTestCase
     {
         $this->createGlobalClient();
 
-        $this->goToAndAssertErrorWhenMissing(
+        $this->goToSimpleRouteAndAssertErrorWhenMissing(
             QueryOptionController::class,
             QueryOptionController::ROUTE_FILTER_TAG,
             ApiHelper::FILTER_TAG
         );
 
-        $this->goToAndAssertSuccess(
+        $this->goToSimpleRouteAndAssertSuccess(
             QueryOptionController::class,
             QueryOptionController::ROUTE_FILTER_TAG,
             ApiHelper::_KEBAB_FILTER_TAG,

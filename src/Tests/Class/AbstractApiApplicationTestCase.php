@@ -19,7 +19,7 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
         );
     }
 
-    protected function goToAndAssertFailedTypeRestriction(
+    protected function goToSimpleRouteAndAssertFailedTypeRestriction(
         string|AbstractController $controller,
         string $route,
         string $queryStringKey,
@@ -40,7 +40,7 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
      * Using a simple tests mechanism,
      * checks that sent query string returns expected value in response.
      */
-    protected function goToAndAssertSuccess(
+    protected function goToSimpleRouteAndAssertSuccess(
         string|AbstractController $controller,
         string $route,
         string $queryStringKey,
@@ -68,7 +68,7 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
      * Using a simple tests mechanism,
      * checks that an error is return when query string is missing.
      */
-    protected function goToAndAssertErrorWhenMissing(
+    protected function goToSimpleRouteAndAssertErrorWhenMissing(
         string|AbstractController $controller,
         string $route,
         string $messageKey
@@ -97,13 +97,13 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
         string|int|float|bool $sentValue,
         string|int|float|bool $expectedValue
     ): void {
-        $this->goToAndAssertErrorWhenMissing(
+        $this->goToSimpleRouteAndAssertErrorWhenMissing(
             $controller,
             $route,
             $queryStringKey
         );
 
-        $this->goToAndAssertFailedTypeRestriction(
+        $this->goToSimpleRouteAndAssertFailedTypeRestriction(
             $controller,
             $route,
             $queryStringKey,
@@ -111,7 +111,7 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
         );
 
         // Test valid request.
-        $this->goToAndAssertSuccess(
+        $this->goToSimpleRouteAndAssertSuccess(
             $controller,
             $route,
             $queryStringKey,
