@@ -1,6 +1,6 @@
 <?php
 
-namespace Wexample\SymfonyApi\Api\Controller;
+namespace Wexample\SymfonyApi\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

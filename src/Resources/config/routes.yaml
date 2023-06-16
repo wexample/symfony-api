@@ -1,3 +1,7 @@
+api_test_controllers:
+    resource: '@WexampleSymfonyApiBundle/Api/Controller/Test/'
+    type: annotation
+
 api_controllers:
-    resource: '@WexampleSymfonyApiBundle/Api/Controller/'
+    resource: '@WexampleSymfonyApiBundle/Controller/'
     type: annotation

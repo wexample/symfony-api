@@ -13,6 +13,10 @@ services:
     Wexample\SymfonyApi\EventSubscriber\ApiEventSubscriber:
         tags: ['kernel.event_subscriber']
 
-    Wexample\SymfonyApi\Api\Controller\:
-        resource: '../../Api/Controller/*'
+    Wexample\SymfonyApi\Controller\:
+        resource: '../../Controller/*'
+        tags: ['controller.service_arguments']
+
+    Wexample\SymfonyApi\Api\Controller\Test\:
+        resource: '../../Api/Controller/Test/*'
         tags: ['controller.service_arguments']
