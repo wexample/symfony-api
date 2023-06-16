@@ -1,1 +1,11 @@
-API
+<h1>API</h1>
+
+{% for apiRoute in apiRoutes %}
+    <p>
+    <h2>
+        <a href="{{ apiRoute.path }}">{{ apiRoute.path }}</a>
+    </h2>
+    {{ apiRoute.requirements|join(', ') }}<br>
+    {{ apiRoute.queryParameters|join(',') }}
+    </p>
+{% endfor %}
