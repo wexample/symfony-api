@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
-use Wexample\SymfonyHelpers\Controller\AbstractController;
+use Wexample\SymfonyDesignSystem\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
@@ -46,7 +46,7 @@ class IndexApiController extends AbstractController
         }
 
         return $this->render(
-            '@WexampleSymfonyApiBundle/pages/index.html.twig', [
+            '@SymfonyApiBundle/pages/index.html.twig', [
                 'apiRoutes' => $apiRoutes,
             ]
         );
