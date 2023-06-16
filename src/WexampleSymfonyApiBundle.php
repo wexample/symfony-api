@@ -4,14 +4,17 @@ namespace Wexample\SymfonyApi;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Wexample\SymfonyApi\DependencyInjection\Compiler\TwigPathCompilerPass;
+use Wexample\SymfonyDesignSystem\DependencyInjection\Compiler\DesignSystemTemplatesCompilerPass;
 
 class WexampleSymfonyApiBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(
-            new TwigPathCompilerPass()
+            new DesignSystemTemplatesCompilerPass(
+                __DIR__.'/../front',
+                'SymfonyApiBundle'
+            )
         );
     }
 }
