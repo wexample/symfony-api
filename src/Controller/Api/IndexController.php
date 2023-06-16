@@ -1,6 +1,6 @@
 <?php
 
-namespace Wexample\SymfonyApi\Controller;
+namespace Wexample\SymfonyApi\Controller\Api;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,7 +12,7 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 
 #[Route(path: 'api/', name: 'api_')]
-class IndexApiController extends AbstractController
+class IndexController extends AbstractController
 {
     final public const ROUTE_INDEX = VariableHelper::INDEX;
 
@@ -46,7 +46,7 @@ class IndexApiController extends AbstractController
         }
 
         return $this->render(
-            '@SymfonyApiBundle/pages/index.html.twig', [
+            '@SymfonyApiBundle/pages/api/index.html.twig', [
                 'apiRoutes' => $apiRoutes,
             ]
         );
