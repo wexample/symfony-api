@@ -21,7 +21,7 @@ class IndexController extends AbstractController
     {
         $apiRoutes = [];
 
-        foreach ($router->getRouteCollection() as $route) {
+        foreach ($router->getRouteCollection() as $name => $route) {
             $path = $route->getPath();
 
             if (str_starts_with($path, '/api/')) {
@@ -38,6 +38,7 @@ class IndexController extends AbstractController
                 $requirements = $route->getRequirements();
 
                 $apiRoutes[] = [
+                    'name' => $name,
                     'path' => $path,
                     'requirements' => $requirements,
                     'queryParameters' => $queryParametersString,

@@ -4,13 +4,15 @@
     <h1>API</h1>
 
     {% for apiRoute in apiRoutes %}
-        <p>
         <h2>
             <a href="{{ apiRoute.path }}">{{ apiRoute.path }}</a>
         </h2>
 
+        <p>{{ ('api.' ~ apiRoute.name ~ '::description') | trans }}.</p>
+
         {% if apiRoute.queryParameters is not empty %}
             <h3>Query parameters</h3>
+
             <table border="1">
                 {% for name,constraint in apiRoute.requirements %}
                     <tr>
@@ -31,7 +33,6 @@
                 {% endfor %}
             </table>
         {% endif %}
-        </p>
     {% endfor %}
     <script>
       // Temp
