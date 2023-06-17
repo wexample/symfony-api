@@ -3,18 +3,15 @@
 namespace Wexample\SymfonyApi;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Wexample\SymfonyDesignSystem\DependencyInjection\Compiler\DesignSystemTemplatesCompilerPass;
+use Wexample\SymfonyDesignSystem\AbstractDesignSystemBundle;
 
-class WexampleSymfonyApiBundle extends Bundle
+class WexampleSymfonyApiBundle extends AbstractDesignSystemBundle
 {
     public function build(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(
-            new DesignSystemTemplatesCompilerPass(
-                __DIR__.'/../front',
-                'SymfonyApiBundle'
-            )
+        $this->addFrontPathCompilerPass(
+            $container,
+            __DIR__.'/../front',
         );
     }
 }
