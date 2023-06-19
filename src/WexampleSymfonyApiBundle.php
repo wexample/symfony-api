@@ -2,16 +2,15 @@
 
 namespace Wexample\SymfonyApi;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Wexample\SymfonyDesignSystem\AbstractDesignSystemBundle;
+use Wexample\SymfonyDesignSystem\Interface\DesignSystemBundleInterface;
+use Wexample\SymfonyHelpers\AbstractBundle;
 
-class WexampleSymfonyApiBundle extends AbstractDesignSystemBundle
+class WexampleSymfonyApiBundle extends AbstractBundle implements DesignSystemBundleInterface
 {
-    public function build(ContainerBuilder $container): void
+    public static function getDesignSystemFrontPaths(): array
     {
-        $this->addFrontPathCompilerPass(
-            $container,
+        return [
             __DIR__.'/../front',
-        );
+        ];
     }
 }
