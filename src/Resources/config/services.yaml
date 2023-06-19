@@ -10,7 +10,8 @@ services:
         tags: ['controller.service_arguments']
 
     # Used to validate api urls requests arguments.
-    Wexample\SymfonyApi\EventSubscriber\ApiEventSubscriber:
+    Wexample\SymfonyApi\EventSubscriber\:
+        resource: '../../EventSubscriber/*'
         tags: ['kernel.event_subscriber']
 
     Wexample\SymfonyApi\Controller\:
