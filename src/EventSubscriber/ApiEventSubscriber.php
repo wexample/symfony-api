@@ -8,6 +8,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\EveryQueryOption;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
@@ -56,6 +58,10 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
 
         foreach ($queryParameters as $key => $value) {
             if (!isset($optionsAttributes[$key])) {
+                if (isset($optionsAttributes[EveryQueryOption::KEY])) {
+                    continue;
+                }
+
                 $this->createError($event,
                     'Unknown given query option '
                     .$key.'. '
@@ -97,9 +103,15 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         }
 
         // Check if required attributes are present in query strings
+        /**
+         * @var string $key
+         * @var QueryOptionConstrainedTrait::class $attribute
+         */
         foreach ($optionsAttributes as $key => $attribute) {
             // Not sent.
-            if (!array_key_exists($key, $queryParameters)) {
+            if (ClassHelper::classUsesTrait($attribute, QueryOptionConstrainedTrait::class)
+                && !array_key_exists($key, $queryParameters)
+            ) {
                 if ($attribute->required === true) {
                     $this->createError($event, 'Required query option **'.$key.'** is missing.', ['required' => $key]);
                     return;

@@ -5,7 +5,7 @@ namespace Wexample\SymfonyApi\Controller\Api;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
-use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 use Wexample\SymfonyDesignSystem\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
@@ -27,7 +27,7 @@ class IndexController extends AbstractController
             if (str_starts_with($path, '/api/')) {
                 $apiQueryAttributes = ClassHelper::getChildrenAttributes(
                     $route->getDefaults()['_controller'],
-                    QueryOptionTrait::class
+                    QueryOptionConstrainedTrait::class
                 );
 
                 $queryParametersString = [];
