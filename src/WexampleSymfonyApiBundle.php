@@ -10,7 +10,7 @@ class WexampleSymfonyApiBundle extends AbstractBundle implements DesignSystemBun
     public static function getDesignSystemFrontPaths(): array
     {
         return [
-            __DIR__.'/../front',
+            __DIR__.'/../front/',
         ];
     }
 }
