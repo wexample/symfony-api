@@ -1,8 +1,11 @@
-@import '../../../../../../node_modules/highlight.js/styles/base16/dracula.css';
+//@import '../../../../../../node_modules/highlight.js/styles/base16/dracula.css';
+@import '../../../../../../node_modules/prismjs/themes/prism-tomorrow.css';
 
-.highlight-block {
-  padding: 1rem;
-  margin: 0.5rem 1rem;
-  border-radius: 0.5rem;
+.highlight-code {
+  padding: 0 1rem;
+
+  pre {
+    border-radius: 0.5rem;
+  }
 }
 

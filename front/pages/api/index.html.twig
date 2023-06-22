@@ -36,8 +36,8 @@
                 {% endif %}
             </div>
             <div class="block blocks-col">
-                <div class="highlight-block">
-                    curl {{ app.request.getSchemeAndHttpHost() }}{{ apiRoute.path }}
+                <div class="highlight-code">
+                    <pre class="language-bash line-numbers"><code>curl {{ app.request.getSchemeAndHttpHost() }}{{ apiRoute.path }}</code></pre>
                 </div>
             </div>
         </div>
