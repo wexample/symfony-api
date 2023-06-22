@@ -1,4 +1,4 @@
-{%- extends '@SymfonyApiBundle/layouts/api.html.twig' -%}
+{%- extends '@SymfonyApiBundle/layouts/api/layout.html.twig' -%}
 
 {%- block page_body -%}
     <h1>API</h1>
@@ -34,8 +34,4 @@
             </table>
         {% endif %}
     {% endfor %}
-    <script>
-      // Temp
-      document.getElementById('layout').classList.remove('layout-loading');
-    </script>
 {%- endblock -%}
