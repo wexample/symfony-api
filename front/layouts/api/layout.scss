@@ -1,3 +1,4 @@
-body {
-  background: orange;
-}
+// Layout.
+@use '../../../../symfony-design-system/front/layouts/black/layout';
+// Base partials.
+@use '../../../../symfony-design-system/front/css/shapes/container';

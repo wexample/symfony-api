@@ -1,3 +1,14 @@
-{%- extends '@SymfonyDesignSystemBundle/layouts/default/layout.html.twig' -%}
+{%- extends '@SymfonyDesignSystemBundle/layouts/black/layout.html.twig' -%}
 
 {%- set layout_path = layout_path|default(_self) -%}
+
+{%- block layout_composer_html -%}
+    <div class="container-medium">
+        {% if page_title is defined %}
+            <h1>{{ page_title | trans }}</h1>
+        {% endif %}
+        <div class="page-content-body">
+            {{ block('page') }}
+        </div>
+    </div>
+{%- endblock -%}
