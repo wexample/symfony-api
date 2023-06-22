@@ -2,3 +2,5 @@
 @use '../../../../symfony-design-system/front/layouts/black/layout';
 // Base partials.
 @use '../../../../symfony-design-system/front/css/shapes/container';
+// Allowed partials in all pages.
+@use '../../../../symfony-design-system/front/css/shapes/block';

@@ -6,31 +6,39 @@
             <a href="{{ apiRoute.path }}">{{ apiRoute.path }}</a>
         </h2>
 
-        <p>{{ ('api.' ~ apiRoute.name ~ '::description') | trans }}.</p>
 
-        {% if apiRoute.requirements is not empty %}
-            <h3>{{ '@page::section_requirements' | trans }}</h3>
+        <div class="blocks blocks-no-stretch">
+            <div class="block">
+                {{ ('api.' ~ apiRoute.name ~ '::description') | trans }}.
 
-            <table border="1">
-                {% for name,constraint in apiRoute.requirements %}
-                    <tr>
-                        <td>{{ name }}</td>
-                        <td>{{ constraint }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
+                {% if apiRoute.requirements is not empty %}
+                    <h3>{{ '@page::section_requirements' | trans }}</h3>
 
-        {% if apiRoute.queryParameters is not empty %}
-            <h3>{{ '@page::section_query' | trans }}</h3>
-            <table border="1">
-                {% for queryParameter in apiRoute.queryParameters %}
-                    <tr>
-                        <td>{{ queryParameter }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
+                    <table border="1">
+                        {% for name,constraint in apiRoute.requirements %}
+                            <tr>
+                                <td>{{ name }}</td>
+                                <td>{{ constraint }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+
+                {% if apiRoute.queryParameters is not empty %}
+                    <h3>{{ '@page::section_query' | trans }}</h3>
+                    <table border="1">
+                        {% for queryParameter in apiRoute.queryParameters %}
+                            <tr>
+                                <td>{{ queryParameter }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+            <div class="block blocks-col">
+                <br>
+            </div>
+        </div>
     {% endfor %}
     <br>
     <br>
