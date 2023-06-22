@@ -6,7 +6,7 @@ use Wexample\SymfonyApi\WexampleSymfonyApiBundle;
 
 trait AbstractSymfonyApiBundleCommandTrait
 {
-    public static function getBundle(): string
+    public static function getBundleClassName(): string
     {
         return WexampleSymfonyApiBundle::class;
     }

@@ -19,5 +19,13 @@
         "php": ">=8.2",
         "wexample/symfony-helpers": ">=0.1.21",
         "wexample/symfony-design-system": ">=0.1.6"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php bin/console api:check-node-install"
+        ],
+        "post-update-cmd": [
+            "php bin/console api:check-node-install"
+        ]
     }
 }

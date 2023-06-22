@@ -14,14 +14,14 @@
                 {% if apiRoute.requirements is not empty %}
                     <h3>{{ '@page::section_requirements' | trans }}</h3>
 
-                    <table border="1">
+                    <ul>
                         {% for name,constraint in apiRoute.requirements %}
-                            <tr>
-                                <td>{{ name }}</td>
-                                <td>{{ constraint }}</td>
-                            </tr>
+                            <li>
+                                <h4>{{ name }}</h4>
+                                <p>{{ constraint }}</p>
+                            </li>
                         {% endfor %}
-                    </table>
+                    </ul>
                 {% endif %}
 
                 {% if apiRoute.queryParameters is not empty %}
@@ -39,6 +39,10 @@
                 <br>
             </div>
         </div>
+        <br>
+        <br>
+        <br>
+        <br>
     {% endfor %}
     <br>
     <br>

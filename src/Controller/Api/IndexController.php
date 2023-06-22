@@ -37,7 +37,7 @@ class IndexController extends AbstractController
 
                 $requirements = $route->getRequirements();
 
-                $apiRoutes[] = [
+                $apiRoutes[$path] = [
                     'name' => $name,
                     'path' => $path,
                     'requirements' => $requirements,
@@ -45,6 +45,8 @@ class IndexController extends AbstractController
                 ];
             }
         }
+
+        ksort($apiRoutes);
 
         return $this->render(
             '@SymfonyApiBundle/pages/api/index.html.twig', [

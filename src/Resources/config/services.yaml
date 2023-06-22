@@ -3,13 +3,16 @@ services:
         autowire: true
         autoconfigure: true
         public: false
-
     # Ensure is loaded as a service.
     App\Api\Controller\:
         resource: '%kernel.project_dir%/src/Api/Controller/*'
         tags: ['controller.service_arguments']
 
     # Used to validate api urls requests arguments.
+    Wexample\SymfonyApi\:
+        resource: '../../{Command}'
+        tags: ['controller.service_arguments']
+
     Wexample\SymfonyApi\EventSubscriber\:
         resource: '../../EventSubscriber/*'
         tags: ['kernel.event_subscriber']
