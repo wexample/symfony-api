@@ -1,5 +1,7 @@
 # A simple API syntax for Symfony controllers
 
+![Pipeline status](https://gitlab.wexample.com/wexample/symfony-api/badges/main/pipeline.svg)
+
 ## Install
 
 - Note that the src/Api/Controller directory will be accessible as service.
