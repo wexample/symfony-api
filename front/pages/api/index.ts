@@ -4,8 +4,6 @@ import 'prismjs/components/prism-bash.min.js';
 
 export default class extends Page {
   async pageReady() {
-    console.log(Prism.languages.bash);
-
     this.el.querySelectorAll('.highlight-code pre').forEach((elCode) => {
       Prism.highlightElement(
         elCode as HTMLElement,
