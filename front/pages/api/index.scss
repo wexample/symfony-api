@@ -6,6 +6,11 @@
 
   pre {
     border-radius: 0.5rem;
+
+    code {
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
   }
 }
 

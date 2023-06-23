@@ -5,11 +5,15 @@
         <h2>
             <a href="{{ apiRoute.path }}">{{ apiRoute.path }}</a>
         </h2>
-
+        <h3>
+            <a
+                    target="_blank"
+                    href="{{ api_build_example_url(apiRoute.name) }}">{{ api_build_example_url(apiRoute.name) }}</a>
+        </h3>
 
         <div class="blocks blocks-no-stretch">
             <div class="block">
-                {{ ('api.' ~ apiRoute.name ~ '::description') | trans }}.
+                {{ ('api.' ~ apiRoute.name ~ '::description') | trans }}
 
                 {% if apiRoute.requirements is not empty %}
                     <h3>{{ '@page::section_requirements' | trans }}</h3>
@@ -26,13 +30,14 @@
 
                 {% if apiRoute.queryParameters is not empty %}
                     <h3>{{ '@page::section_query' | trans }}</h3>
-                    <table border="1">
+                    <ul>
                         {% for queryParameter in apiRoute.queryParameters %}
-                            <tr>
-                                <td>{{ queryParameter }}</td>
-                            </tr>
+                            <li>
+                                <h4>{{ queryParameter }}</h4>
+                                <p> {{ ('api.' ~ apiRoute.name ~ '::query.' ~ (queryParameter | u.snake)) | trans }}</p>
+                            </li>
                         {% endfor %}
-                    </table>
+                    </ul>
                 {% endif %}
             </div>
             <div class="block blocks-col">
