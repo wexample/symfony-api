@@ -3,7 +3,7 @@
     "description": "A simple syntax to expose API in Symfony",
     "type": "library",
     "license": "MIT",
-    "version": "0.1.24",
+    "version": "0.1.25",
     "autoload": {
         "psr-4": {
             "Wexample\\SymfonyApi\\": "src/"
@@ -17,8 +17,8 @@
     ],
     "require": {
         "php": ">=8.2",
-        "wexample/symfony-helpers": "^0.1.29",
-        "wexample/symfony-design-system": "^0.1.11"
+        "wexample/symfony-helpers": "^0.1.32",
+        "wexample/symfony-design-system": "^0.1.12"
     },
     "scripts": {
         "post-install-cmd": [
