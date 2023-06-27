@@ -1,5 +1,5 @@
 {
   "dependencies": [
-    "highlight.js"
+    "prismjs"
   ]
 }
