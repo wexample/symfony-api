@@ -1,3 +1,3 @@
-import App from '../../../../symfony-design-system/assets/js/class/App';
+import App from'@wexample/symfony-design-system/js/class/App';
 
 new App();
