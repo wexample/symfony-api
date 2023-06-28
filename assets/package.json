@@ -1,0 +1,7 @@
+{
+  "name": "@wexample/symfony-api",
+  "version": "0.1.35",
+  "peerDependencies": {
+    "prismjs": "^1.29.0"
+  }
+}
