@@ -3,8 +3,10 @@
     "description": "A simple syntax to expose API in Symfony",
     "type": "library",
     "license": "MIT",
-    "version": "0.1.35",
-    "keywords": ["symfony-ux"],
+    "version": "0.1.36",
+    "keywords": [
+        "symfony-ux"
+    ],
     "autoload": {
         "psr-4": {
             "Wexample\\SymfonyApi\\": "src/"
@@ -18,8 +20,8 @@
     ],
     "require": {
         "php": ">=8.2",
-        "wexample/symfony-helpers": "^0.1.63",
-        "wexample/symfony-design-system": "^0.1.22"
+        "wexample/symfony-helpers": "^0.1.64",
+        "wexample/symfony-design-system": "^0.1.23"
     },
     "scripts": {
         "post-install-cmd": [
