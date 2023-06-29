@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[\Attribute(\Attribute::TARGET_METHOD)]
 class DisplayFormatQueryOption extends AbstractQueryOption
 {
     public string $key = ApiHelper::_KEBAB_DISPLAY_FORMAT;

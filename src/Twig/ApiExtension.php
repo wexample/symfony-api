@@ -11,7 +11,6 @@ class ApiExtension extends AbstractExtension
     public function __construct(
         readonly private ApiService $apiService
     ) {
-
     }
 
     public function getFunctions(): array

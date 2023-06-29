@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyApi\Tests\Traits\TestCase\Application;
 
-use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 trait ApiTestCaseTrait
@@ -14,7 +13,7 @@ trait ApiTestCaseTrait
                 $response->getContent(),
                 flags: JSON_THROW_ON_ERROR
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logBodyExtract();
             $this->error('Unable to parse response JSON content : '.$e->getMessage());
 

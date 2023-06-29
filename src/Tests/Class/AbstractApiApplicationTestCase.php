@@ -47,7 +47,6 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
         string|int|float|bool $sentValue,
         string|int|float|bool $expectedValue
     ): void {
-
         $this->goToRoute(
             $controller::buildRouteName($route), [
                 $queryStringKey => $sentValue,

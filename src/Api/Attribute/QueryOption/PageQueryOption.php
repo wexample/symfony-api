@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Type;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[\Attribute(\Attribute::TARGET_METHOD)]
 class PageQueryOption extends AbstractQueryOption
 {
     public string $key = VariableHelper::PAGE;

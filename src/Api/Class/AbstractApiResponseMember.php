@@ -2,24 +2,23 @@
 
 namespace Wexample\SymfonyApi\Api\Class;
 
-use Exception;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 abstract class AbstractApiResponseMember
 {
-    public final const DISPLAY_FORMAT_DEFAULT = 'default';
+    final public const DISPLAY_FORMAT_DEFAULT = 'default';
 
-    public final const DISPLAY_FORMAT_LARGE = 'large';
+    final public const DISPLAY_FORMAT_LARGE = 'large';
 
-    public final const DISPLAY_FORMAT_LINE = 'line';
+    final public const DISPLAY_FORMAT_LINE = 'line';
 
-    public final const DISPLAY_FORMAT_MEDIUM = 'medium';
+    final public const DISPLAY_FORMAT_MEDIUM = 'medium';
 
-    public final const DISPLAY_FORMAT_PAD = 'pad';
+    final public const DISPLAY_FORMAT_PAD = 'pad';
 
-    public final const DISPLAY_FORMAT_SMALL = 'small';
+    final public const DISPLAY_FORMAT_SMALL = 'small';
 
-    public final const DISPLAY_FORMAT_FULL = VariableHelper::FULL;
+    final public const DISPLAY_FORMAT_FULL = VariableHelper::FULL;
 
     public static function getDisplayFormats(): array
     {
@@ -35,12 +34,11 @@ abstract class AbstractApiResponseMember
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct(
         public mixed $data,
         public string $displayFormat
     ) {
-
     }
 }
