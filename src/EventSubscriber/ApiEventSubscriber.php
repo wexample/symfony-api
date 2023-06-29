@@ -3,7 +3,11 @@
 namespace Wexample\SymfonyApi\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -28,7 +32,43 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         // return the subscribed events, their methods and priorities
         return [
             KernelEvents::CONTROLLER_ARGUMENTS => 'apiControllerArgumentValidate',
+            KernelEvents::EXCEPTION => 'onKernelException',
         ];
+    }
+
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        $request = $event->getRequest();
+
+        if (!RequestHelper::requestIsOnSubClassOf(
+            $request,
+            AbstractApiController::class
+        )) {
+            return;
+        }
+
+        $exception = $event->getThrowable();
+
+        $response = new JsonResponse(
+            [
+                'error' => [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage()
+                ]
+            ]
+        );
+
+        // HttpExceptionInterface est une interface spéciale qui contient le code d'état HTTP
+        // On vérifie si l'exception est une instance de cette interface
+        if ($exception instanceof HttpExceptionInterface) {
+            $response->setStatusCode($exception->getStatusCode());
+            $response->headers->replace($exception->getHeaders());
+        } else {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        // Envoi de la réponse modifiée à l'événement
+        $event->setResponse($response);
     }
 
     public function apiControllerArgumentValidate(ControllerArgumentsEvent $event): void
