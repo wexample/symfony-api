@@ -4,7 +4,7 @@ namespace Wexample\SymfonyApi\Twig;
 
 use Twig\TwigFunction;
 use Wexample\SymfonyApi\Service\ApiService;
-use Wexample\SymfonyDesignSystem\Twig\AbstractExtension;
+use Wexample\SymfonyHelpers\Twig\AbstractExtension;
 
 class ApiExtension extends AbstractExtension
 {

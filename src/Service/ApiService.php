@@ -5,8 +5,8 @@ namespace Wexample\SymfonyApi\Service;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Wexample\SymfonyDesignSystem\Translation\Translator;
 use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\SymfonyTranslations\Translation\Translator;
 
 readonly class ApiService
 {
