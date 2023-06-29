@@ -10,7 +10,6 @@ use Wexample\SymfonyDesignSystem\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-
 #[Route(path: 'api/', name: 'api_')]
 class IndexController extends AbstractController
 {

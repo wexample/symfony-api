@@ -21,7 +21,6 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
     public function __construct(
         private ValidatorInterface $validator
     ) {
-
     }
 
     public static function getSubscribedEvents(): array
@@ -69,6 +68,7 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
                         ? 'Allowed query options are : '.implode(', ', array_keys($optionsAttributes)).'.'
                         : 'No query option allowed.'
                     ), ['got' => $key.RequestHelper::URL_QUERY_STRING_EQUAL.$value]);
+
                 return;
             }
 
@@ -98,13 +98,14 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
                         'type' => $constraint::class,
                     ]
                 );
+
                 return;
             }
         }
 
         // Check if required attributes are present in query strings
         /**
-         * @var string $key
+         * @var string                             $key
          * @var QueryOptionConstrainedTrait::class $attribute
          */
         foreach ($optionsAttributes as $key => $attribute) {
@@ -112,8 +113,9 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
             if (ClassHelper::classUsesTrait($attribute, QueryOptionConstrainedTrait::class)
                 && !array_key_exists($key, $queryParameters)
             ) {
-                if ($attribute->required === true) {
+                if (true === $attribute->required) {
                     $this->createError($event, 'Required query option **'.$key.'** is missing.', ['required' => $key]);
+
                     return;
                 } else {
                     // Replace by default.
@@ -131,8 +133,7 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         array $errorData
     ): void {
         $event->setController(
-            function() use
-            (
+            function () use (
                 $errorMessage,
                 $errorData
             ) {

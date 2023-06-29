@@ -2,8 +2,6 @@
 
 namespace Wexample\SymfonyApi\Api\Controller;
 
-use DateTime;
-use DateTimeInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -69,13 +67,13 @@ abstract class AbstractApiController extends AbstractController
     }
 
     public static function apiResponseError(
-        string|Exception $message,
+        string|\Exception $message,
         $data = [],
         $type = ApiHelper::RESPONSE_TYPE_FAILURE,
         bool $prettyPrint = false
     ): JsonResponse {
         return self::apiResponse(
-            $message instanceof Exception ? $message->getMessage() : $message,
+            $message instanceof \Exception ? $message->getMessage() : $message,
             $type,
             $data,
             $prettyPrint
@@ -87,9 +85,9 @@ abstract class AbstractApiController extends AbstractController
         string $keyYear = VariableHelper::YEAR,
         string $keyMonth = VariableHelper::MONTH,
         string $keyDay = VariableHelper::DAY
-    ): DateTimeInterface {
+    ): \DateTimeInterface {
         try {
-            return new DateTime(
+            return new \DateTime(
                 implode(
                     '-',
                     [

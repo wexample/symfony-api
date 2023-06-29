@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraint;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[\Attribute(\Attribute::TARGET_METHOD)]
 class YearQueryOption extends AbstractQueryOption
 {
     public string $key = VariableHelper::YEAR;
