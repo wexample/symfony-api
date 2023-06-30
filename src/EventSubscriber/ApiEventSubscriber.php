@@ -184,8 +184,7 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         array $errorData
     ): void {
         $event->setController(
-            function() use
-            (
+            function () use (
                 $errorMessage,
                 $errorData
             ) {

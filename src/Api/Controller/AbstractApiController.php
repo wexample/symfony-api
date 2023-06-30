@@ -3,7 +3,6 @@
 namespace Wexample\SymfonyApi\Api\Controller;
 
 use Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
