@@ -2,15 +2,16 @@
 
 namespace Wexample\SymfonyApi\Api\Attribute\QueryOption;
 
-use Attribute;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints\Type;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 
-#[Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
-class CustomQueryOption extends AbstractQueryOption
+abstract class AbstractSimpleTypeQueryOption extends AbstractQueryOption
 {
+    use QueryOptionConstrainedTrait;
+
     public function __construct(
         public string $key,
-        public Constraint $constraint,
         public mixed $default = null,
         bool $required = false,
     ) {
@@ -18,8 +19,11 @@ class CustomQueryOption extends AbstractQueryOption
             $required
         );
     }
+
     public function getConstraint(): Constraint
     {
-        return $this->constraint;
+        return new Type($this->getSimpleTypeConstraint());
     }
+
+    abstract function getSimpleTypeConstraint(): string;
 }

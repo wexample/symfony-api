@@ -4,22 +4,24 @@ namespace Wexample\SymfonyApi\Api\Attribute\QueryOption;
 
 use Attribute;
 use Symfony\Component\Validator\Constraint;
+use Wexample\SymfonyHelpers\Validator\MultipleTypeConstraint;
 
 #[Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
-class CustomQueryOption extends AbstractQueryOption
+class MultipleTypesQueryOption extends AbstractQueryOption
 {
     public function __construct(
         public string $key,
-        public Constraint $constraint,
+        readonly private array $types,
         public mixed $default = null,
-        bool $required = false,
+        bool $required = false
     ) {
-        parent::__construct(
-            $required
-        );
+        parent::__construct($required);
     }
+
     public function getConstraint(): Constraint
     {
-        return $this->constraint;
+        return new MultipleTypeConstraint(
+            $this->types
+        );
     }
 }

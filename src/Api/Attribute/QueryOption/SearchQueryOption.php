@@ -3,23 +3,22 @@
 namespace Wexample\SymfonyApi\Api\Attribute\QueryOption;
 
 use Attribute;
-use Symfony\Component\Validator\Constraint;
+use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 #[Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
-class CustomQueryOption extends AbstractQueryOption
+class SearchQueryOption extends MultipleTypesQueryOption
 {
     public function __construct(
-        public string $key,
-        public Constraint $constraint,
+        public string $key = VariableHelper::SEARCH,
         public mixed $default = null,
-        bool $required = false,
+        array $types = [],
+        bool $required = false
     ) {
         parent::__construct(
+            $this->key,
+            $types,
+            $this->default,
             $required
         );
-    }
-    public function getConstraint(): Constraint
-    {
-        return $this->constraint;
     }
 }
