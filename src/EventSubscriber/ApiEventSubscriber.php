@@ -2,8 +2,8 @@
 
 namespace Wexample\SymfonyApi\EventSubscriber;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -15,6 +15,7 @@ use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\EveryQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
+use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\RequestHelper;
@@ -23,7 +24,8 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 readonly class ApiEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private ValidatorInterface $validator
+        private ValidatorInterface $validator,
+        private ParameterBagInterface $parameterBag
     ) {
     }
 
@@ -33,7 +35,25 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         return [
             KernelEvents::CONTROLLER_ARGUMENTS => 'apiControllerArgumentValidate',
             KernelEvents::EXCEPTION => 'onKernelException',
+            KernelEvents::VIEW => 'onKernelView',
         ];
+    }
+
+    public function onKernelView($event): void
+    {
+        $response = $event->getControllerResult();
+
+        if (!$response instanceof ApiResponse) {
+            return;
+        }
+
+        if (is_null($response->getPrettyPrint())) {
+            $response->setPrettyPrint($this->parameterBag->get('api_pretty_print'));
+        }
+
+        $event->setResponse(
+            $response->toJsonResponse()
+        );
     }
 
     public function onKernelException(ExceptionEvent $event): void
@@ -48,27 +68,18 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         }
 
         $exception = $event->getThrowable();
-
-        $response = new JsonResponse(
-            [
-                'error' => [
-                    'code' => $exception->getCode(),
-                    'message' => $exception->getMessage()
-                ]
-            ]
-        );
-
-        // HttpExceptionInterface est une interface spéciale qui contient le code d'état HTTP
-        // On vérifie si l'exception est une instance de cette interface
+        $status = Response::HTTP_INTERNAL_SERVER_ERROR;
         if ($exception instanceof HttpExceptionInterface) {
-            $response->setStatusCode($exception->getStatusCode());
-            $response->headers->replace($exception->getHeaders());
-        } else {
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $status = $exception->getStatusCode();
         }
 
-        // Envoi de la réponse modifiée à l'événement
-        $event->setResponse($response);
+        $event->setResponse(
+            AbstractApiController::apiResponseError(
+                $exception->getMessage(),
+                prettyPrint: $this->parameterBag->get('api_pretty_print'),
+                status: $status
+            )->toJsonResponse(),
+        );
     }
 
     public function apiControllerArgumentValidate(ControllerArgumentsEvent $event): void
@@ -173,7 +184,8 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         array $errorData
     ): void {
         $event->setController(
-            function () use (
+            function() use
+            (
                 $errorMessage,
                 $errorData
             ) {

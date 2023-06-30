@@ -6,12 +6,13 @@ use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-abstract class AbstractApiController extends AbstractController
+class AbstractApiController extends AbstractController
 {
     final public const ROUTES_PATH_PREFIX = VariableHelper::API;
     final public const ROUTES_NAME_PREFIX = VariableHelper::API;
@@ -20,8 +21,8 @@ abstract class AbstractApiController extends AbstractController
         $message = null,
         $data = [],
         $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
-        bool $prettyPrint = false
-    ): JsonResponse {
+        bool $prettyPrint = null
+    ): ApiResponse {
         return self::apiResponse(
             $message,
             $status,
@@ -34,10 +35,13 @@ abstract class AbstractApiController extends AbstractController
         $message = null,
         $type = ApiHelper::RESPONSE_TYPE_SUCCESS,
         $data = null,
-        bool $prettyPrint = false
-    ): JsonResponse {
-        $status = ApiHelper::RESPONSE_TYPE_FAILURE === $type
-            ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK;
+        bool $prettyPrint = null,
+        int $status = null
+    ): ApiResponse {
+        if (is_null($status)) {
+            $status = ApiHelper::RESPONSE_TYPE_FAILURE === $type
+                ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK;
+        }
 
         $content = [
             ApiHelper::KEY_RESPONSE_TYPE => $type,
@@ -52,31 +56,26 @@ abstract class AbstractApiController extends AbstractController
             $content[ApiHelper::KEY_RESPONSE_DATA] = $data;
         }
 
-        $response = new JsonResponse(
+        return new ApiResponse(
             $content,
             $status,
+            $prettyPrint
         );
-
-        if ($prettyPrint) {
-            $response->setEncodingOptions(
-                $response->getEncodingOptions() | JSON_PRETTY_PRINT
-            );
-        }
-
-        return $response;
     }
 
     public static function apiResponseError(
         string|\Exception $message,
         $data = [],
         $type = ApiHelper::RESPONSE_TYPE_FAILURE,
-        bool $prettyPrint = false
-    ): JsonResponse {
+        bool $prettyPrint = null,
+        int $status = null,
+    ): ApiResponse {
         return self::apiResponse(
             $message instanceof \Exception ? $message->getMessage() : $message,
             $type,
             $data,
-            $prettyPrint
+            $prettyPrint,
+            $status
         );
     }
 

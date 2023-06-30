@@ -15,5 +15,13 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             __DIR__,
             $container
         );
+
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter(
+            'api_pretty_print',
+            $config['pretty_print']
+        );
     }
 }
