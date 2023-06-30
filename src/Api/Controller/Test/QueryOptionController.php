@@ -13,6 +13,7 @@ use Wexample\SymfonyApi\Api\Attribute\QueryOption\IdQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\PageQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\YearQueryOption;
+use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
@@ -40,7 +41,7 @@ class QueryOptionController extends AbstractApiController
     #[CustomQueryOption(key: VariableHelper::CUSTOM.'-'.TypesHelper::BOOLEAN, constraint: new Type(TypesHelper::BOOLEAN), required: true)]
     #[CustomQueryOption(key: VariableHelper::CUSTOM.'-'.TypesHelper::INTEGER, constraint: new Type(TypesHelper::INTEGER), required: true)]
     #[CustomQueryOption(key: VariableHelper::CUSTOM.'-'.TypesHelper::STRING, constraint: new Type(TypesHelper::STRING), required: true)]
-    public function custom(Request $request): JsonResponse
+    public function custom(Request $request): ApiResponse
     {
         $data = [];
 
@@ -55,7 +56,7 @@ class QueryOptionController extends AbstractApiController
 
     #[Route(path: ApiHelper::_KEBAB_DISPLAY_FORMAT, name: self::ROUTE_DISPLAY_FORMAT)]
     #[DisplayFormatQueryOption(required: true)]
-    public function displayFormat(Request $request): JsonResponse
+    public function displayFormat(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
             ApiHelper::DISPLAY_FORMAT => $request->get(
@@ -66,7 +67,7 @@ class QueryOptionController extends AbstractApiController
 
     #[Route(path: ApiHelper::_KEBAB_FILTER_TAG, name: self::ROUTE_FILTER_TAG)]
     #[FilterTagQueryOption(required: true)]
-    public function filterTag(Request $request): JsonResponse
+    public function filterTag(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
             ApiHelper::FILTER_TAG => $request->get(
@@ -77,7 +78,7 @@ class QueryOptionController extends AbstractApiController
 
     #[Route(path: VariableHelper::ID, name: self::ROUTE_ID)]
     #[IdQueryOption(required: true)]
-    public function id(Request $request): JsonResponse
+    public function id(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
             VariableHelper::ID => $request->get(
@@ -88,7 +89,7 @@ class QueryOptionController extends AbstractApiController
 
     #[Route(path: VariableHelper::LENGTH, name: self::ROUTE_LENGTH)]
     #[LengthQueryOption(required: true)]
-    public function length(Request $request): JsonResponse
+    public function length(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
             VariableHelper::LENGTH => $request->get(
@@ -99,7 +100,7 @@ class QueryOptionController extends AbstractApiController
 
     #[Route(path: VariableHelper::PAGE, name: self::ROUTE_PAGE)]
     #[PageQueryOption(required: true)]
-    public function page(Request $request): JsonResponse
+    public function page(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
             VariableHelper::PAGE => $request->get(
@@ -110,7 +111,7 @@ class QueryOptionController extends AbstractApiController
 
     #[Route(path: VariableHelper::YEAR, name: self::ROUTE_YEAR)]
     #[YearQueryOption(required: true)]
-    public function year(Request $request): JsonResponse
+    public function year(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
             VariableHelper::YEAR => $this

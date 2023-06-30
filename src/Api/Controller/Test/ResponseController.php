@@ -4,6 +4,7 @@ namespace Wexample\SymfonyApi\Api\Controller\Test;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
@@ -14,13 +15,13 @@ class ResponseController extends AbstractApiController
     final public const ROUTE_ERROR = VariableHelper::ERROR;
 
     #[Route(path: 'success', name: self::ROUTE_SUCCESS)]
-    public function success(): JsonResponse
+    public function success(): ApiResponse
     {
         return self::apiResponseSuccess();
     }
 
     #[Route(path: 'error', name: self::ROUTE_ERROR)]
-    public function error(): JsonResponse
+    public function error(): ApiResponse
     {
         return self::apiResponseError('EXPECTED_ERROR');
     }
