@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyApi\Api\Controller\Test;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
