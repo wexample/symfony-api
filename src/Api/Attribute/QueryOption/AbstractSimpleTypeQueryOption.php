@@ -12,9 +12,11 @@ abstract class AbstractSimpleTypeQueryOption extends AbstractQueryOption
 
     public function __construct(
         public string $key,
-        public mixed $default = null,
+        mixed $default = null,
         bool $required = false,
     ) {
+        $this->default = $default;
+
         parent::__construct(
             $required
         );
