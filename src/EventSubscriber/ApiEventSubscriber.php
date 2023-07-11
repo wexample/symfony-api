@@ -75,7 +75,8 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
 
         $event->setResponse(
             AbstractApiController::apiResponseError(
-                $exception->getMessage(),
+                $exception->getMessage()
+                . ' in ' . $exception->getFile() . ':' . $exception->getLine(),
                 prettyPrint: $this->parameterBag->get('api_pretty_print'),
                 status: $status
             )->toJsonResponse(),
