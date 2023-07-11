@@ -21,3 +21,29 @@ Add the folder to your routes.yaml for loading routes.
 ## Usage
 
 Create a controller extending the AbstractApiController class.
+
+## Testing in your project
+
+Testing api vitals in your own project can help to check that every vital of your site is working well.
+Package test folder should be made accessible to composer autoloader.
+
+### Add to Composer
+
+In composer.json
+
+    "autoload-dev": {
+        "psr-4": {
+            "Wexample\\SymfonyApi\\Tests\\": "vendor/wexample/symfony-api/tests/"
+        }
+    },
+
+### Add to PhpUnit
+
+In phpunit.xml.dist
+
+    <testsuites>
+        <testsuite name="Api Test Suite">
+            <directory>vendor/symfony-api/tests</directory>
+        </testsuite>
+    </testsuites>
+
