@@ -76,9 +76,10 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         $event->setResponse(
             AbstractApiController::apiResponseError(
                 $exception->getMessage()
-                . ' in ' . $exception->getFile() . ':' . $exception->getLine(),
-                prettyPrint: $this->parameterBag->get('api_pretty_print'),
-                status: $status
+                .' in '.$exception->getFile().':'.$exception->getLine(),
+                ['trace' => $exception->getTrace()],
+                $this->parameterBag->get('api_pretty_print'),
+                $status
             )->toJsonResponse(),
         );
     }
@@ -185,7 +186,8 @@ readonly class ApiEventSubscriber implements EventSubscriberInterface
         array $errorData
     ): void {
         $event->setController(
-            function () use (
+            function() use
+            (
                 $errorMessage,
                 $errorData
             ) {
