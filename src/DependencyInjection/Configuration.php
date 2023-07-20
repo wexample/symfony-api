@@ -18,6 +18,13 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->end();
 
+        $treeBuilder->getRootNode()
+            ->children()
+            ->integerNode('test_error_log_length')
+            ->defaultValue(1000)
+            ->end()
+            ->end();
+
         return $treeBuilder;
     }
 }

@@ -23,5 +23,10 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             'api_pretty_print',
             $config['pretty_print']
         );
+
+        $container->setParameter(
+            'api_test_error_log_length',
+            $config['test_error_log_length']
+        );
     }
 }
