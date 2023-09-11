@@ -6,7 +6,7 @@ use Attribute;
 use Symfony\Component\Validator\Constraint;
 use Wexample\SymfonyHelpers\Validator\MultipleTypeConstraint;
 
-#[Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
+#[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 class MultipleTypesQueryOption extends AbstractQueryOption
 {
     public function __construct(

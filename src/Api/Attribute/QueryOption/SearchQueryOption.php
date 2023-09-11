@@ -6,7 +6,7 @@ use Attribute;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
+#[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 class SearchQueryOption extends MultipleTypesQueryOption
 {
     public function __construct(

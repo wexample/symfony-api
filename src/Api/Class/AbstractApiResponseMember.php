@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\Api\Class;
 
+use Exception;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 abstract class AbstractApiResponseMember
@@ -34,7 +35,7 @@ abstract class AbstractApiResponseMember
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(
         public mixed $data,
