@@ -29,7 +29,7 @@ readonly class ApiService
         foreach ($parameters as $parameter) {
             $snakeName = TextHelper::toSnake($parameter);
             $routeParameters[$parameter] = $this->translator->trans(
-                id: 'example.'.$snakeName,
+                'example.'.$snakeName,
                 domain: 'api.'.$routeName,
             );
         }
