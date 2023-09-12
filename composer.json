@@ -4,9 +4,7 @@
     "type": "library",
     "license": "MIT",
     "version": "0.1.48",
-    "keywords": [
-        "symfony-ux"
-    ],
+    "keywords": [],
     "autoload": {
         "psr-4": {
             "Wexample\\SymfonyApi\\": "src/"
