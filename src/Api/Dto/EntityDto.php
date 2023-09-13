@@ -1,6 +1,6 @@
 <?php
 
-namespace Wexample\SymfonyApi\Api\Dto\Traits;
+namespace Wexample\SymfonyApi\Api\Dto;
 
 abstract class EntityDto
 {
