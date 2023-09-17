@@ -15,7 +15,7 @@ abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCas
     public function applicationParseResponse(Response $response = null): object
     {
         return $this->apiParseResponse(
-            $response ?? $this->getGlobalClientResponse()
+            $response ?? $this->client->getResponse()
         );
     }
 
