@@ -20,8 +20,8 @@
     ],
     "require": {
         "php": ">=8.2",
-        "wexample/symfony-helpers": "^0.1.85",
-        "wexample/symfony-design-system": "^0.1.41"
+        "wexample/symfony-helpers": "^0.1.86",
+        "wexample/symfony-design-system": "^0.1.42"
     },
     "scripts": {
         "post-install-cmd": [
