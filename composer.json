@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": ">=8.2",
-        "wexample/symfony-helpers": "^0.1.88",
+        "wexample/symfony-helpers": "^0.1.89",
         "wexample/symfony-design-system": "^0.1.43"
     },
     "scripts": {
