@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\Application\ApiTestCaseTrait;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\TextHelper;
-use Wexample\SymfonyHelpers\Tests\Class\AbstractApplicationTestCase;
+use Wexample\SymfonyTesting\Tests\AbstractApplicationTestCase;
 
 abstract class AbstractApiApplicationTestCase extends AbstractApplicationTestCase
 {
