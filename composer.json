@@ -22,7 +22,7 @@
         "php": ">=8.2",
         "wexample/symfony-testing": "^0.0.6",
         "wexample/symfony-helpers": "^0.1.91",
-        "wexample/symfony-design-system": "^0.1.46"
+        "wexample/symfony-design-system": "^0.1.47"
     },
     "scripts": {
         "post-install-cmd": [
