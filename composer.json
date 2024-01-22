@@ -3,7 +3,7 @@
     "description": "A simple syntax to expose API in Symfony",
     "type": "library",
     "license": "MIT",
-    "version": "0.1.63",
+    "version": "0.1.64",
     "keywords": [
         "symfony-ux"
     ],
