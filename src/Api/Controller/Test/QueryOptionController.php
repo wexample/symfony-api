@@ -15,6 +15,7 @@ use Wexample\SymfonyApi\Api\Attribute\QueryOption\YearQueryOption;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
+use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
@@ -22,6 +23,8 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 #[Route(path: '_test/api/query-option/', name: '_test_query_option_')]
 final class QueryOptionController extends AbstractApiController
 {
+    use SymfonyApiBundleClassTrait;
+
     final public const ROUTE_CUSTOM = VariableHelper::CUSTOM;
     final public const ROUTE_DISPLAY_FORMAT = ApiHelper::DISPLAY_FORMAT;
     final public const ROUTE_FILTER_TAG = ApiHelper::FILTER_TAG;
