@@ -21,7 +21,7 @@ use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\RequestHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-readonly class ApiEventSubscriber implements EventSubscriberInterface
+class ApiEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private ValidatorInterface $validator,
