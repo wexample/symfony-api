@@ -5,10 +5,10 @@ namespace Application\Role\Anonymous\Api\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Api\Controller\Test\ResponseController;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\Application\ApiTestCaseTrait;
-use Wexample\SymfonyTesting\Tests\AbstractApplicationTestCase;
+use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 use Wexample\SymfonyTesting\Tests\Traits\AbstractAnonymousTestCaseTrait;
 
-class ResponseControllerTest extends AbstractApplicationTestCase
+class ResponseControllerTest extends AbstractRoleControllerTestCase
 {
     use AbstractAnonymousTestCaseTrait;
     use ApiTestCaseTrait;

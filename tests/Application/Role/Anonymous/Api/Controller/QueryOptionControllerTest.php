@@ -12,10 +12,10 @@ use Wexample\SymfonyHelpers\Helper\ArrayHelper;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
-use Wexample\SymfonyTesting\Tests\AbstractApplicationTestCase;
+use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 use Wexample\SymfonyTesting\Tests\Traits\AbstractAnonymousTestCaseTrait;
 
-class QueryOptionControllerTest extends AbstractApplicationTestCase
+class QueryOptionControllerTest extends AbstractRoleControllerTestCase
 {
     use AbstractAnonymousTestCaseTrait;
     use TextManipulationTestCaseTrait;
