@@ -14,11 +14,11 @@ use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
-use Wexample\SymfonyTesting\Tests\Traits\AbstractAnonymousTestCaseTrait;
+use Wexample\SymfonyTesting\Tests\Traits\RoleAnonymousTestCaseTrait;
 
 class QueryOptionControllerTest extends AbstractRoleControllerTestCase
 {
-    use AbstractAnonymousTestCaseTrait;
+    use RoleAnonymousTestCaseTrait;
     use TextManipulationTestCaseTrait;
     use ApiTestCaseTrait;
     use SymfonyApiBundleClassTrait;

@@ -13,7 +13,7 @@ use Wexample\SymfonyHelpers\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-class AbstractApiController extends AbstractController
+abstract class AbstractApiController extends AbstractController
 {
     final public const ROUTES_PATH_PREFIX = VariableHelper::API;
     final public const ROUTES_NAME_PREFIX = VariableHelper::API;

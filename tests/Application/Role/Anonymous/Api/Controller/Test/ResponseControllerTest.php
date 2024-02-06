@@ -7,11 +7,11 @@ use Wexample\SymfonyApi\Api\Controller\Test\ResponseController;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\Application\ApiTestCaseTrait;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
-use Wexample\SymfonyTesting\Tests\Traits\AbstractAnonymousTestCaseTrait;
+use Wexample\SymfonyTesting\Tests\Traits\RoleAnonymousTestCaseTrait;
 
 class ResponseControllerTest extends AbstractRoleControllerTestCase
 {
-    use AbstractAnonymousTestCaseTrait;
+    use RoleAnonymousTestCaseTrait;
     use ApiTestCaseTrait;
     use SymfonyApiBundleClassTrait;
 

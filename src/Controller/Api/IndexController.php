@@ -6,13 +6,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
+use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyDesignSystem\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 #[Route(path: 'api/', name: 'api_')]
-class IndexController extends AbstractController
+final class IndexController extends AbstractController
 {
+    use SymfonyApiBundleClassTrait;
+
     final public const ROUTE_INDEX = VariableHelper::INDEX;
 
     #[Route(name: self::ROUTE_INDEX)]
