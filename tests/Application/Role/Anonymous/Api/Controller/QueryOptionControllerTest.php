@@ -1,21 +1,25 @@
 <?php
 
-namespace Wexample\SymfonyApi\Tests\Application\Api\Controller;
+namespace Application\Role\Anonymous\Api\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Controller\Test\QueryOptionController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
-use Wexample\SymfonyApi\Tests\Class\AbstractApiApplicationTestCase;
+use Wexample\SymfonyApi\Tests\Traits\TestCase\Application\ApiTestCaseTrait;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\TextManipulationTestCaseTrait;
 use Wexample\SymfonyHelpers\Helper\ArrayHelper;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
+use Wexample\SymfonyTesting\Tests\AbstractApplicationTestCase;
+use Wexample\SymfonyTesting\Tests\Traits\AbstractAnonymousTestCaseTrait;
 
-class QueryOptionControllerTest extends AbstractApiApplicationTestCase
+class QueryOptionControllerTest extends AbstractApplicationTestCase
 {
+    use AbstractAnonymousTestCaseTrait;
     use TextManipulationTestCaseTrait;
+    use ApiTestCaseTrait;
 
     public function testCustom()
     {

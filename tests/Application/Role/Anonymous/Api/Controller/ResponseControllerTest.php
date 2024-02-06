@@ -1,14 +1,16 @@
 <?php
 
-namespace Wexample\SymfonyApi\Tests\Application\Api\Controller;
+namespace Application\Role\Anonymous\Api\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Api\Controller\Test\ResponseController;
-use Wexample\SymfonyApi\Tests\Class\AbstractApiApplicationTestCase;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\Application\ApiTestCaseTrait;
+use Wexample\SymfonyTesting\Tests\AbstractApplicationTestCase;
+use Wexample\SymfonyTesting\Tests\Traits\AbstractAnonymousTestCaseTrait;
 
-class ResponseControllerTest extends AbstractApiApplicationTestCase
+class ResponseControllerTest extends AbstractApplicationTestCase
 {
+    use AbstractAnonymousTestCaseTrait;
     use ApiTestCaseTrait;
 
     public function testSuccess()
