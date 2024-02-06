@@ -20,7 +20,7 @@ use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 #[Route(path: '_test/api/query-option/', name: '_test_query_option_')]
-class QueryOptionController extends AbstractApiController
+final class QueryOptionController extends AbstractApiController
 {
     final public const ROUTE_CUSTOM = VariableHelper::CUSTOM;
     final public const ROUTE_DISPLAY_FORMAT = ApiHelper::DISPLAY_FORMAT;
