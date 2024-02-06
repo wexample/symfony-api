@@ -1,10 +1,10 @@
 <?php
 
-namespace Wexample\SymfonyApi\Command\Traits;
+namespace Wexample\SymfonyApi\Traits;
 
 use Wexample\SymfonyApi\WexampleSymfonyApiBundle;
 
-trait AbstractSymfonyApiBundleCommandTrait
+trait SymfonyApiBundleClassTrait
 {
     public static function getBundleClassName(): string
     {
