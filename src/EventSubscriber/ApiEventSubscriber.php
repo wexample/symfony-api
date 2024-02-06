@@ -186,16 +186,10 @@ class ApiEventSubscriber implements EventSubscriberInterface
         array $errorData
     ): void {
         $event->setController(
-            function() use
-            (
+            fn() => AbstractApiController::apiResponseError(
                 $errorMessage,
-                $errorData
-            ) {
-                return AbstractApiController::apiResponseError(
-                    $errorMessage,
-                    [VariableHelper::DATA => $errorData]
-                );
-            }
+                [VariableHelper::DATA => $errorData]
+            )
         );
     }
 }

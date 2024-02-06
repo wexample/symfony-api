@@ -8,7 +8,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Wexample\SymfonyHelpers\Helper\TextHelper;
 use Wexample\SymfonyTranslations\Translation\Translator;
 
-readonly class ApiService
+class ApiService
 {
     public function __construct(
         private RequestStack $requestStack,
