@@ -1,6 +1,6 @@
 <?php
 
-namespace Wexample\SymfonyApi\Tests\Application\Role\Anonymous\Api\Controller;
+namespace Wexample\SymfonyApi\Tests\Application\Role\Anonymous\Api\Controller\Test;
 
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
@@ -8,6 +8,7 @@ use Wexample\SymfonyApi\Api\Controller\Test\QueryOptionController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\Application\ApiTestCaseTrait;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\TextManipulationTestCaseTrait;
+use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyHelpers\Helper\ArrayHelper;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
@@ -20,6 +21,7 @@ class QueryOptionControllerTest extends AbstractRoleControllerTestCase
     use AbstractAnonymousTestCaseTrait;
     use TextManipulationTestCaseTrait;
     use ApiTestCaseTrait;
+    use SymfonyApiBundleClassTrait;
 
     public function testCustom()
     {
