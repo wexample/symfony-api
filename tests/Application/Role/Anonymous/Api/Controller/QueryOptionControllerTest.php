@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Role\Anonymous\Api\Controller;
+namespace Wexample\SymfonyApi\Tests\Application\Role\Anonymous\Api\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
