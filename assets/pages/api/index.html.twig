@@ -1,4 +1,4 @@
-{%- extends '@SymfonyApiBundle/layouts/api/layout.html.twig' -%}
+{%- extends '@WexampleSymfonyApiBundle/layouts/api/layout.html.twig' -%}
 
 {%- block page_body -%}
     {% for apiRoute in apiRoutes %}
@@ -14,7 +14,7 @@
 
         <div class="blocks blocks-no-stretch">
             <div class="block">
-                {{ ('api.' ~ apiRoute.name ~ '::description') | trans }}
+                {{ ('@WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description') | trans }}
 
                 {% if apiRoute.requirements is not empty %}
                     <h3>{{ '@page::section_requirements' | trans }}</h3>

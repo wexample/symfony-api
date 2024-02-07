@@ -51,7 +51,7 @@ final class IndexController extends AbstractController
         ksort($apiRoutes);
 
         return $this->render(
-            '@SymfonyApiBundle/pages/api/index.html.twig', [
+            '@WexampleSymfonyApiBundle/pages/api/index.html.twig', [
                 'apiRoutes' => $apiRoutes,
             ]
         );
