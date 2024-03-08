@@ -3,7 +3,7 @@
 namespace Wexample\SymfonyApi;
 
 use Wexample\SymfonyDesignSystem\Interface\DesignSystemBundleInterface;
-use Wexample\SymfonyHelpers\AbstractBundle;
+use Wexample\SymfonyHelpers\Class\AbstractBundle;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 
 class WexampleSymfonyApiBundle extends AbstractBundle implements DesignSystemBundleInterface
