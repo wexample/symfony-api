@@ -7,12 +7,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
-use Wexample\SymfonyDesignSystem\Controller\AbstractController;
+use Wexample\SymfonyDesignSystem\Controller\AbstractPagesController;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 #[Route(path: 'api/', name: 'api_')]
-final class IndexController extends AbstractController
+final class IndexController extends AbstractPagesController
 {
     use SymfonyApiBundleClassTrait;
 
@@ -50,8 +50,9 @@ final class IndexController extends AbstractController
 
         ksort($apiRoutes);
 
-        return $this->render(
-            '@WexampleSymfonyApiBundle/pages/api/index.html.twig', [
+        return $this->renderPage(
+            self::ROUTE_INDEX,
+            [
                 'apiRoutes' => $apiRoutes,
             ]
         );
