@@ -2,7 +2,7 @@
 
 namespace Wexample\SymfonyApi\Tests\Application\Role\Anonymous\Controller\Api;
 
-use Wexample\SymfonyApi\Controller\Api\IndexController;
+use Wexample\SymfonyApi\Controller\ApiController;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;
 use Wexample\SymfonyTesting\Tests\Traits\RoleAnonymousTestCaseTrait;
@@ -17,7 +17,7 @@ class IndexControllerTest extends AbstractRoleControllerTestCase
     public function testIndex()
     {
         $this->goToControllerRouteAndCheckHtml(
-            IndexController::ROUTE_INDEX
+            ApiController::ROUTE_INDEX
         );
     }
 }

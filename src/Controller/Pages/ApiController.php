@@ -1,6 +1,6 @@
 <?php
 
-namespace Wexample\SymfonyApi\Controller\Api;
+namespace Wexample\SymfonyApi\Controller\Pages;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,7 +12,7 @@ use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 #[Route(path: 'api/', name: 'api_')]
-final class IndexController extends AbstractPagesController
+final class ApiController extends AbstractPagesController
 {
     use SymfonyApiBundleClassTrait;
 
