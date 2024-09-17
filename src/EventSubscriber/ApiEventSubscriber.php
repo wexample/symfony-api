@@ -127,19 +127,9 @@ class ApiEventSubscriber implements EventSubscriberInterface
 
             /** @var AbstractQueryOption $queryOption */
             $queryOption = $optionsAttributes[$key];
+            $queryParameters[$key] = $value = $queryOption->parseValue($value);
+
             $constraint = $queryOption->getConstraint();
-
-            // Parse value if constraint is on type.
-            if ($constraint instanceof Type) {
-                $value = RequestHelper::parseRequestValue(
-                    $value,
-                    $constraint->type
-                );
-
-                // Replace by parsed value.
-                $queryParameters[$key] = $value;
-            }
-
             $violations = $this->validator->validate($value, $constraint);
 
             if ($violations->count()) {
