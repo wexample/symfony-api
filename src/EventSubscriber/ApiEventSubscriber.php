@@ -67,18 +67,25 @@ class ApiEventSubscriber implements EventSubscriberInterface
         }
 
         $exception = $event->getThrowable();
-        $status = Response::HTTP_INTERNAL_SERVER_ERROR;
+        $code = Response::HTTP_INTERNAL_SERVER_ERROR;
         if ($exception instanceof HttpExceptionInterface) {
-            $status = $exception->getStatusCode();
+            $code = $exception->getStatusCode();
+        }
+
+        $data = null;
+        $message = $exception->getMessage();
+        if ($this->parameterBag->get('api.debug') ?? false) {
+            $data = [
+                'trace' => $exception->getTrace(),
+            ];
         }
 
         $event->setResponse(
             AbstractApiController::apiResponseError(
-                $exception->getMessage()
-                .' in '.$exception->getFile().':'.$exception->getLine(),
-                ['trace' => $exception->getTrace()],
-                $this->parameterBag->get('api_pretty_print'),
-                $status
+                message: $message,
+                data: $data,
+                prettyPrint: $this->parameterBag->get('api_pretty_print'),
+                code: $code
             )->toJsonResponse(),
         );
     }
