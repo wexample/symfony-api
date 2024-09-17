@@ -7,9 +7,12 @@ use DateTimeInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
+use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
+use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
@@ -78,6 +81,41 @@ abstract class AbstractApiController extends AbstractController
             $prettyPrint,
             $status
         );
+    }
+
+    public static function getQueryOptionValue(
+        Request $request,
+        string $name,
+        array|float|int|null|string $default = AbstractApiResponseMember::DISPLAY_FORMAT_DEFAULT,
+    ): mixed {
+        /** @var AbstractQueryOption $attribute */
+        if ($attribute = self::findMethodAttribute($request, $name)) {
+            return $attribute->getRequestValue(
+                $request
+            );
+        }
+
+        return $default;
+    }
+
+    protected static function findMethodAttribute(
+        Request $request,
+        string $name
+    ) {
+        $methodClassPath = $request->attributes->get('_controller');
+
+        foreach (ClassHelper::getChildrenAttributes(
+            $methodClassPath,
+            AbstractQueryOption::class
+        ) as $attribute) {
+            $instance = $attribute->newInstance();
+
+            if ($instance->key === $name) {
+                return $instance;
+            }
+        }
+
+        return null;
     }
 
     protected function getQueryOptionDateFilter(
