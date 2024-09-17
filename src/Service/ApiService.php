@@ -13,6 +13,7 @@ class ApiService
     public function __construct(
         private RequestStack $requestStack,
         private UrlGeneratorInterface $router,
+        // We should avoid this dependency.
         private Translator $translator,
         private RouterInterface $symfonyRouter
     ) {
