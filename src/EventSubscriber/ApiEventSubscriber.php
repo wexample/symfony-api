@@ -6,25 +6,32 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\EveryQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
+use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
+use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\SymfonyHelpers\Helper\DataHelper;
 use Wexample\SymfonyHelpers\Helper\RequestHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class ApiEventSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private ValidatorInterface $validator,
-        private ParameterBagInterface $parameterBag
+        private readonly ValidatorInterface $validator,
+        private readonly ParameterBagInterface $parameterBag,
+        private readonly SerializerInterface $serializer,
     ) {
     }
 
@@ -33,9 +40,85 @@ class ApiEventSubscriber implements EventSubscriberInterface
         // return the subscribed events, their methods and priorities
         return [
             KernelEvents::CONTROLLER_ARGUMENTS => 'apiControllerArgumentValidate',
+            KernelEvents::CONTROLLER => 'onKernelController',
             KernelEvents::EXCEPTION => 'onKernelException',
             KernelEvents::VIEW => 'onKernelView',
         ];
+    }
+
+    public function onKernelController(ControllerEvent $event): void
+    {
+        $controller = $event->getController();
+
+        if (!is_array($controller)) {
+            return;
+        }
+
+        $attributes = $this->getControllerAttributes(
+            $event,
+            ValidateRequestContent::class
+        );
+
+        if (is_null($attributes) or empty($attributes)) {
+            return;
+        }
+
+        $request = $event->getRequest();
+
+        $contentString = $request->getContent();
+        $content = json_decode(
+            $request->getContent(),
+            associative: true
+        );
+
+        if (!$content) {
+            return;
+        }
+
+        foreach ($attributes as $attribute) {
+            /** @var ValidateRequestContent $instance */
+            $instance = $attribute->newInstance();
+            /** @var AbstractDto $dtoClassType */
+            $dtoClassType = $instance->dto;
+
+            // First validate input data.
+            $errors = $this->validator->validate(
+                $content,
+                $dtoClassType::getConstraints()
+            );
+
+            if (count($errors) > 0) {
+                $this->createError(
+                    $event,
+                    (string) $errors
+                );
+
+                return;
+            }
+
+            try {
+                // Constraints passed, now we create the actual dto.
+                $dto = $this->serializer->deserialize(
+                    $contentString,
+                    $dtoClassType,
+                    DataHelper::FORMAT_JSON
+                );
+
+                $request->attributes->set(
+                    $instance->attributeName,
+                    $dto
+                );
+
+            } catch (\Exception $e) {
+                // Some errors can remain on deserialization.
+                $this->createError(
+                    $event,
+                    $e->getMessage()
+                );
+
+                return;
+            }
+        }
     }
 
     public function onKernelView($event): void
@@ -90,24 +173,37 @@ class ApiEventSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function apiControllerArgumentValidate(ControllerArgumentsEvent $event): void
-    {
-        $request = $event->getRequest();
+    protected function getControllerAttributes(
+        KernelEvent $event,
+        string $attributeClass
+    ): ?array {
         $controllerData = $event->getController();
 
         if (!is_array($controllerData) || !is_subclass_of($controllerData[0], AbstractApiController::class)) {
-            return;
+            return null;
         }
 
         $requestedController = $controllerData[0]::class.ClassHelper::METHOD_SEPARATOR.$controllerData[1];
 
-        $apiQueryAttributes = ClassHelper::getChildrenAttributes(
+        return ClassHelper::getChildrenAttributes(
             $requestedController,
+            $attributeClass
+        );
+    }
+
+    public function apiControllerArgumentValidate(ControllerArgumentsEvent $event): void
+    {
+        $request = $event->getRequest();
+        $optionsAttributes = [];
+        $queryParameters = $request->query->all();
+        $apiQueryAttributes = $this->getControllerAttributes(
+            $event,
             QueryOptionTrait::class
         );
 
-        $optionsAttributes = [];
-        $queryParameters = $request->query->all();
+        if (is_null($apiQueryAttributes) or empty($apiQueryAttributes)) {
+            return;
+        }
 
         foreach ($apiQueryAttributes as $attribute) {
             $instance = $attribute->newInstance();
@@ -177,9 +273,9 @@ class ApiEventSubscriber implements EventSubscriberInterface
     }
 
     private function createError(
-        ControllerArgumentsEvent $event,
+        KernelEvent $event,
         string $errorMessage,
-        array $errorData
+        array $errorData = []
     ): void {
         $event->setController(
             fn() => AbstractApiController::apiResponseError(

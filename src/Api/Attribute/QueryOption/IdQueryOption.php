@@ -13,7 +13,7 @@ class IdQueryOption extends AbstractQueryOption
     public function __construct(
         public string $key = VariableHelper::ID,
         public mixed $default = null,
-        bool $required = false,
+        public bool $required = false,
     ) {
         parent::__construct(
             $required
