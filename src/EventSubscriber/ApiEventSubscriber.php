@@ -5,7 +5,6 @@ namespace Wexample\SymfonyApi\EventSubscriber;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
@@ -188,11 +187,12 @@ class ApiEventSubscriber implements EventSubscriberInterface
             return null;
         }
 
-        $requestedController = $controllerData[0]::class.ClassHelper::METHOD_SEPARATOR.$controllerData[1];
+        $requestedClass = $controllerData[0]::class;
+        $requestedMethod = $requestedClass.ClassHelper::METHOD_SEPARATOR.$controllerData[1];
 
-        return ClassHelper::getChildrenAttributes(
-            $requestedController,
-            $attributeClass
+        return array_merge(
+            ClassHelper::getChildrenAttributes($requestedClass, $attributeClass),
+            ClassHelper::getChildrenAttributes($requestedMethod, $attributeClass)
         );
     }
 

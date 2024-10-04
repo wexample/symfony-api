@@ -6,7 +6,7 @@ use Attribute;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 class EveryQueryOption
 {
     use QueryOptionTrait;
