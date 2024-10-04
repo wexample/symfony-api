@@ -39,7 +39,6 @@ class ApiEventSubscriber implements EventSubscriberInterface
     {
         // return the subscribed events, their methods and priorities
         return [
-            KernelEvents::CONTROLLER_ARGUMENTS => 'apiControllerArgumentValidate',
             KernelEvents::CONTROLLER => 'onKernelController',
             KernelEvents::EXCEPTION => 'onKernelException',
             KernelEvents::VIEW => 'onKernelView',
@@ -47,6 +46,12 @@ class ApiEventSubscriber implements EventSubscriberInterface
     }
 
     public function onKernelController(ControllerEvent $event): void
+    {
+        $this->validateSentContent($event);
+        $this->validateQueryOptions($event);
+    }
+
+    public function validateSentContent(ControllerEvent $event): void
     {
         $controller = $event->getController();
 
@@ -191,7 +196,7 @@ class ApiEventSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function apiControllerArgumentValidate(ControllerArgumentsEvent $event): void
+    public function validateQueryOptions(ControllerEvent $event): void
     {
         $request = $event->getRequest();
         $optionsAttributes = [];
@@ -267,6 +272,12 @@ class ApiEventSubscriber implements EventSubscriberInterface
                     $queryParameters[$key] = $attribute->default;
                 }
             }
+
+            // Add in method attributes.
+            $request->attributes->set(
+                $attribute->key,
+                $queryParameters[$key]
+            );
         }
 
         $request->query->replace($queryParameters);
