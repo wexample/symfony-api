@@ -3,7 +3,6 @@
 namespace Wexample\SymfonyApi\EventSubscriber;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -25,7 +24,7 @@ use Wexample\SymfonyHelpers\Helper\DataHelper;
 use Wexample\SymfonyHelpers\Helper\RequestHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-class ApiEventSubscriber implements EventSubscriberInterface
+class ApiEventSubscriber extends AbstractControllerEventSubscriber
 {
     public function __construct(
         private readonly ValidatorInterface $validator,
@@ -58,7 +57,7 @@ class ApiEventSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $attributes = $this->getControllerAttributes(
+        $attributes = $this->getControllerClassOrMethodAttributes(
             $event,
             ValidateRequestContent::class
         );
@@ -177,36 +176,17 @@ class ApiEventSubscriber implements EventSubscriberInterface
         );
     }
 
-    protected function getControllerAttributes(
-        KernelEvent $event,
-        string $attributeClass
-    ): ?array {
-        $controllerData = $event->getController();
-
-        if (!is_array($controllerData) || !is_subclass_of($controllerData[0], AbstractApiController::class)) {
-            return null;
-        }
-
-        $requestedClass = $controllerData[0]::class;
-        $requestedMethod = $requestedClass.ClassHelper::METHOD_SEPARATOR.$controllerData[1];
-
-        return array_merge(
-            ClassHelper::getChildrenAttributes($requestedClass, $attributeClass),
-            ClassHelper::getChildrenAttributes($requestedMethod, $attributeClass)
-        );
-    }
-
     public function validateQueryOptions(ControllerEvent $event): void
     {
         $request = $event->getRequest();
         $optionsAttributes = [];
         $queryParameters = $request->query->all();
-        $apiQueryAttributes = $this->getControllerAttributes(
+        $apiQueryAttributes = $this->getControllerClassOrMethodAttributes(
             $event,
             QueryOptionTrait::class
         );
 
-        if (is_null($apiQueryAttributes) or empty($apiQueryAttributes)) {
+        if (empty($apiQueryAttributes)) {
             return;
         }
 
