@@ -21,6 +21,12 @@ abstract class AbstractApiController extends AbstractController
     final public const ROUTES_PATH_PREFIX = VariableHelper::API;
     final public const ROUTES_NAME_PREFIX = VariableHelper::API;
 
+    final public const DEFAULT_ROUTE_NAME_DELETE = 'delete';
+    final public const DEFAULT_ROUTE_NAME_DETAIL = 'detail';
+    final public const DEFAULT_ROUTE_NAME_LIST = VariableHelper::LIST;
+    final public const DEFAULT_ROUTE_NAME_SHOW = VariableHelper::SHOW;
+    final public const DEFAULT_ROUTE_NAME_UPDATE = 'update';
+
     public static function apiResponseSuccess(
         $message = null,
         $data = [],
@@ -80,6 +86,22 @@ abstract class AbstractApiController extends AbstractController
             $data,
             $prettyPrint,
             $code
+        );
+    }
+
+    public static function apiResponsePaginated(
+        int $page,
+        int $length,
+        array $items
+    ): ApiResponse {
+        return self::apiResponseSuccess(
+            data: [
+                'pagination' => [
+                    'page' => $page,
+                    'page_length' => $length,
+                ],
+                'items' => $items,
+            ]
         );
     }
 
