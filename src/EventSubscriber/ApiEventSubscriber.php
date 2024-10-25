@@ -84,6 +84,14 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
             /** @var AbstractDto $dtoClassType */
             $dtoClassType = $instance->dto;
 
+            $requiredKeys = $dtoClassType::getRequiredProperties();
+            foreach ($requiredKeys as $key) {
+                if (!array_key_exists($key, $content)) {
+                    $this->createError($event, "The key '{$key}' is missing in the request data.");
+                    return;
+                }
+            }
+
             // First validate input data.
             $errors = $this->validator->validate(
                 $content,
