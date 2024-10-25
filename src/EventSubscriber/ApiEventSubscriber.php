@@ -68,10 +68,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         $request = $event->getRequest();
 
         $contentString = $request->getContent();
-        $content = json_decode(
-            $request->getContent(),
-            associative: true
-        );
+        $content = json_decode($contentString, associative: true);
 
         if (!$content) {
             return;
@@ -114,10 +111,21 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                     DataHelper::FORMAT_JSON
                 );
 
-                $request->attributes->set(
-                    $instance->attributeName,
-                    $dto
+                $errors = $this->validator->validate($dto);
+
+                $additionalErrors = $this->validator->validate(
+                    $content,
+                    $dtoClassType::getConstraints()
                 );
+
+                $errors->addAll($additionalErrors);
+
+                if (count($errors) > 0) {
+                    $this->createError($event, (string) $errors);
+                    return;
+                }
+
+                $request->attributes->set($instance->attributeName, $dto);
 
             } catch (\Exception $e) {
                 // Some errors can remain on deserialization.
