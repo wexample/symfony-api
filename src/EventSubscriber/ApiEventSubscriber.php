@@ -22,7 +22,6 @@ use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\DataHelper;
 use Wexample\SymfonyHelpers\Helper\RequestHelper;
-use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class ApiEventSubscriber extends AbstractControllerEventSubscriber
 {
@@ -279,7 +278,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         $event->setController(
             fn() => AbstractApiController::apiResponseError(
                 $errorMessage,
-                [VariableHelper::DATA => $errorData]
+                $errorData
             )
         );
     }
