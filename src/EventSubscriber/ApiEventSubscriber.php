@@ -61,12 +61,11 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
             ValidateRequestContent::class
         );
 
-        if (is_null($attributes) or empty($attributes)) {
+        if (empty($attributes)) {
             return;
         }
 
         $request = $event->getRequest();
-
         $contentString = $request->getContent();
         $content = json_decode($contentString, associative: true);
 
