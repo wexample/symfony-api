@@ -29,9 +29,9 @@ abstract class AbstractApiController extends AbstractController
     final public const DEFAULT_ROUTE_NAME_UPDATE = 'update';
 
     public static function apiResponseSuccess(
-        $message = null,
-        $data = [],
-        $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
+        string $message = null,
+        ?array $data = null,
+        string $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
         bool $prettyPrint = null
     ): ApiResponse {
         return self::apiResponse(
@@ -43,9 +43,9 @@ abstract class AbstractApiController extends AbstractController
     }
 
     public static function apiResponse(
-        $message = null,
-        $type = null,
-        $data = null,
+        string $message = null,
+        string $type = null,
+        ?array $data = null,
         bool $prettyPrint = null,
         int $code = null
     ): ApiResponse {
@@ -76,8 +76,8 @@ abstract class AbstractApiController extends AbstractController
 
     public static function apiResponseError(
         string|Exception $message,
-        $data = [],
-        $type = ApiHelper::RESPONSE_TYPE_FAILURE,
+        ?array $data = null,
+        string $type = ApiHelper::RESPONSE_TYPE_FAILURE,
         bool $prettyPrint = null,
         int $code = null,
     ): ApiResponse {
