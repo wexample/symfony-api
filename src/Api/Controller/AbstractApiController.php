@@ -30,7 +30,7 @@ abstract class AbstractApiController extends AbstractController
 
     public static function apiResponseSuccess(
         string $message = null,
-        ?array $data = null,
+        mixed $data = null,
         string $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
         bool $prettyPrint = null
     ): ApiResponse {
@@ -45,7 +45,7 @@ abstract class AbstractApiController extends AbstractController
     public static function apiResponse(
         string $message = null,
         string $type = null,
-        ?array $data = null,
+        mixed $data = null,
         bool $prettyPrint = null,
         int $code = null
     ): ApiResponse {
@@ -76,7 +76,7 @@ abstract class AbstractApiController extends AbstractController
 
     public static function apiResponseError(
         string|Exception $message,
-        ?array $data = null,
+        mixed $data = null,
         string $type = ApiHelper::RESPONSE_TYPE_FAILURE,
         bool $prettyPrint = null,
         int $code = null,
