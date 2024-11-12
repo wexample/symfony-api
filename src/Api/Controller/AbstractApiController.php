@@ -92,14 +92,14 @@ abstract class AbstractApiController extends AbstractController
 
     public static function apiResponsePaginated(
         int $page,
-        int $length,
+        ?int $length,
         array $items
     ): ApiResponse {
         return self::apiResponseSuccess(
             data: [
                 'pagination' => [
                     'page' => $page,
-                    'page_length' => $length,
+                    'length' => $length,
                 ],
                 'items' => $items,
             ]
