@@ -21,6 +21,10 @@ services:
         resource: '../../Controller/*'
         tags: ['controller.service_arguments']
 
+    Wexample\SymfonyApi\Normalizer\:
+        resource: '../../Normalizer/*'
+        tags: ['serializer.normalizer']
+
     Wexample\SymfonyApi\Api\Controller\Test\:
         resource: '../../Api/Controller/Test/*'
         tags: ['controller.service_arguments']
