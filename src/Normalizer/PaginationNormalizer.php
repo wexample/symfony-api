@@ -9,13 +9,13 @@ class PaginationNormalizer implements NormalizerInterface
 {
     public function normalizePagination(
         int $page,
-        int $length,
+        ?int $length,
         array $items
     ) {
         return [
             'pagination' => [
                 'page' => $page,
-                'page_length' => $length,
+                'length' => $length,
             ],
             'items' => $items,
         ];
