@@ -87,10 +87,12 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 }
             }
 
+            $constraints = $dtoClassType::getConstraints();
+
             // First validate input data.
             $errors = $this->validator->validate(
                 $content,
-                $dtoClassType::getConstraints()
+                $constraints
             );
 
             if (count($errors) > 0) {
@@ -114,7 +116,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
                 $additionalErrors = $this->validator->validate(
                     $content,
-                    $dtoClassType::getConstraints()
+                    $constraints
                 );
 
                 $errors->addAll($additionalErrors);
