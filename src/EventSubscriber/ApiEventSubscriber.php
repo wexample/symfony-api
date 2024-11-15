@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\EventSubscriber;
 
+use ReflectionClass;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -10,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\EveryQueryOption;
@@ -89,19 +91,33 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
             $constraints = $dtoClassType::getConstraints();
 
-            // First validate input data.
-            $errors = $this->validator->validate(
-                $content,
-                $constraints
-            );
+            // Pre check data.
+            if ($constraints !== null) {
+                $reflectionClass = new ReflectionClass($dtoClassType);
 
-            if (count($errors) > 0) {
-                $this->createError(
-                    $event,
-                    (string) $errors
+                // Add every property name allows the field to exist in content.
+                foreach ($reflectionClass->getProperties() as $property) {
+                    $key = $property->getName();
+                    if (!isset($constraints->fields[$key])) {
+                        $constraints->fields[$key] = new Optional();
+                    }
+                }
+
+                // First validate input data.
+                $errors = $this->validator->validate(
+                    $content,
+                    $constraints
                 );
 
-                return;
+                if (count($errors) > 0) {
+                    $this->createError(
+                        $event,
+                        (string) $errors
+                    );
+
+                    return;
+                }
+
             }
 
             try {
@@ -114,9 +130,20 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
                 $errors = $this->validator->validate($dto);
 
+                // Checks specific constraints,
+                // This check will allow fields that are not explicitly declared into getConstraints.
+                if ($constraints !== null) {
+                    $additionalErrors = $this->validator->validate(
+                        $content,
+                        $constraints
+                    );
+
+                    $errors->addAll($additionalErrors);
+                }
+
+                // This check will inspect only properties that were not declared into getConstraints.
                 $additionalErrors = $this->validator->validate(
-                    $content,
-                    $constraints
+                    $content
                 );
 
                 $errors->addAll($additionalErrors);
