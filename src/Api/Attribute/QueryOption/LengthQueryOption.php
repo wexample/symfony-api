@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Type;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 class LengthQueryOption extends AbstractQueryOption
 {
     final public const DEFAULT_PAGE_LENGTH = 10;

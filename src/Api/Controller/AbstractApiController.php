@@ -21,10 +21,17 @@ abstract class AbstractApiController extends AbstractController
     final public const ROUTES_PATH_PREFIX = VariableHelper::API;
     final public const ROUTES_NAME_PREFIX = VariableHelper::API;
 
+    final public const DEFAULT_ROUTE_NAME_CREATE = 'create';
+    final public const DEFAULT_ROUTE_NAME_DELETE = 'delete';
+    final public const DEFAULT_ROUTE_NAME_DETAIL = 'detail';
+    final public const DEFAULT_ROUTE_NAME_LIST = VariableHelper::LIST;
+    final public const DEFAULT_ROUTE_NAME_SHOW = VariableHelper::SHOW;
+    final public const DEFAULT_ROUTE_NAME_UPDATE = 'update';
+
     public static function apiResponseSuccess(
-        $message = null,
-        $data = [],
-        $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
+        string $message = null,
+        mixed $data = null,
+        string $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
         bool $prettyPrint = null
     ): ApiResponse {
         return self::apiResponse(
@@ -36,9 +43,9 @@ abstract class AbstractApiController extends AbstractController
     }
 
     public static function apiResponse(
-        $message = null,
-        $type = null,
-        $data = null,
+        string $message = null,
+        string $type = null,
+        mixed $data = null,
         bool $prettyPrint = null,
         int $code = null
     ): ApiResponse {
@@ -69,8 +76,8 @@ abstract class AbstractApiController extends AbstractController
 
     public static function apiResponseError(
         string|Exception $message,
-        $data = [],
-        $type = ApiHelper::RESPONSE_TYPE_FAILURE,
+        mixed $data = null,
+        string $type = ApiHelper::RESPONSE_TYPE_FAILURE,
         bool $prettyPrint = null,
         int $code = null,
     ): ApiResponse {
@@ -80,6 +87,22 @@ abstract class AbstractApiController extends AbstractController
             $data,
             $prettyPrint,
             $code
+        );
+    }
+
+    public static function apiResponsePaginated(
+        int $page,
+        ?int $length,
+        array $items
+    ): ApiResponse {
+        return self::apiResponseSuccess(
+            data: [
+                'pagination' => [
+                    'page' => $page,
+                    'length' => $length,
+                ],
+                'items' => $items,
+            ]
         );
     }
 

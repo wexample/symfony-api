@@ -2,16 +2,16 @@
 
 namespace Wexample\SymfonyApi\EventSubscriber;
 
+use ReflectionClass;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\EveryQueryOption;
@@ -24,9 +24,8 @@ use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyHelpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\DataHelper;
 use Wexample\SymfonyHelpers\Helper\RequestHelper;
-use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-class ApiEventSubscriber implements EventSubscriberInterface
+class ApiEventSubscriber extends AbstractControllerEventSubscriber
 {
     public function __construct(
         private readonly ValidatorInterface $validator,
@@ -39,7 +38,6 @@ class ApiEventSubscriber implements EventSubscriberInterface
     {
         // return the subscribed events, their methods and priorities
         return [
-            KernelEvents::CONTROLLER_ARGUMENTS => 'apiControllerArgumentValidate',
             KernelEvents::CONTROLLER => 'onKernelController',
             KernelEvents::EXCEPTION => 'onKernelException',
             KernelEvents::VIEW => 'onKernelView',
@@ -48,28 +46,30 @@ class ApiEventSubscriber implements EventSubscriberInterface
 
     public function onKernelController(ControllerEvent $event): void
     {
+        $this->validateSentContent($event);
+        $this->validateQueryOptions($event);
+    }
+
+    public function validateSentContent(ControllerEvent $event): void
+    {
         $controller = $event->getController();
 
         if (!is_array($controller)) {
             return;
         }
 
-        $attributes = $this->getControllerAttributes(
+        $attributes = $this->getControllerClassOrMethodAttributes(
             $event,
             ValidateRequestContent::class
         );
 
-        if (is_null($attributes) or empty($attributes)) {
+        if (empty($attributes)) {
             return;
         }
 
         $request = $event->getRequest();
-
         $contentString = $request->getContent();
-        $content = json_decode(
-            $request->getContent(),
-            associative: true
-        );
+        $content = json_decode($contentString, associative: true);
 
         if (!$content) {
             return;
@@ -81,19 +81,43 @@ class ApiEventSubscriber implements EventSubscriberInterface
             /** @var AbstractDto $dtoClassType */
             $dtoClassType = $instance->dto;
 
-            // First validate input data.
-            $errors = $this->validator->validate(
-                $content,
-                $dtoClassType::getConstraints()
-            );
+            $requiredKeys = $dtoClassType::getRequiredProperties();
+            foreach ($requiredKeys as $key) {
+                if (!array_key_exists($key, $content)) {
+                    $this->createError($event, "The key '{$key}' is missing in the request data.");
+                    return;
+                }
+            }
 
-            if (count($errors) > 0) {
-                $this->createError(
-                    $event,
-                    (string) $errors
+            $constraints = $dtoClassType::getConstraints();
+
+            // Pre check data.
+            if ($constraints !== null) {
+                $reflectionClass = new ReflectionClass($dtoClassType);
+
+                // Add every property name allows the field to exist in content.
+                foreach ($reflectionClass->getProperties() as $property) {
+                    $key = $property->getName();
+                    if (!isset($constraints->fields[$key])) {
+                        $constraints->fields[$key] = new Optional();
+                    }
+                }
+
+                // First validate input data.
+                $errors = $this->validator->validate(
+                    $content,
+                    $constraints
                 );
 
-                return;
+                if (count($errors) > 0) {
+                    $this->createError(
+                        $event,
+                        (string) $errors
+                    );
+
+                    return;
+                }
+
             }
 
             try {
@@ -104,10 +128,32 @@ class ApiEventSubscriber implements EventSubscriberInterface
                     DataHelper::FORMAT_JSON
                 );
 
-                $request->attributes->set(
-                    $instance->attributeName,
-                    $dto
+                $errors = $this->validator->validate($dto);
+
+                // Checks specific constraints,
+                // This check will allow fields that are not explicitly declared into getConstraints.
+                if ($constraints !== null) {
+                    $additionalErrors = $this->validator->validate(
+                        $content,
+                        $constraints
+                    );
+
+                    $errors->addAll($additionalErrors);
+                }
+
+                // This check will inspect only properties that were not declared into getConstraints.
+                $additionalErrors = $this->validator->validate(
+                    $content
                 );
+
+                $errors->addAll($additionalErrors);
+
+                if (count($errors) > 0) {
+                    $this->createError($event, (string) $errors);
+                    return;
+                }
+
+                $request->attributes->set($instance->attributeName, $dto);
 
             } catch (\Exception $e) {
                 // Some errors can remain on deserialization.
@@ -173,35 +219,17 @@ class ApiEventSubscriber implements EventSubscriberInterface
         );
     }
 
-    protected function getControllerAttributes(
-        KernelEvent $event,
-        string $attributeClass
-    ): ?array {
-        $controllerData = $event->getController();
-
-        if (!is_array($controllerData) || !is_subclass_of($controllerData[0], AbstractApiController::class)) {
-            return null;
-        }
-
-        $requestedController = $controllerData[0]::class.ClassHelper::METHOD_SEPARATOR.$controllerData[1];
-
-        return ClassHelper::getChildrenAttributes(
-            $requestedController,
-            $attributeClass
-        );
-    }
-
-    public function apiControllerArgumentValidate(ControllerArgumentsEvent $event): void
+    public function validateQueryOptions(ControllerEvent $event): void
     {
         $request = $event->getRequest();
         $optionsAttributes = [];
         $queryParameters = $request->query->all();
-        $apiQueryAttributes = $this->getControllerAttributes(
+        $apiQueryAttributes = $this->getControllerClassOrMethodAttributes(
             $event,
             QueryOptionTrait::class
         );
 
-        if (is_null($apiQueryAttributes) or empty($apiQueryAttributes)) {
+        if (empty($apiQueryAttributes)) {
             return;
         }
 
@@ -267,6 +295,12 @@ class ApiEventSubscriber implements EventSubscriberInterface
                     $queryParameters[$key] = $attribute->default;
                 }
             }
+
+            // Add in method attributes.
+            $request->attributes->set(
+                $attribute->key,
+                $queryParameters[$key]
+            );
         }
 
         $request->query->replace($queryParameters);
@@ -280,7 +314,7 @@ class ApiEventSubscriber implements EventSubscriberInterface
         $event->setController(
             fn() => AbstractApiController::apiResponseError(
                 $errorMessage,
-                [VariableHelper::DATA => $errorData]
+                $errorData
             )
         );
     }

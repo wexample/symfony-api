@@ -2,6 +2,8 @@
 
 namespace Wexample\SymfonyApi\Helper;
 
+use Symfony\Component\HttpFoundation\Request;
+use Wexample\SymfonyHelpers\Helper\TextHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class ApiHelper
@@ -16,4 +18,30 @@ class ApiHelper
     final public const KEY_RESPONSE_TYPE = VariableHelper::TYPE;
     final public const RESPONSE_TYPE_FAILURE = VariableHelper::ERROR;
     final public const RESPONSE_TYPE_SUCCESS = VariableHelper::SUCCESS;
+    final public const HEADER_BEARER_AUTHORIZATION_KEY = "Authorization";
+    final public const HEADER_BEARER_AUTHORIZATION_PREFIX = "Bearer ";
+
+    public static function extractBearerTokenFromRequest(
+        Request $request,
+        string $bearerIdentifier = ApiHelper::HEADER_BEARER_AUTHORIZATION_KEY
+    ): ?string {
+        if (!$request->headers->get($bearerIdentifier)) {
+            return null;
+        }
+
+        return ApiHelper::extractBearerTokenFromString(
+            $request->headers->get($bearerIdentifier)
+        );
+    }
+
+    public static function extractBearerTokenFromString(
+        ?string $authHeader,
+        string $bearerPrefix = ApiHelper::HEADER_BEARER_AUTHORIZATION_PREFIX
+    ): ?string {
+        if ($authHeader && str_starts_with($authHeader, $bearerPrefix)) {
+            return TextHelper::removePrefix($authHeader, $bearerPrefix);
+        }
+
+        return null;
+    }
 }
