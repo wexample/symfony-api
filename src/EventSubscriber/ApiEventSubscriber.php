@@ -75,28 +75,28 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
             /** @var AbstractDto $dtoClassType */
             $dtoClassType = $instance->dto;
 
-            $content = null;
-            $contentString = '';
+        $content = null;
+        $contentString = '';
 
-            // Check if request is multipart/form-data
-            if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
+        // Check if request is multipart/form-data
+        if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
                 // Try each configured data field name
                 foreach ($instance->getDataFieldNames() as $fieldName) {
                     $jsonData = $request->request->get($fieldName);
-                    if ($jsonData) {
-                        $content = json_decode($jsonData, true);
-                        $contentString = $jsonData;
+            if ($jsonData) {
+                $content = json_decode($jsonData, true);
+                $contentString = $jsonData;
                         break;
                     }
-                }
-            } else {
-                $contentString = $request->getContent();
-                $content = json_decode($contentString, true);
             }
+        } else {
+            $contentString = $request->getContent();
+            $content = json_decode($contentString, true);
+        }
 
-            if (!$content) {
+        if (!$content) {
                 continue;
-            }
+        }
 
             $requiredKeys = $dtoClassType::getRequiredProperties();
             foreach ($requiredKeys as $key) {
@@ -144,9 +144,18 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                     DataHelper::FORMAT_JSON
                 );
 
-                // Attach any uploaded files to the DTO
+                // Validate files if present
                 if ($request->files->count() > 0) {
                     $dto->setFiles($request->files->all());
+                    
+                    if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
+                        $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
+                        
+                        if (count($errors) > 0) {
+                            $this->createError($event, (string) $errors);
+                            return;
+                        }
+                    }
                 }
 
                 $errors = $this->validator->validate($dto);
