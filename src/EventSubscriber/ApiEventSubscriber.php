@@ -129,16 +129,20 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
                     return;
                 }
-
             }
 
             try {
-                // Constraints passed, now we create the actual dto.
+                /** @var AbstractDto $dto */
                 $dto = $this->serializer->deserialize(
                     $contentString,
                     $dtoClassType,
                     DataHelper::FORMAT_JSON
                 );
+
+                // Attach any uploaded files to the DTO
+                if ($request->files->count() > 0) {
+                    $dto->setFiles($request->files->all());
+                }
 
                 $errors = $this->validator->validate($dto);
 

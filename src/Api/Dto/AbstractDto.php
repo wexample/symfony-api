@@ -3,11 +3,15 @@
 namespace Wexample\SymfonyApi\Api\Dto;
 
 use ReflectionClass;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints\Collection;
 use Wexample\SymfonyApi\Api\Attribute\RequiredDtoProperty;
 
 abstract class AbstractDto
 {
+    /** @var UploadedFile[] */
+    protected array $files = [];
+
     public static function getConstraints(): ?Collection
     {
         return null;
@@ -27,5 +31,21 @@ abstract class AbstractDto
         }
 
         return $requiredProperties;
+    }
+
+    /**
+     * @param UploadedFile[] $files
+     */
+    public function setFiles(array $files): void
+    {
+        $this->files = $files;
+    }
+
+    /**
+     * @return UploadedFile[]
+     */
+    public function getFiles(): array
+    {
+        return $this->files;
     }
 }
