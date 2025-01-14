@@ -68,30 +68,35 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         }
 
         $request = $event->getRequest();
-        $content = null;
-        $contentString = '';
-
-        // Check if request is multipart/form-data
-        if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
-            $jsonData = $request->request->get('data');
-            if ($jsonData) {
-                $content = json_decode($jsonData, true);
-                $contentString = $jsonData;
-            }
-        } else {
-            $contentString = $request->getContent();
-            $content = json_decode($contentString, true);
-        }
-
-        if (!$content) {
-            return;
-        }
-
+        
         foreach ($attributes as $attribute) {
             /** @var ValidateRequestContent $instance */
             $instance = $attribute->newInstance();
             /** @var AbstractDto $dtoClassType */
             $dtoClassType = $instance->dto;
+
+            $content = null;
+            $contentString = '';
+
+            // Check if request is multipart/form-data
+            if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
+                // Try each configured data field name
+                foreach ($instance->getDataFieldNames() as $fieldName) {
+                    $jsonData = $request->request->get($fieldName);
+                    if ($jsonData) {
+                        $content = json_decode($jsonData, true);
+                        $contentString = $jsonData;
+                        break;
+                    }
+                }
+            } else {
+                $contentString = $request->getContent();
+                $content = json_decode($contentString, true);
+            }
+
+            if (!$content) {
+                continue;
+            }
 
             $requiredKeys = $dtoClassType::getRequiredProperties();
             foreach ($requiredKeys as $key) {
@@ -132,7 +137,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
             }
 
             try {
-                /** @var AbstractDto $dto */
+                // Constraints passed, now we create the actual dto.
                 $dto = $this->serializer->deserialize(
                     $contentString,
                     $dtoClassType,
