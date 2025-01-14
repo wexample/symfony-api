@@ -68,8 +68,20 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         }
 
         $request = $event->getRequest();
-        $contentString = $request->getContent();
-        $content = json_decode($contentString, associative: true);
+        $content = null;
+        $contentString = '';
+
+        // Check if request is multipart/form-data
+        if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
+            $jsonData = $request->request->get('data');
+            if ($jsonData) {
+                $content = json_decode($jsonData, true);
+                $contentString = $jsonData;
+            }
+        } else {
+            $contentString = $request->getContent();
+            $content = json_decode($contentString, true);
+        }
 
         if (!$content) {
             return;
