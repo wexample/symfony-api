@@ -7,7 +7,7 @@ class DebugHelper
     /**
      * Debug variable with simple text formatting
      */
-    public static function debug(mixed $var): void
+    public static function dump(mixed $var): void
     {
         $output = \Wexample\SymfonyHelpers\Helper\DebugHelper::formatVar($var);
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
@@ -21,9 +21,9 @@ class DebugHelper
     /**
      * Debug variable and die
      */
-    public static function debugAndDie(mixed $var): never
+    public static function dumpAndDie(mixed $var): never
     {
-        static::debug($var);
+        static::dump($var);
         die(1);
     }
 
@@ -32,6 +32,6 @@ class DebugHelper
      */
     public static function dd(mixed $var): never
     {
-        static::debugAndDie($var);
+        static::dumpAndDie($var);
     }
 }

@@ -68,35 +68,41 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         }
 
         $request = $event->getRequest();
-        
+
         foreach ($attributes as $attribute) {
             /** @var ValidateRequestContent $instance */
             $instance = $attribute->newInstance();
             /** @var AbstractDto $dtoClassType */
             $dtoClassType = $instance->dto;
 
-        $content = null;
-        $contentString = '';
+            $content = null;
+            $contentString = '';
 
-        // Check if request is multipart/form-data
-        if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
-                // Try each configured data field name
-                foreach ($instance->getDataFieldNames() as $fieldName) {
+            // Check if request is multipart/form-data
+            if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
+                // Get all available field names from the request
+                // Get valid field names based on patterns
+                $validFields = $instance->getValidFieldNames(
+                    array_merge(
+                        array_keys($request->request->all()),
+                        array_keys($request->files->all())
+                    )
+                );
+
+                // Look for JSON data in valid fields
+                foreach ($validFields as $fieldName) {
                     $jsonData = $request->request->get($fieldName);
-            if ($jsonData) {
-                $content = json_decode($jsonData, true);
-                $contentString = $jsonData;
+                    if ($jsonData) {
+                        $content = json_decode($jsonData, true);
+                        $contentString = $jsonData;
                         break;
                     }
+                }
             }
-        } else {
-            $contentString = $request->getContent();
-            $content = json_decode($contentString, true);
-        }
 
-        if (!$content) {
+            if (!$content) {
                 continue;
-        }
+            }
 
             $requiredKeys = $dtoClassType::getRequiredProperties();
             foreach ($requiredKeys as $key) {
@@ -147,10 +153,10 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 // Validate files if present
                 if ($request->files->count() > 0) {
                     $dto->setFiles($request->files->all());
-                    
+
                     if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
                         $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
-                        
+
                         if (count($errors) > 0) {
                             $this->createError($event, (string) $errors);
                             return;
