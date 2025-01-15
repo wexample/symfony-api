@@ -152,7 +152,17 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
                 // Validate files if present
                 if ($request->files->count() > 0) {
-                    $dto->setFiles($request->files->all());
+                    $files = $request->files->all();
+                    
+                    // Force real MIME type detection
+                    foreach ($files as $file) {
+                        if ($file instanceof UploadedFile) {
+                            // This triggers real MIME type detection
+                            $file->getMimeType();
+                        }
+                    }
+                    
+                    $dto->setFiles($files);
 
                     if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
                         $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
