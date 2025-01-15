@@ -4,6 +4,7 @@ namespace Wexample\SymfonyApi\EventSubscriber;
 
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -12,6 +13,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Optional;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\EveryQueryOption;
@@ -48,6 +51,44 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
     {
         $this->validateSentContent($event);
         $this->validateQueryOptions($event);
+    }
+
+    protected function createErrorFromMessage(
+        KernelEvent $event,
+        string $message
+    ): void {
+        $this->createError(
+            $event,
+            $message,
+            [
+                'type' => 'message',
+            ]);
+    }
+
+    protected function createErrorFromViolationList(
+        KernelEvent $event,
+        string $message,
+        ConstraintViolationListInterface $violations
+    ): void {
+        $errors = [];
+        foreach ($violations as $violation) {
+            $errors[] = [
+                'message' => $violation->getMessage(),
+                'type' => 'validation',
+                'property' => $violation->getPropertyPath(),
+                'code' => $violation->getCode(),
+                'value' => $violation->getInvalidValue(),
+            ];
+        }
+
+        $this->createError(
+            $event,
+            $message,
+            [
+                'type' => 'validation_collection',
+                'errors' => $errors,
+            ]
+        );
     }
 
     public function validateSentContent(ControllerEvent $event): void
@@ -107,7 +148,10 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
             $requiredKeys = $dtoClassType::getRequiredProperties();
             foreach ($requiredKeys as $key) {
                 if (!array_key_exists($key, $content)) {
-                    $this->createError($event, "The key '{$key}' is missing in the request data.");
+                    $this->createErrorFromMessage(
+                        $event,
+                        "The key '{$key}' is missing in the request data."
+                    );
                     return;
                 }
             }
@@ -133,11 +177,11 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 );
 
                 if (count($errors) > 0) {
-                    $this->createError(
+                    $this->createErrorFromViolationList(
                         $event,
-                        (string) $errors
+                        'At least one constraint has been violated.',
+                        $errors
                     );
-
                     return;
                 }
             }
@@ -153,7 +197,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 // Validate files if present
                 if ($request->files->count() > 0) {
                     $files = $request->files->all();
-                    
+
                     // Force real MIME type detection
                     foreach ($files as $file) {
                         if ($file instanceof UploadedFile) {
@@ -161,14 +205,18 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                             $file->getMimeType();
                         }
                     }
-                    
+
                     $dto->setFiles($files);
 
                     if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
                         $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
 
                         if (count($errors) > 0) {
-                            $this->createError($event, (string) $errors);
+                            $this->createErrorFromViolationList(
+                                $event,
+                                'At least one constraint has been violated in sent files.',
+                                $errors
+                            );
                             return;
                         }
                     }
@@ -193,9 +241,12 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 );
 
                 $errors->addAll($additionalErrors);
-
                 if (count($errors) > 0) {
-                    $this->createError($event, (string) $errors);
+                    $this->createErrorFromViolationList(
+                        $event,
+                        'At least one field constraint has been violated',
+                        $errors
+                    );
                     return;
                 }
 
@@ -203,11 +254,10 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
             } catch (\Exception $e) {
                 // Some errors can remain on deserialization.
-                $this->createError(
+                $this->createErrorFromMessage(
                     $event,
                     $e->getMessage()
                 );
-
                 return;
             }
         }
@@ -290,13 +340,13 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                     continue;
                 }
 
-                $this->createError($event,
-                    'Unknown given query option '
-                    .$key.'. '
+                $this->createErrorFromMessage(
+                    $event,
+                    'Unknown given query option **'.$key.'**. '
                     .(!empty($optionsAttributes)
-                        ? 'Allowed query options are : '.implode(', ', array_keys($optionsAttributes)).'.'
-                        : 'No query option allowed.'
-                    ), ['got' => $key.RequestHelper::URL_QUERY_STRING_EQUAL.$value]);
+                        ? 'Allowed options are: '.implode(', ', array_keys($optionsAttributes)).'.'
+                        : 'No query options are allowed.'
+                    ));
 
                 return;
             }
@@ -309,15 +359,11 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
             $violations = $this->validator->validate($value, $constraint);
 
             if ($violations->count()) {
-                $this->createError(
+                $this->createErrorFromViolationList(
                     $event,
                     'Query option **'.$key.'** does not match constraints.',
-                    [
-                        'got' => $value,
-                        'type' => $constraint::class,
-                    ]
+                    $violations
                 );
-
                 return;
             }
         }
@@ -333,8 +379,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 && !array_key_exists($key, $queryParameters)
             ) {
                 if (true === $attribute->required) {
-                    $this->createError($event, 'Required query option **'.$key.'** is missing.', ['required' => $key]);
-
+                    $this->createErrorFromMessage('Required query option **'.$key.'** is missing.');
                     return;
                 } else {
                     // Replace by default.
