@@ -13,7 +13,6 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Optional;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
@@ -139,6 +138,9 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                         break;
                     }
                 }
+            } else {
+                $contentString = $request->getContent();
+                $content = json_decode($contentString, true);
             }
 
             if (!$content) {
