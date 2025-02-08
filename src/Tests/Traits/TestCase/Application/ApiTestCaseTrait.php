@@ -5,7 +5,7 @@ namespace Wexample\SymfonyApi\Tests\Traits\TestCase\Application;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
-use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\Helpers\Helper\TextHelper;
 
 trait ApiTestCaseTrait
 {

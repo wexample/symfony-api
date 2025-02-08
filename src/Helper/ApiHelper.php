@@ -3,7 +3,7 @@
 namespace Wexample\SymfonyApi\Helper;
 
 use Symfony\Component\HttpFoundation\Request;
-use Wexample\SymfonyHelpers\Helper\TextHelper;
+use Wexample\Helpers\Helper\TextHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 class ApiHelper

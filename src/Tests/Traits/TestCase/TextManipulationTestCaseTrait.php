@@ -3,7 +3,7 @@
 namespace Wexample\SymfonyApi\Tests\Traits\TestCase;
 
 use JetBrains\PhpStorm\Pure;
-use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\ClassHelper;
 
 trait TextManipulationTestCaseTrait
 {

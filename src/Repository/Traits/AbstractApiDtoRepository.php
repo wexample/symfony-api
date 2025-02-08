@@ -6,7 +6,7 @@ use Exception;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 use Wexample\SymfonyHelpers\Entity\Traits\Manipulator\EntityManipulatorTrait;
-use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\ClassHelper;
 
 trait AbstractApiDtoRepository
 {

@@ -5,7 +5,7 @@ namespace Wexample\SymfonyApi\EventSubscriber;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
-use Wexample\SymfonyHelpers\Helper\ClassHelper;
+use Wexample\Helpers\Helper\ClassHelper;
 
 
 abstract class AbstractControllerEventSubscriber implements EventSubscriberInterface
