@@ -7,12 +7,12 @@ use DateTimeInterface;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
-use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
@@ -33,7 +33,8 @@ abstract class AbstractApiController extends AbstractController
         mixed $data = null,
         string $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
         bool $prettyPrint = null
-    ): ApiResponse {
+    ): ApiResponse
+    {
         return self::apiResponse(
             $message,
             $status,
@@ -48,7 +49,8 @@ abstract class AbstractApiController extends AbstractController
         mixed $data = null,
         bool $prettyPrint = null,
         int $code = null
-    ): ApiResponse {
+    ): ApiResponse
+    {
         if (is_null($code)) {
             $code = ApiHelper::RESPONSE_TYPE_FAILURE === $type
                 ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK;
@@ -80,7 +82,8 @@ abstract class AbstractApiController extends AbstractController
         string $type = ApiHelper::RESPONSE_TYPE_FAILURE,
         bool $prettyPrint = null,
         int $code = null,
-    ): ApiResponse {
+    ): ApiResponse
+    {
         return self::apiResponse(
             $message instanceof Exception ? $message->getMessage() : $message,
             $type,
@@ -94,15 +97,28 @@ abstract class AbstractApiController extends AbstractController
         int $page,
         ?int $length,
         array $items
-    ): ApiResponse {
-        return self::apiResponseSuccess(
-            data: [
+    ): ApiResponse
+    {
+        return self::apiResponseCollection(
+            items: $items,
+            extraInfo: [
                 'pagination' => [
                     'page' => $page,
                     'length' => $length,
                 ],
-                'items' => $items,
             ]
+        );
+    }
+
+    public static function apiResponseCollection(
+        array $items,
+        array $extraInfo = []
+    ): ApiResponse
+    {
+        return self::apiResponseSuccess(
+            data: [
+                'items' => $items,
+            ] + $extraInfo
         );
     }
 
@@ -110,7 +126,8 @@ abstract class AbstractApiController extends AbstractController
         Request $request,
         string $name,
         array|float|int|null|string $default = AbstractApiResponseMember::DISPLAY_FORMAT_DEFAULT,
-    ): mixed {
+    ): mixed
+    {
         /** @var AbstractQueryOption $attribute */
         if ($attribute = self::findMethodAttribute($request, $name)) {
             return $attribute->getRequestValue(
@@ -124,7 +141,8 @@ abstract class AbstractApiController extends AbstractController
     protected static function findMethodAttribute(
         Request $request,
         string $name
-    ) {
+    )
+    {
         $methodClassPath = $request->attributes->get('_controller');
 
         foreach (ClassHelper::getChildrenAttributes(
@@ -146,7 +164,8 @@ abstract class AbstractApiController extends AbstractController
         string $keyYear = VariableHelper::YEAR,
         string $keyMonth = VariableHelper::MONTH,
         string $keyDay = VariableHelper::DAY
-    ): DateTimeInterface {
+    ): DateTimeInterface
+    {
         try {
             return new DateTime(
                 implode(
