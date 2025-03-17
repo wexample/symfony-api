@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\EventSubscriber;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -9,6 +10,7 @@ use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\EveryQueryOption;
@@ -23,6 +25,8 @@ use Wexample\SymfonyHelpers\Helper\RequestHelper;
 class ApiEventSubscriber extends AbstractControllerEventSubscriber
 {
     public function __construct(
+        private readonly ValidatorInterface $validator,
+        private readonly ParameterBagInterface $parameterBag,
         private readonly DtoValidationService $dtoValidationService,
     )
     {
