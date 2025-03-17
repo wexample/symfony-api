@@ -2,19 +2,14 @@
 
 namespace Wexample\SymfonyApi\EventSubscriber;
 
-use ReflectionClass;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\EveryQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
@@ -22,18 +17,15 @@ use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
-use Wexample\SymfonyApi\Api\Dto\AbstractDto;
-use Wexample\Helpers\Helper\ClassHelper;
-use Wexample\SymfonyHelpers\Helper\DataHelper;
+use Wexample\SymfonyApi\Service\DtoValidationService;
 use Wexample\SymfonyHelpers\Helper\RequestHelper;
 
 class ApiEventSubscriber extends AbstractControllerEventSubscriber
 {
     public function __construct(
-        private readonly ValidatorInterface $validator,
-        private readonly ParameterBagInterface $parameterBag,
-        private readonly SerializerInterface $serializer,
-    ) {
+        private readonly DtoValidationService $dtoValidationService,
+    )
+    {
     }
 
     public static function getSubscribedEvents(): array
@@ -55,7 +47,8 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
     protected function createErrorFromMessage(
         KernelEvent $event,
         string $message
-    ): void {
+    ): void
+    {
         $this->createError(
             $event,
             $message,
@@ -68,7 +61,8 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         KernelEvent $event,
         string $message,
         ConstraintViolationListInterface $violations
-    ): void {
+    ): void
+    {
         $errors = [];
         foreach ($violations as $violation) {
             $errors[] = [
@@ -216,9 +210,9 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
                 $this->createErrorFromMessage(
                     $event,
-                    'Unknown given query option **'.$key.'**. '
-                    .(!empty($optionsAttributes)
-                        ? 'Allowed options are: '.implode(', ', array_keys($optionsAttributes)).'.'
+                    'Unknown given query option **' . $key . '**. '
+                    . (!empty($optionsAttributes)
+                        ? 'Allowed options are: ' . implode(', ', array_keys($optionsAttributes)) . '.'
                         : 'No query options are allowed.'
                     ));
 
@@ -235,7 +229,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
             if ($violations->count()) {
                 $this->createErrorFromViolationList(
                     $event,
-                    'Query option **'.$key.'** does not match constraints.',
+                    'Query option **' . $key . '** does not match constraints.',
                     $violations
                 );
                 return;
@@ -244,7 +238,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
         // Check if required attributes are present in query strings
         /**
-         * @var string                             $key
+         * @var string $key
          * @var QueryOptionConstrainedTrait::class $attribute
          */
         foreach ($optionsAttributes as $key => $attribute) {
@@ -253,7 +247,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 && !array_key_exists($key, $queryParameters)
             ) {
                 if (true === $attribute->required) {
-                    $this->createErrorFromMessage('Required query option **'.$key.'** is missing.');
+                    $this->createErrorFromMessage('Required query option **' . $key . '** is missing.');
                     return;
                 } else {
                     // Replace by default.
@@ -275,7 +269,8 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         KernelEvent $event,
         string $errorMessage,
         array $errorData = []
-    ): void {
+    ): void
+    {
         $event->setController(
             fn() => AbstractApiController::apiResponseError(
                 $errorMessage,
