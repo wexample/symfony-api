@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\Api\Dto;
 
 use ReflectionClass;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Wexample\SymfonyApi\Api\Attribute\RequiredDtoProperty;

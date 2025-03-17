@@ -30,6 +30,7 @@ class DtoValidationService
      * @param ValidateRequestContent $instance
      * @param callable $errorCallback
      * @return AbstractDto|null
+     * @throws ReflectionException
      */
     public function validateDtoFromRequest(
         Request $request,
@@ -208,5 +209,55 @@ class DtoValidationService
             );
             return null;
         }
+    }
+
+    /**
+     * Validates data and creates a DTO instance.
+     *
+     * @param array $data The data to validate and use for DTO creation
+     * @param AbstractDto $dtoClass The DTO class to instantiate
+     * @return AbstractDto|null The created DTO instance or null if validation fails
+     * @throws ReflectionException
+     */
+    public function validateAndCreateDto(array $data, AbstractDto $dtoClass): ?AbstractDto
+    {
+        // Convert array to JSON string
+        $jsonString = json_encode($data);
+        if (!$jsonString) {
+            return null;
+        }
+
+        // Create an error collector
+        $errors = [];
+        $errorCallback = function (string $message, ?ConstraintViolationListInterface $violations = null) use (&$errors) {
+            if ($violations) {
+                foreach ($violations as $violation) {
+                    $errors[] = [
+                        'message' => $violation->getMessage(),
+                        'property' => $violation->getPropertyPath(),
+                        'code' => $violation->getCode(),
+                        'value' => $violation->getInvalidValue(),
+                    ];
+                }
+            } else {
+                $errors[] = ['message' => $message];
+            }
+        };
+
+        // Use the existing validateDto method
+        $dto = $this->validateDto(
+            $data,
+            $jsonString,
+            $dtoClass,
+            $errorCallback
+        );
+
+        // If there are errors, log them and return null
+        if (!empty($errors)) {
+            // You could log the errors here if needed
+            return null;
+        }
+
+        return $dto;
     }
 }
