@@ -112,155 +112,27 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         foreach ($attributes as $attribute) {
             /** @var ValidateRequestContent $instance */
             $instance = $attribute->newInstance();
-            /** @var AbstractDto $dtoClassType */
-            $dtoClassType = $instance->dto;
 
-            $content = null;
-            $contentString = '';
-
-            // Check if request is multipart/form-data
-            if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
-                // Get all available field names from the request
-                // Get valid field names based on patterns
-                $validFields = $instance->getValidFieldNames(
-                    array_merge(
-                        array_keys($request->request->all()),
-                        array_keys($request->files->all())
-                    )
-                );
-
-                // Look for JSON data in valid fields
-                foreach ($validFields as $fieldName) {
-                    $jsonData = $request->request->get($fieldName);
-                    if ($jsonData) {
-                        $content = json_decode($jsonData, true);
-                        $contentString = $jsonData;
-                        break;
+            $dto = $this->dtoValidationService->validateDtoFromRequest(
+                $request,
+                $instance,
+                function (
+                    string $message,
+                    ?ConstraintViolationListInterface $violations = null
+                ) use
+                (
+                    $event
+                ) {
+                    if ($violations) {
+                        $this->createErrorFromViolationList($event, $message, $violations);
+                    } else {
+                        $this->createErrorFromMessage($event, $message);
                     }
                 }
-            } else {
-                $contentString = $request->getContent();
-                $content = json_decode($contentString, true);
-            }
+            );
 
-            if (!$content) {
-                continue;
-            }
-
-            $requiredKeys = $dtoClassType::getRequiredProperties();
-            foreach ($requiredKeys as $key) {
-                if (!array_key_exists($key, $content)) {
-                    $this->createErrorFromMessage(
-                        $event,
-                        "The key '{$key}' is missing in the request data."
-                    );
-                    return;
-                }
-            }
-
-            $constraints = $dtoClassType::getConstraints();
-
-            // Pre check data.
-            if ($constraints !== null) {
-                $reflectionClass = new ReflectionClass($dtoClassType);
-
-                // Add every property name allows the field to exist in content.
-                foreach ($reflectionClass->getProperties() as $property) {
-                    $key = $property->getName();
-                    if (!isset($constraints->fields[$key])) {
-                        $constraints->fields[$key] = new Optional();
-                    }
-                }
-
-                // First validate input data.
-                $errors = $this->validator->validate(
-                    $content,
-                    $constraints
-                );
-
-                if (count($errors) > 0) {
-                    $this->createErrorFromViolationList(
-                        $event,
-                        'At least one constraint has been violated.',
-                        $errors
-                    );
-                    return;
-                }
-            }
-
-            try {
-                // Constraints passed, now we create the actual dto.
-                $dto = $this->serializer->deserialize(
-                    $contentString,
-                    $dtoClassType,
-                    DataHelper::FORMAT_JSON
-                );
-
-                // Validate files if present
-                if ($request->files->count() > 0) {
-                    $files = $request->files->all();
-
-                    // Force real MIME type detection
-                    foreach ($files as $file) {
-                        if ($file instanceof UploadedFile) {
-                            // This triggers real MIME type detection
-                            $file->getMimeType();
-                        }
-                    }
-
-                    $dto->setFiles($files);
-
-                    if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
-                        $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
-
-                        if (count($errors) > 0) {
-                            $this->createErrorFromViolationList(
-                                $event,
-                                'At least one constraint has been violated in sent files.',
-                                $errors
-                            );
-                            return;
-                        }
-                    }
-                }
-
-                $errors = $this->validator->validate($dto);
-
-                // Checks specific constraints,
-                // This check will allow fields that are not explicitly declared into getConstraints.
-                if ($constraints !== null) {
-                    $additionalErrors = $this->validator->validate(
-                        $content,
-                        $constraints
-                    );
-
-                    $errors->addAll($additionalErrors);
-                }
-
-                // This check will inspect only properties that were not declared into getConstraints.
-                $additionalErrors = $this->validator->validate(
-                    $content
-                );
-
-                $errors->addAll($additionalErrors);
-                if (count($errors) > 0) {
-                    $this->createErrorFromViolationList(
-                        $event,
-                        'At least one field constraint has been violated',
-                        $errors
-                    );
-                    return;
-                }
-
+            if ($dto !== null) {
                 $request->attributes->set($instance->attributeName, $dto);
-
-            } catch (\Exception $e) {
-                // Some errors can remain on deserialization.
-                $this->createErrorFromMessage(
-                    $event,
-                    $e->getMessage()
-                );
-                return;
             }
         }
     }
