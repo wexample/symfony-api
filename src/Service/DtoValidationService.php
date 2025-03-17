@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\Service;
 
 use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
@@ -30,7 +31,7 @@ class DtoValidationService
      * @param callable $errorCallback
      * @return AbstractDto|null
      */
-    public function validateDto(
+    public function validateDtoFromRequest(
         Request $request,
         ValidateRequestContent $instance,
         callable $errorCallback
@@ -70,12 +71,65 @@ class DtoValidationService
             return null;
         }
 
+        $dto = $this->validateDto(
+            $content,
+            $contentString,
+            $dtoClassType,
+            $errorCallback
+        );
+
+        // If validation succeeded and we have files in the request, process them
+        if ($dto !== null && $request->files->count() > 0) {
+            $files = $request->files->all();
+
+            // Force real MIME type detection
+            foreach ($files as $file) {
+                if ($file instanceof UploadedFile) {
+                    // This triggers real MIME type detection
+                    $file->getMimeType();
+                }
+            }
+
+            $dto->setFiles($files);
+
+            if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
+                $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
+
+                if (count($errors) > 0) {
+                    $errorCallback(
+                        'At least one constraint has been violated in sent files.',
+                        $errors
+                    );
+                    return null;
+                }
+            }
+        }
+
+        return $dto;
+    }
+
+    /**
+     * Validates a DTO from content data.
+     *
+     * @param array $content The content data as array
+     * @param string $contentString The content as JSON string
+     * @param AbstractDto $dtoClassType The DTO class type
+     * @param callable $errorCallback Callback for error handling
+     * @return AbstractDto|null
+     * @throws ReflectionException
+     */
+    public function validateDto(
+        array $content,
+        string $contentString,
+        AbstractDto $dtoClassType,
+        callable $errorCallback
+    ): ?AbstractDto {
         // Validate required keys
         $requiredKeys = $dtoClassType::getRequiredProperties();
         foreach ($requiredKeys as $key) {
             if (!array_key_exists($key, $content)) {
                 $errorCallback(
-                    "The key '{$key}' is missing in the request data."
+                    "The key '{$key}' is missing in the data."
                 );
                 return null;
             }
@@ -118,33 +172,6 @@ class DtoValidationService
                 $dtoClassType,
                 DataHelper::FORMAT_JSON
             );
-
-            // Validate files if present
-            if ($request->files->count() > 0) {
-                $files = $request->files->all();
-
-                // Force real MIME type detection
-                foreach ($files as $file) {
-                    if ($file instanceof UploadedFile) {
-                        // This triggers real MIME type detection
-                        $file->getMimeType();
-                    }
-                }
-
-                $dto->setFiles($files);
-
-                if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
-                    $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
-
-                    if (count($errors) > 0) {
-                        $errorCallback(
-                            'At least one constraint has been violated in sent files.',
-                            $errors
-                        );
-                        return null;
-                    }
-                }
-            }
 
             $errors = $this->validator->validate($dto);
 
