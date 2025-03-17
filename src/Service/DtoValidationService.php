@@ -2,17 +2,18 @@
 
 namespace Wexample\SymfonyApi\Service;
 
+use JsonException;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
+use Wexample\SymfonyApi\Exception\ValidationException;
 use Wexample\SymfonyHelpers\Helper\DataHelper;
 
 class DtoValidationService
@@ -20,7 +21,8 @@ class DtoValidationService
     public function __construct(
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
-    ) {
+    )
+    {
     }
 
     /**
@@ -36,7 +38,8 @@ class DtoValidationService
         Request $request,
         ValidateRequestContent $instance,
         callable $errorCallback
-    ): ?AbstractDto {
+    ): ?AbstractDto
+    {
         /** @var AbstractDto $dtoClassType */
         $dtoClassType = $instance->dto;
 
@@ -114,7 +117,7 @@ class DtoValidationService
      *
      * @param array $content The content data as array
      * @param string $contentString The content as JSON string
-     * @param AbstractDto $dtoClassType The DTO class type
+     * @param string $dtoClassType The DTO class type
      * @param callable $errorCallback Callback for error handling
      * @return AbstractDto|null
      * @throws ReflectionException
@@ -122,9 +125,10 @@ class DtoValidationService
     public function validateDto(
         array $content,
         string $contentString,
-        AbstractDto $dtoClassType,
+        string $dtoClassType,
         callable $errorCallback
-    ): ?AbstractDto {
+    ): ?AbstractDto
+    {
         // Validate required keys
         $requiredKeys = $dtoClassType::getRequiredProperties();
         foreach ($requiredKeys as $key) {
@@ -215,21 +219,34 @@ class DtoValidationService
      * Validates data and creates a DTO instance.
      *
      * @param array $data The data to validate and use for DTO creation
-     * @param AbstractDto $dtoClass The DTO class to instantiate
-     * @return AbstractDto|null The created DTO instance or null if validation fails
+     * @param string $dtoClass The DTO class to instantiate
+     * @return AbstractDto The created DTO instance
+     * @throws JsonException When JSON encoding fails
+     * @throws ValidationException When validation fails
      * @throws ReflectionException
      */
-    public function validateAndCreateDto(array $data, AbstractDto $dtoClass): ?AbstractDto
+    public function validateAndCreateDto(
+        array $data,
+        string $dtoClass
+    ): AbstractDto
     {
         // Convert array to JSON string
-        $jsonString = json_encode($data);
-        if (!$jsonString) {
-            return null;
+        try {
+            $jsonString = json_encode($data, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new \JsonException('Failed to encode data to JSON: ' . $e->getMessage(), $e->getCode(), $e);
         }
 
         // Create an error collector
         $errors = [];
-        $errorCallback = function (string $message, ?ConstraintViolationListInterface $violations = null) use (&$errors) {
+        $errorCallback = function (
+            string $message,
+            ?ConstraintViolationListInterface $violations = null
+        ) use
+        (
+            &
+            $errors
+        ) {
             if ($violations) {
                 foreach ($violations as $violation) {
                     $errors[] = [
@@ -252,10 +269,13 @@ class DtoValidationService
             $errorCallback
         );
 
-        // If there are errors, log them and return null
+        // If there are errors, throw a ValidationException
         if (!empty($errors)) {
-            // You could log the errors here if needed
-            return null;
+            throw new ValidationException('Validation failed for DTO class ' . $dtoClass, $errors);
+        }
+
+        if ($dto === null) {
+            throw new ValidationException('Failed to create DTO instance for class ' . $dtoClass);
         }
 
         return $dto;
