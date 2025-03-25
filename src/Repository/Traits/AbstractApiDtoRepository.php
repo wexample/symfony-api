@@ -17,19 +17,21 @@ trait AbstractApiDtoRepository
      * based on the class type of the provided entity.
      *
      * @param AbstractEntity $entity
-     * @param mixed          $dto
-     * @param bool           $flush
+     * @param mixed $dto
+     * @param string $methodPrefix
+     * @param bool $flush
      * @return AbstractEntity
      * @throws Exception
      */
     public function updateByDtoAndClassType(
         AbstractEntity $entity,
         AbstractDto $dto,
+        string $methodPrefix = 'updateByDto',
         bool $flush = true
     ): AbstractEntity {
         $entityShortName = ClassHelper::getShortName($entity);
 
-        $updateMethod = 'updateByDto'.$entityShortName;
+        $updateMethod = $methodPrefix.$entityShortName;
 
         if (!method_exists($this, $updateMethod)) {
             throw new \Exception("Update method \"$updateMethod\" not found on repository \"".static::class."\".");
