@@ -140,6 +140,9 @@ class DtoValidationService
             }
         }
 
+        // Check for extra properties not defined in the DTO
+        $this->validateExtraProperties($content, $dtoClassType, $errorCallback);
+
         // Validate constraints
         $constraints = $dtoClassType::getConstraints();
 
@@ -213,6 +216,48 @@ class DtoValidationService
             );
             return null;
         }
+    }
+
+    /**
+     * Validates that the input data doesn't contain properties that are not defined in the DTO class.
+     *
+     * @param array $content The content data as array
+     * @param string $dtoClassType The DTO class type
+     * @param callable $errorCallback Callback for error handling
+     * @return bool True if validation passes, false otherwise
+     * @throws ReflectionException
+     */
+    private function validateExtraProperties(
+        array $content,
+        string $dtoClassType,
+        callable $errorCallback
+    ): bool {
+        $reflectionClass = new ReflectionClass($dtoClassType);
+        $allowedProperties = [];
+
+        // Get all properties defined in the DTO class
+        foreach ($reflectionClass->getProperties() as $property) {
+            $allowedProperties[] = $property->getName();
+        }
+
+        // Check for extra properties
+        $extraProperties = [];
+        foreach (array_keys($content) as $key) {
+            if (!in_array($key, $allowedProperties)) {
+                $extraProperties[] = $key;
+            }
+        }
+
+        if (!empty($extraProperties)) {
+            $errorCallback(
+                'The request contains unexpected properties: ' .
+                implode(', ', $extraProperties) . '. ' .
+                'Allowed properties are: ' . implode(', ', $allowedProperties) . '.'
+            );
+            return false;
+        }
+
+        return true;
     }
 
     /**

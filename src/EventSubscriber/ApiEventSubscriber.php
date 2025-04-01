@@ -251,7 +251,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 && !array_key_exists($key, $queryParameters)
             ) {
                 if (true === $attribute->required) {
-                    $this->createErrorFromMessage('Required query option **' . $key . '** is missing.');
+                    $this->createErrorFromMessage($event, 'Required query option **' . $key . '** is missing.');
                     return;
                 } else {
                     // Replace by default.
