@@ -40,7 +40,7 @@ class DtoValidationService
         callable $errorCallback
     ): ?AbstractDto
     {
-        /** @var AbstractDto $dtoClassType */
+        /** @var AbstractDto|string $dtoClassType */
         $dtoClassType = $instance->dto;
 
         $content = null;
