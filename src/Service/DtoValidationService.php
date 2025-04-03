@@ -7,6 +7,7 @@ use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -18,6 +19,12 @@ use Wexample\SymfonyHelpers\Helper\DataHelper;
 
 class DtoValidationService
 {
+    /**
+     * Cache for reflection classes to avoid repeated instantiation
+     * @var array<string, ReflectionClass>
+     */
+    private array $reflectionCache = [];
+
     public function __construct(
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
@@ -141,14 +148,17 @@ class DtoValidationService
         }
 
         // Check for extra properties not defined in the DTO
-        $this->validateExtraProperties($content, $dtoClassType, $errorCallback);
+        if (!$this->validateExtraProperties($content, $dtoClassType, $errorCallback)) {
+            return null;
+        }
 
         // Validate constraints
         $constraints = $dtoClassType::getConstraints();
 
-        // Pre check data.
+        // Pre check data with constraints if available
         if ($constraints !== null) {
-            $reflectionClass = new ReflectionClass($dtoClassType);
+            // Add Optional constraint to all properties not explicitly constrained
+            $reflectionClass = $this->getReflectionClass($dtoClassType);
 
             // Add every property name allows the field to exist in content.
             foreach ($reflectionClass->getProperties() as $property) {
@@ -158,11 +168,8 @@ class DtoValidationService
                 }
             }
 
-            // First validate input data.
-            $errors = $this->validator->validate(
-                $content,
-                $constraints
-            );
+            // Validate input data against constraints
+            $errors = $this->validator->validate($content, $constraints);
 
             if (count($errors) > 0) {
                 $errorCallback(
@@ -181,10 +188,12 @@ class DtoValidationService
                 DataHelper::FORMAT_JSON
             );
 
+            // Comprehensive validation approach:
+            // 1. Validate the DTO object itself (validates annotations on DTO properties)
             $errors = $this->validator->validate($dto);
 
-            // Checks specific constraints,
-            // This check will allow fields that are not explicitly declared into getConstraints.
+            // 2. If we have specific constraints defined in the DTO class, validate content against them
+            // This is important as some constraints might only be defined in getConstraints() method
             if ($constraints !== null) {
                 $additionalErrors = $this->validator->validate(
                     $content,
@@ -194,12 +203,14 @@ class DtoValidationService
                 $errors->addAll($additionalErrors);
             }
 
-            // This check will inspect only properties that were not declared into getConstraints.
+            // 3. General validation of content (catches any violations not covered by the above)
+            // This step is necessary to catch violations that might not be covered by explicit constraints
             $additionalErrors = $this->validator->validate(
                 $content
-            );
-
+            )
+            ;
             $errors->addAll($additionalErrors);
+
             if (count($errors) > 0) {
                 $errorCallback(
                     'At least one field constraint has been violated',
@@ -209,10 +220,22 @@ class DtoValidationService
             }
 
             return $dto;
-        } catch (\Exception $e) {
-            // Some errors can remain on deserialization.
+        } catch (ExceptionInterface $e) {
+            // Handle serializer exceptions specifically
             $errorCallback(
-                $e->getMessage()
+                'Deserialization error: ' . $e->getMessage()
+            );
+            return null;
+        } catch (JsonException $e) {
+            // Handle JSON exceptions
+            $errorCallback(
+                'JSON error: ' . $e->getMessage()
+            );
+            return null;
+        } catch (\Exception $e) {
+            // Fallback for other exceptions
+            $errorCallback(
+                'Validation error: ' . $e->getMessage()
             );
             return null;
         }
@@ -231,8 +254,9 @@ class DtoValidationService
         array $content,
         string $dtoClassType,
         callable $errorCallback
-    ): bool {
-        $reflectionClass = new ReflectionClass($dtoClassType);
+    ): bool
+    {
+        $reflectionClass = $this->getReflectionClass($dtoClassType);
         $allowedProperties = [];
 
         // Get all properties defined in the DTO class
@@ -261,6 +285,22 @@ class DtoValidationService
     }
 
     /**
+     * Gets a ReflectionClass instance for the given class, using cache if available
+     *
+     * @param string $className The class name
+     * @return ReflectionClass The reflection class instance
+     * @throws ReflectionException
+     */
+    private function getReflectionClass(string $className): ReflectionClass
+    {
+        if (!isset($this->reflectionCache[$className])) {
+            $this->reflectionCache[$className] = new ReflectionClass($className);
+        }
+
+        return $this->reflectionCache[$className];
+    }
+
+    /**
      * Validates data and creates a DTO instance.
      *
      * @param array $data The data to validate and use for DTO creation
@@ -279,7 +319,7 @@ class DtoValidationService
         try {
             $jsonString = json_encode($data, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            throw new \JsonException('Failed to encode data to JSON: ' . $e->getMessage(), $e->getCode(), $e);
+            throw new JsonException('Failed to encode data to JSON: ' . $e->getMessage(), $e->getCode(), $e);
         }
 
         // Create an error collector
