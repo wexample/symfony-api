@@ -140,8 +140,23 @@ class DtoValidationService
         $requiredKeys = $dtoClassType::getRequiredProperties();
         foreach ($requiredKeys as $key) {
             if (!array_key_exists($key, $content)) {
+                // Create a custom violation list with property path information
+                $customViolation = new \Symfony\Component\Validator\ConstraintViolationList([
+                    new \Symfony\Component\Validator\ConstraintViolation(
+                        "The key '{$key}' is missing in the data.",
+                        "The key '{{ property }}' is missing in the data.",
+                        ['{{ property }}' => $key],
+                        null,
+                        $key, // Use the missing key as the property path
+                        null,
+                        null,
+                        'required_property'
+                    )
+                ]);
+                
                 $errorCallback(
-                    "The key '{$key}' is missing in the data."
+                    "The key '{$key}' is missing in the data.",
+                    $customViolation
                 );
                 return null;
             }
@@ -342,7 +357,17 @@ class DtoValidationService
                     ];
                 }
             } else {
-                $errors[] = ['message' => $message];
+                // For messages without violations, try to extract property information
+                // This is a fallback for older code that doesn't use the new violation approach
+                $propertyMatch = [];
+                if (preg_match("/The key '([^']+)' is missing/", $message, $propertyMatch)) {
+                    $errors[] = [
+                        'message' => $message,
+                        'property' => $propertyMatch[1] ?? ''
+                    ];
+                } else {
+                    $errors[] = ['message' => $message];
+                }
             }
         };
 
