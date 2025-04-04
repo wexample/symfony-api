@@ -16,6 +16,7 @@ use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\ValidationException;
+use Wexample\SymfonyApi\Validator\Constraint\DeserializationError;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
 use Wexample\SymfonyApi\Validator\Constraint\JsonEncodingError;
 use Wexample\SymfonyApi\Validator\Constraint\MissingRequiredProperty;
@@ -186,7 +187,23 @@ class DtoValidationService
                 DataHelper::FORMAT_JSON
             );
         } catch (ExceptionInterface $e) {
-            throw $e;
+            // Extract property name from deserialization error message
+            $propertyName = 'unknown';
+            $message = $e->getMessage();
+            
+            // Try to extract property name from the error message
+            // Example: "The type of the \"userId\" attribute for class..."
+            if (preg_match('/The type of the "([^"]+)" attribute/', $message, $matches)) {
+                $propertyName = $matches[1];
+            }
+            
+            // Create violations for the deserialization error
+            $violations = $this->validator->validate(null, new DeserializationError($message, $propertyName));
+            
+            throw new ConstraintViolationException(
+                'Deserialization error: ' . $message,
+                $violations
+            );
         } catch (JsonException $e) {
             throw $e;
         }
