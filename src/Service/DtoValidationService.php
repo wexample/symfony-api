@@ -14,7 +14,11 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
+use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\ValidationException;
+use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
+use Wexample\SymfonyApi\Validator\Constraint\JsonEncodingError;
+use Wexample\SymfonyApi\Validator\Constraint\MissingRequiredProperty;
 use Wexample\SymfonyHelpers\Helper\DataHelper;
 
 class DtoValidationService
@@ -129,19 +133,16 @@ class DtoValidationService
         string $dtoClassType
     ): AbstractDto
     {
-        // Vérification des clés requises
+        // Check required keys
         $requiredKeys = $dtoClassType::getRequiredProperties();
         foreach ($requiredKeys as $key) {
             if (!array_key_exists($key, $content)) {
-                throw new ValidationException(
-                    "The key '{$key}' is missing in the data.",
-                    [[
-                        'message' => "The key '{$key}' is missing in the data.",
-                        'property' => $key
-                    ]]
+                // Create a violation list with a single violation for the missing property
+                $violations = $this->validator->validate(null, new MissingRequiredProperty($key));
+                
                 throw new ConstraintViolationException(
                     "The key '{$key}' is missing in the data.",
-                    $customViolation
+                    $violations
                 );
             }
         }
@@ -231,22 +232,15 @@ class DtoValidationService
         }
 
         if (!empty($extraProperties)) {
-            // Créer des violations personnalisées pour chaque propriété supplémentaire
+            // Create violations for each extra property
             $violations = new \Symfony\Component\Validator\ConstraintViolationList();
             
             foreach ($extraProperties as $property) {
-                $violations->add(
-                    new \Symfony\Component\Validator\ConstraintViolation(
-                        "The property '{$property}' is not defined in the DTO.",
-                        "The property '{{ property }}' is not defined in the DTO.",
-                        ['{{ property }}' => $property],
-                        null,
-                        $property,
-                        null,
-                        null,
-                        'extra_field'
-                    )
-                );
+                // Add violations from the ExtraProperty constraint
+                $propertyViolations = $this->validator->validate(null, new ExtraProperty($property));
+                foreach ($propertyViolations as $violation) {
+                    $violations->add($violation);
+                }
             }
             
             throw new ConstraintViolationException(
@@ -295,23 +289,12 @@ class DtoValidationService
         try {
             $jsonString = json_encode($data, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            // Créer une violation personnalisée pour l'erreur JSON
-            $customViolation = new \Symfony\Component\Validator\ConstraintViolationList([
-                new \Symfony\Component\Validator\ConstraintViolation(
-                    'Failed to encode data to JSON: ' . $e->getMessage(),
-                    'Failed to encode data to JSON: {{ message }}',
-                    ['{{ message }}' => $e->getMessage()],
-                    null,
-                    '',  // Pas de propriété spécifique pour une erreur JSON globale
-                    null,
-                    null,
-                    'json_encoding_error'
-                )
-            ]);
+            // Create violations for JSON encoding error
+            $violations = $this->validator->validate(null, new JsonEncodingError($e->getMessage()));
             
             throw new ConstraintViolationException(
                 'Failed to encode data to JSON: ' . $e->getMessage(),
-                $customViolation,
+                $violations,
                 $e->getCode(),
                 $e
             );

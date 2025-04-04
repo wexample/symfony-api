@@ -5,20 +5,27 @@ namespace Wexample\SymfonyApi\Exception;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+/**
+ * Exception for constraint violations in DTOs.
+ * 
+ * This exception takes a ConstraintViolationList and formats it for API responses.
+ */
 class ConstraintViolationException extends \RuntimeException
 {
     /**
+     * Array representation of the constraint violations for API responses.
+     *
      * @var array
      */
     private array $errors;
 
     /**
-     * ConstraintViolationException constructor.
+     * Creates a new constraint violation exception.
      *
-     * @param string $message
-     * @param ConstraintViolationListInterface $violations
-     * @param int $code
-     * @param \Throwable|null $previous
+     * @param string $message The main error message
+     * @param ConstraintViolationListInterface $violations The list of constraint violations
+     * @param int $code The exception code
+     * @param \Throwable|null $previous The previous exception if nested
      */
     public function __construct(
         string $message, 
@@ -36,9 +43,9 @@ class ConstraintViolationException extends \RuntimeException
     }
 
     /**
-     * Get validation errors.
+     * Gets the validation errors as an array for API responses.
      *
-     * @return array
+     * @return array The validation errors
      */
     public function getErrors(): array
     {
@@ -46,11 +53,11 @@ class ConstraintViolationException extends \RuntimeException
     }
     
     /**
-     * Format the error message to include violation details.
+     * Formats the error message to include detailed information about violations.
      *
-     * @param string $message
-     * @param ConstraintViolationListInterface $violations
-     * @return string
+     * @param string $message The main error message
+     * @param ConstraintViolationListInterface $violations The list of constraint violations
+     * @return string The formatted error message
      */
     private function formatErrorMessage(string $message, ConstraintViolationListInterface $violations): string
     {
@@ -82,10 +89,10 @@ class ConstraintViolationException extends \RuntimeException
     }
     
     /**
-     * Convert ConstraintViolationList to array format.
+     * Converts a ConstraintViolationList to an array format suitable for API responses.
      *
-     * @param ConstraintViolationListInterface $violations
-     * @return array
+     * @param ConstraintViolationListInterface $violations The list of constraint violations
+     * @return array The array representation of the violations
      */
     private function violationsToArray(ConstraintViolationListInterface $violations): array
     {
@@ -99,10 +106,10 @@ class ConstraintViolationException extends \RuntimeException
     }
     
     /**
-     * Convert a single ConstraintViolation to array format.
+     * Converts a single ConstraintViolation to an array format.
      *
-     * @param ConstraintViolationInterface $violation
-     * @return array
+     * @param ConstraintViolationInterface $violation The constraint violation
+     * @return array The array representation of the violation
      */
     private function violationToArray(ConstraintViolationInterface $violation): array
     {
@@ -115,11 +122,11 @@ class ConstraintViolationException extends \RuntimeException
     }
     
     /**
-     * Format a value for inclusion in error messages.
-     * Handles complex types like arrays and objects.
+     * Formats a value for inclusion in error messages.
+     * Handles complex types like arrays and objects by providing a readable representation.
      *
-     * @param mixed $value
-     * @return mixed
+     * @param mixed $value The value to format
+     * @return mixed The formatted value
      */
     private function formatValue($value)
     {
