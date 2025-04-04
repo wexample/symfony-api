@@ -139,6 +139,9 @@ class DtoValidationService
                         'message' => "The key '{$key}' is missing in the data.",
                         'property' => $key
                     ]]
+                throw new ConstraintViolationException(
+                    "The key '{$key}' is missing in the data.",
+                    $customViolation
                 );
             }
         }
@@ -292,7 +295,26 @@ class DtoValidationService
         try {
             $jsonString = json_encode($data, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            throw new JsonException('Failed to encode data to JSON: ' . $e->getMessage(), $e->getCode(), $e);
+            // Créer une violation personnalisée pour l'erreur JSON
+            $customViolation = new \Symfony\Component\Validator\ConstraintViolationList([
+                new \Symfony\Component\Validator\ConstraintViolation(
+                    'Failed to encode data to JSON: ' . $e->getMessage(),
+                    'Failed to encode data to JSON: {{ message }}',
+                    ['{{ message }}' => $e->getMessage()],
+                    null,
+                    '',  // Pas de propriété spécifique pour une erreur JSON globale
+                    null,
+                    null,
+                    'json_encoding_error'
+                )
+            ]);
+            
+            throw new ConstraintViolationException(
+                'Failed to encode data to JSON: ' . $e->getMessage(),
+                $customViolation,
+                $e->getCode(),
+                $e
+            );
         }
 
         return $this->validateDto(
