@@ -37,14 +37,12 @@ class DtoValidationService
      *
      * @param Request $request
      * @param ValidateRequestContent $instance
-     * @param callable $errorCallback
      * @return AbstractDto|null
      * @throws ReflectionException
      */
     public function validateDtoFromRequest(
         Request $request,
-        ValidateRequestContent $instance,
-        callable $errorCallback
+        ValidateRequestContent $instance
     ): ?AbstractDto
     {
         /** @var AbstractDto|string $dtoClassType */
@@ -85,8 +83,7 @@ class DtoValidationService
         $dto = $this->validateDto(
             $content,
             $contentString,
-            $dtoClassType,
-            $errorCallback
+            $dtoClassType
         );
 
         // If validation succeeded and we have files in the request, process them
@@ -105,13 +102,11 @@ class DtoValidationService
 
             if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
                 $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
-
                 if (count($errors) > 0) {
-                    $errorCallback(
+                    throw new ValidationException(
                         'At least one constraint has been violated in sent files.',
-                        $errors
+                        $this->formatViolationsToArray($errors)
                     );
-                    return null;
                 }
             }
         }
@@ -125,56 +120,31 @@ class DtoValidationService
      * @param array $content The content data as array
      * @param string $contentString The content as JSON string
      * @param string $dtoClassType The DTO class type
-     * @param callable $errorCallback Callback for error handling: function(\Throwable $exception = null, ?ConstraintViolationListInterface $violations = null)
-     * @return AbstractDto|null
+     * @return AbstractDto
      * @throws ReflectionException
      */
     public function validateDto(
         array $content,
         string $contentString,
-        string $dtoClassType,
-        callable $errorCallback
-    ): ?AbstractDto
+        string $dtoClassType
+    ): AbstractDto
     {
-        // Validate required keys
+        // Vérification des clés requises
         $requiredKeys = $dtoClassType::getRequiredProperties();
         foreach ($requiredKeys as $key) {
             if (!array_key_exists($key, $content)) {
-                // Create a custom violation list with property path information
-                $customViolation = new \Symfony\Component\Validator\ConstraintViolationList([
-                    new \Symfony\Component\Validator\ConstraintViolation(
-                        "The key '{$key}' is missing in the data.",
-                        "The key '{{ property }}' is missing in the data.",
-                        ['{{ property }}' => $key],
-                        null,
-                        $key, // Use the missing key as the property path
-                        null,
-                        null,
-                        'required_property'
-                    )
-                ]);
-                
-                // Create a specific exception for missing required property
-                $exception = new \Wexample\SymfonyApi\Exception\ValidationException(
+                throw new ValidationException(
                     "The key '{$key}' is missing in the data.",
                     [[
                         'message' => "The key '{$key}' is missing in the data.",
                         'property' => $key
                     ]]
                 );
-                
-                $errorCallback(
-                    $exception,
-                    $customViolation
-                );
-                return null;
             }
         }
 
         // Check for extra properties not defined in the DTO
-        if (!$this->validateExtraProperties($content, $dtoClassType, $errorCallback)) {
-            return null;
-        }
+        $this->validateExtraProperties($content, $dtoClassType);
 
         // Validate constraints
         $constraints = $dtoClassType::getConstraints();
@@ -197,16 +167,10 @@ class DtoValidationService
 
             if (count($errors) > 0) {
                 // Create a specific exception for constraint violations
-                $exception = new \Wexample\SymfonyApi\Exception\ValidationException(
+                throw new ValidationException(
                     'At least one constraint has been violated.',
                     $this->formatViolationsToArray($errors)
                 );
-                
-                $errorCallback(
-                    $exception,
-                    $errors
-                );
-                return null;
             }
         }
 
@@ -217,85 +181,21 @@ class DtoValidationService
                 $dtoClassType,
                 DataHelper::FORMAT_JSON
             );
-
-            // Comprehensive validation approach:
-            // 1. Validate the DTO object itself (validates annotations on DTO properties)
-            $errors = $this->validator->validate($dto);
-
-            // 2. If we have specific constraints defined in the DTO class, validate content against them
-            // This is important as some constraints might only be defined in getConstraints() method
-            if ($constraints !== null) {
-                $additionalErrors = $this->validator->validate(
-                    $content,
-                    $constraints
-                );
-
-                $errors->addAll($additionalErrors);
-            }
-
-            // 3. General validation of content (catches any violations not covered by the above)
-            // This step is necessary to catch violations that might not be covered by explicit constraints
-            $additionalErrors = $this->validator->validate(
-                $content
-            )
-            ;
-            $errors->addAll($additionalErrors);
-
-            if (count($errors) > 0) {
-                // Create a specific exception for field constraint violations
-                $exception = new \Wexample\SymfonyApi\Exception\ValidationException(
-                    'At least one field constraint has been violated',
-                    $this->formatViolationsToArray($errors)
-                );
-                
-                $errorCallback(
-                    $exception,
-                    $errors
-                );
-                return null;
-            }
-
-            return $dto;
         } catch (ExceptionInterface $e) {
-            // Extract property name from deserialization error message
-            $propertyName = 'unknown';
-            $message = $e->getMessage();
-            
-            // Try to extract property name from the error message
-            // Example: "The type of the \"userId\" attribute for class..."
-            if (preg_match('/The type of the "([^"]+)" attribute/', $message, $matches)) {
-                $propertyName = $matches[1];
-            }
-            
-            // Create a custom violation list with property path information
-            $customViolation = new \Symfony\Component\Validator\ConstraintViolationList([
-                new \Symfony\Component\Validator\ConstraintViolation(
-                    'Deserialization error: ' . $message,
-                    'Deserialization error: {{ message }}',
-                    ['{{ message }}' => $message],
-                    null,
-                    $propertyName, // Use the extracted property name as the property path
-                    null,
-                    null,
-                    'deserialization_error'
-                )
-            ]);
-            
-            // Pass the original exception to the callback
-            $errorCallback(
-                $e,
-                $customViolation
-            );
-            return null;
+            throw $e;
         } catch (JsonException $e) {
-            // Handle JSON exceptions - pass the exception directly
-            $errorCallback($e);
-            return null;
-        } catch (\Exception $e) {
-            // Fallback for other exceptions - pass the exception directly
-            $errorCallback($e);
-            return null;
+            throw $e;
         }
+
+        $errors = $this->validator->validate($dto);
+        if (count($errors) > 0) {
+            throw new ValidationException(
+                'At least one field constraint has been violated',
+                $this->formatViolationsToArray($errors)
+            );
+        }
+
+        return $dto;
     }
 
     /**
@@ -303,15 +203,13 @@ class DtoValidationService
      *
      * @param array $content The content data as array
      * @param string $dtoClassType The DTO class type
-     * @param callable $errorCallback Callback for error handling
      * @return bool True if validation passes, false otherwise
      * @throws ReflectionException
      */
     private function validateExtraProperties(
         array $content,
-        string $dtoClassType,
-        callable $errorCallback
-    ): bool
+        string $dtoClassType
+    ): void
     {
         $reflectionClass = $this->getReflectionClass($dtoClassType);
         $allowedProperties = [];
@@ -330,15 +228,12 @@ class DtoValidationService
         }
 
         if (!empty($extraProperties)) {
-            $errorCallback(
+            throw new ValidationException(
                 'The request contains unexpected properties: ' .
                 implode(', ', $extraProperties) . '. ' .
                 'Allowed properties are: ' . implode(', ', $allowedProperties) . '.'
             );
-            return false;
         }
-
-        return true;
     }
 
     /**
@@ -401,69 +296,10 @@ class DtoValidationService
             throw new JsonException('Failed to encode data to JSON: ' . $e->getMessage(), $e->getCode(), $e);
         }
 
-        // Create an error collector
-        $errors = [];
-        $errorCallback = function (
-            \Throwable $exception = null,
-            ?ConstraintViolationListInterface $violations = null
-        ) use
-        (
-            &
-            $errors
-        ) {
-            if ($violations) {
-                foreach ($violations as $violation) {
-                    $errors[] = [
-                        'message' => $violation->getMessage(),
-                        'property' => $violation->getPropertyPath(),
-                        'code' => $violation->getCode(),
-                        'value' => $violation->getInvalidValue(),
-                    ];
-                }
-            } elseif ($exception instanceof \Wexample\SymfonyApi\Exception\ValidationException) {
-                // If we have a ValidationException, use its errors directly
-                $errors = array_merge($errors, $exception->getErrors());
-            } elseif ($exception instanceof \Exception) {
-                // For exceptions without violations, try to extract property information
-                $message = $exception->getMessage();
-                $propertyMatch = [];
-                if (preg_match("/The key '([^']+)' is missing/", $message, $propertyMatch)) {
-                    $errors[] = [
-                        'message' => $message,
-                        'property' => $propertyMatch[1] ?? ''
-                    ];
-                } else {
-                    // Try to extract property name from serializer exceptions
-                    $propertyName = 'unknown';
-                    if (preg_match('/The type of the "([^"]+)" attribute/', $message, $matches)) {
-                        $propertyName = $matches[1];
-                    }
-                    
-                    $errors[] = [
-                        'message' => $message,
-                        'property' => $propertyName
-                    ];
-                }
-            }
-        };
-
-        // Use the existing validateDto method
-        $dto = $this->validateDto(
+        return $this->validateDto(
             $data,
             $jsonString,
-            $dtoClass,
-            $errorCallback
+            $dtoClass
         );
-
-        // If there are errors, throw a ValidationException
-        if (!empty($errors)) {
-            throw new ValidationException('Validation failed for DTO class ' . $dtoClass, $errors);
-        }
-
-        if ($dto === null) {
-            throw new ValidationException('Failed to create DTO instance for class ' . $dtoClass);
-        }
-
-        return $dto;
     }
 }
