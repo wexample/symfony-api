@@ -103,9 +103,9 @@ class DtoValidationService
             if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
                 $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
                 if (count($errors) > 0) {
-                    throw new ValidationException(
+                    throw new ConstraintViolationException(
                         'At least one constraint has been violated in sent files.',
-                        $this->formatViolationsToArray($errors)
+                        $errors
                     );
                 }
             }
@@ -167,9 +167,9 @@ class DtoValidationService
 
             if (count($errors) > 0) {
                 // Create a specific exception for constraint violations
-                throw new ValidationException(
+                throw new ConstraintViolationException(
                     'At least one constraint has been violated.',
-                    $this->formatViolationsToArray($errors)
+                    $errors
                 );
             }
         }
@@ -189,9 +189,9 @@ class DtoValidationService
 
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
-            throw new ValidationException(
+            throw new ConstraintViolationException(
                 'At least one field constraint has been violated',
-                $this->formatViolationsToArray($errors)
+                $errors
             );
         }
 
@@ -228,10 +228,29 @@ class DtoValidationService
         }
 
         if (!empty($extraProperties)) {
-            throw new ValidationException(
+            // Créer des violations personnalisées pour chaque propriété supplémentaire
+            $violations = new \Symfony\Component\Validator\ConstraintViolationList();
+            
+            foreach ($extraProperties as $property) {
+                $violations->add(
+                    new \Symfony\Component\Validator\ConstraintViolation(
+                        "The property '{$property}' is not defined in the DTO.",
+                        "The property '{{ property }}' is not defined in the DTO.",
+                        ['{{ property }}' => $property],
+                        null,
+                        $property,
+                        null,
+                        null,
+                        'extra_field'
+                    )
+                );
+            }
+            
+            throw new ConstraintViolationException(
                 'The request contains unexpected properties: ' .
                 implode(', ', $extraProperties) . '. ' .
-                'Allowed properties are: ' . implode(', ', $allowedProperties) . '.'
+                'Allowed properties are: ' . implode(', ', $allowedProperties) . '.',
+                $violations
             );
         }
     }
@@ -252,27 +271,7 @@ class DtoValidationService
         return $this->reflectionCache[$className];
     }
     
-    /**
-     * Formats a ConstraintViolationList to an array of violations
-     * 
-     * @param ConstraintViolationListInterface $violations
-     * @return array
-     */
-    private function formatViolationsToArray(ConstraintViolationListInterface $violations): array
-    {
-        $result = [];
-        
-        foreach ($violations as $violation) {
-            $result[] = [
-                'message' => $violation->getMessage(),
-                'property' => $violation->getPropertyPath(),
-                'code' => $violation->getCode(),
-                'value' => $violation->getInvalidValue(),
-            ];
-        }
-        
-        return $result;
-    }
+
 
     /**
      * Validates data and creates a DTO instance.
