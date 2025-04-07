@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Optional;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
@@ -124,7 +123,7 @@ class DtoValidationService
      *
      * @param array $content The content data as array
      * @param string $contentString The content as JSON string
-     * @param string $dtoClassType The DTO class type
+     * @param AbstractDto|string $dtoClassType The DTO class type
      * @return AbstractDto
      * @throws ReflectionException
      */
@@ -140,7 +139,7 @@ class DtoValidationService
             if (!array_key_exists($key, $content)) {
                 // Create a violation list with a single violation for the missing property
                 $violations = $this->validator->validate(null, new MissingRequiredProperty($key));
-                
+
                 throw new ConstraintViolationException(
                     "The key '{$key}' is missing in the data.",
                     $violations
@@ -190,16 +189,16 @@ class DtoValidationService
             // Extract property name from deserialization error message
             $propertyName = 'unknown';
             $message = $e->getMessage();
-            
+
             // Try to extract property name from the error message
             // Example: "The type of the \"userId\" attribute for class..."
             if (preg_match('/The type of the "([^"]+)" attribute/', $message, $matches)) {
                 $propertyName = $matches[1];
             }
-            
+
             // Create violations for the deserialization error
             $violations = $this->validator->validate(null, new DeserializationError($message, $propertyName));
-            
+
             throw new ConstraintViolationException(
                 'Deserialization error: ' . $message,
                 $violations
@@ -251,7 +250,7 @@ class DtoValidationService
         if (!empty($extraProperties)) {
             // Create violations for each extra property
             $violations = new \Symfony\Component\Validator\ConstraintViolationList();
-            
+
             foreach ($extraProperties as $property) {
                 // Add violations from the ExtraProperty constraint
                 $propertyViolations = $this->validator->validate(null, new ExtraProperty($property));
@@ -259,7 +258,7 @@ class DtoValidationService
                     $violations->add($violation);
                 }
             }
-            
+
             throw new ConstraintViolationException(
                 'The request contains unexpected properties: ' .
                 implode(', ', $extraProperties) . '. ' .
@@ -284,7 +283,6 @@ class DtoValidationService
 
         return $this->reflectionCache[$className];
     }
-    
 
 
     /**
@@ -308,7 +306,7 @@ class DtoValidationService
         } catch (\JsonException $e) {
             // Create violations for JSON encoding error
             $violations = $this->validator->validate(null, new JsonEncodingError($e->getMessage()));
-            
+
             throw new ConstraintViolationException(
                 'Failed to encode data to JSON: ' . $e->getMessage(),
                 $violations,
