@@ -6,8 +6,12 @@ use Wexample\SymfonyHelpers\Exception\AbstractException;
 
 abstract class AbstractApiException extends AbstractException
 {
-    function getInternalCodePrefix(): string
+    public function getInternalCodeParts(): array
     {
-        return 'API-';
+        return array_merge([
+            'API'
+        ], $this->getApiInternalCodeParts());
     }
+
+    abstract function getApiInternalCodeParts(): array;
 }

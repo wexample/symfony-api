@@ -10,7 +10,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  *
  * This exception takes a ConstraintViolationList and formats it for API responses.
  */
-class ConstraintViolationException extends \RuntimeException
+class ConstraintViolationException extends AbstractApiException
 {
     /**
      * Array representation of the constraint violations for API responses.
@@ -18,6 +18,14 @@ class ConstraintViolationException extends \RuntimeException
      * @var array
      */
     private array $errors;
+
+    function getApiInternalCodeParts(): array
+    {
+        return [
+            'CV',
+            001
+        ];
+    }
 
     /**
      * Creates a new constraint violation exception.
