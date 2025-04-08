@@ -11,13 +11,6 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  */
 class ConstraintViolationException extends AbstractApiException
 {
-    function getApiInternalCodeParts(): array
-    {
-        return [
-            'CV',
-        ];
-    }
-
     /**
      * Creates a new constraint violation exception.
      *
@@ -38,6 +31,13 @@ class ConstraintViolationException extends AbstractApiException
             $code,
             $previous
         );
+    }
+
+    function getApiInternalCodeParts(): array
+    {
+        return [
+            'CV',
+        ];
     }
 
     /**
