@@ -18,7 +18,7 @@ class DeserializationException extends AbstractApiException
     public function __construct(
         \Throwable $previous,
         int $code = 0,
-        ?string $internalCode = null,
+        ?string $internalCode = self::CODE_TYPE_MISMATCH,
         array $context = [],
     )
     {

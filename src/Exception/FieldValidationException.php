@@ -20,7 +20,7 @@ class FieldValidationException extends ConstraintViolationException
     public function __construct(
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = null,
+        ?string $internalCode = self::CODE_FIELD_CONSTRAINT_VIOLATION,
         array $context = [],
         \Throwable $previous = null
     )
