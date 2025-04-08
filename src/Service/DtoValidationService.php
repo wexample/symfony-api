@@ -16,6 +16,7 @@ use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Exception\FieldValidationException;
 use Wexample\SymfonyApi\Exception\FileValidationException;
+use Wexample\SymfonyApi\Exception\MissingRequiredPropertyException;
 use Wexample\SymfonyApi\Exception\ValidationException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
 use Wexample\SymfonyApi\Validator\Constraint\JsonEncodingError;
@@ -141,9 +142,10 @@ class DtoValidationService
                 // Create a violation list with a single violation for the missing property
                 $violations = $this->validator->validate(null, new MissingRequiredProperty($key));
 
-                throw new ConstraintViolationException(
-                    "The key '{$key}' is missing in the data.",
-                    $violations
+                throw new MissingRequiredPropertyException(
+                    $key,
+                    $violations,
+                    internalCode: MissingRequiredPropertyException::CODE_MISSING_REQUIRED_PROPERTY
                 );
             }
         }
