@@ -25,7 +25,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
      * @param string $propertyName The name of the missing property
      * @param ConstraintViolationListInterface $violations The list of constraint violations
      * @param int $code The exception code
-     * @param string|null $internalCode The internal error code
+     * @param string|null $internalCodeSuffix The internal error code
      * @param array $context Additional context data
      * @param \Throwable|null $previous The previous exception if nested
      */
@@ -33,7 +33,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
         string $propertyName,
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = self::CODE_MISSING_REQUIRED_PROPERTY,
+        ?string $internalCodeSuffix = self::CODE_MISSING_REQUIRED_PROPERTY,
         array $context = [],
         \Throwable $previous = null
     )
@@ -44,7 +44,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
             "The key '{$propertyName}' is missing in the data.",
             $violations,
             $code,
-            $internalCode,
+            $internalCodeSuffix,
             $context,
             $previous
         );

@@ -20,7 +20,7 @@ class InputValidationException extends ConstraintViolationException
     public function __construct(
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = self::CODE_INPUT_CONSTRAINT_VIOLATION,
+        ?string $internalCodeSuffix = self::CODE_INPUT_CONSTRAINT_VIOLATION,
         array $context = [],
         \Throwable $previous = null
     )
@@ -29,7 +29,7 @@ class InputValidationException extends ConstraintViolationException
             'At least one constraint has been violated.',
             $violations,
             $code,
-            $internalCode,
+            $internalCodeSuffix,
             $context,
             $previous
         );

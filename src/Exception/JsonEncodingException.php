@@ -20,7 +20,7 @@ class JsonEncodingException extends ConstraintViolationException
      * @param string $errorMessage The JSON error message
      * @param ConstraintViolationListInterface $violations The list of constraint violations
      * @param int $code The exception code
-     * @param string|null $internalCode The internal error code
+     * @param string|null $internalCodeSuffix The internal error code
      * @param array $context Additional context data
      * @param \Throwable|null $previous The previous exception if nested
      */
@@ -28,7 +28,7 @@ class JsonEncodingException extends ConstraintViolationException
         string $errorMessage,
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = self::CODE_JSON_ENCODING_ERROR,
+        ?string $internalCodeSuffix = self::CODE_JSON_ENCODING_ERROR,
         array $context = [],
         \Throwable $previous = null
     )
@@ -37,7 +37,7 @@ class JsonEncodingException extends ConstraintViolationException
             'Failed to encode data to JSON: ' . $errorMessage,
             $violations,
             $code,
-            $internalCode,
+            $internalCodeSuffix,
             $context,
             $previous
         );

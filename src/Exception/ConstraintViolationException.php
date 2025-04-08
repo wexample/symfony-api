@@ -21,9 +21,9 @@ class ConstraintViolationException extends AbstractApiException
      */
     public function __construct(
         string $message,
-        ConstraintViolationListInterface $violations,
+        protected ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = null,
+        ?string $internalCodeSuffix = null,
         array $context = [],
         \Throwable $previous = null
     )
@@ -31,10 +31,15 @@ class ConstraintViolationException extends AbstractApiException
         parent::__construct(
             $this->formatErrorMessage($message, $violations),
             $code,
-            $internalCode,
+            $internalCodeSuffix,
             $context,
             $previous
         );
+    }
+
+    public function getViolations(): ConstraintViolationListInterface
+    {
+        return $this->violations;
     }
 
     function getApiInternalCodeParts(): array
@@ -60,10 +65,12 @@ class ConstraintViolationException extends AbstractApiException
             return $message;
         }
 
-        $formattedMessage = $message . ":\n";
+        $formattedMessage = $message . ":" . PHP_EOL;
 
         foreach ($violations as $index => $violation) {
-            $formattedMessage .= "\n" . ($index + 1) . ". ";
+            $number = ($index + 1) . ". ";
+            $formattedMessage .= PHP_EOL . $number;
+            $indent = str_repeat(" ", strlen($number));
 
             $parts = [];
 
@@ -71,13 +78,13 @@ class ConstraintViolationException extends AbstractApiException
                 $parts[] = "property: " . $property;
             }
 
-            $parts[] = "message: " . $violation->getMessage();
+            $parts[] = $indent . "message: " . $violation->getMessage();
 
             if ($code = $violation->getCode()) {
-                $parts[] = "code: " . $code;
+                $parts[] = $indent . "code: " . $code;
             }
 
-            $formattedMessage .= implode("\n", $parts);
+            $formattedMessage .= implode(PHP_EOL, $parts);
         }
 
         return $formattedMessage;

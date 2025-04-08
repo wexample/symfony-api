@@ -35,7 +35,7 @@ class ExtraPropertyException extends ConstraintViolationException
      * @param array<string> $allowedProperties The list of allowed properties
      * @param ConstraintViolationListInterface $violations The list of constraint violations
      * @param int $code The exception code
-     * @param string|null $internalCode The internal error code
+     * @param string|null $internalCodeSuffix The internal error code
      * @param array $context Additional context data
      * @param \Throwable|null $previous The previous exception if nested
      */
@@ -44,7 +44,7 @@ class ExtraPropertyException extends ConstraintViolationException
         array $allowedProperties,
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = self::CODE_EXTRA_PROPERTY,
+        ?string $internalCodeSuffix = self::CODE_EXTRA_PROPERTY,
         array $context = [],
         \Throwable $previous = null
     )
@@ -60,7 +60,7 @@ class ExtraPropertyException extends ConstraintViolationException
             $message,
             $violations,
             $code,
-            $internalCode,
+            $internalCodeSuffix,
             $context,
             $previous
         );

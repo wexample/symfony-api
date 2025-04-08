@@ -20,7 +20,7 @@ class FileValidationException extends ConstraintViolationException
     public function __construct(
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = self::CODE_FILE_CONSTRAINT_VIOLATION,
+        ?string $internalCodeSuffix = self::CODE_FILE_CONSTRAINT_VIOLATION,
         array $context = [],
         \Throwable $previous = null
     )
@@ -29,7 +29,7 @@ class FileValidationException extends ConstraintViolationException
             'At least one constraint has been violated in sent files.',
             $violations,
             $code,
-            $internalCode,
+            $internalCodeSuffix,
             $context,
             $previous
         );
