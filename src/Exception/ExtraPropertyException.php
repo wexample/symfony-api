@@ -44,7 +44,7 @@ class ExtraPropertyException extends ConstraintViolationException
         array $allowedProperties,
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = null,
+        ?string $internalCode = self::CODE_EXTRA_PROPERTY,
         array $context = [],
         \Throwable $previous = null
     )

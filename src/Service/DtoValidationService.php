@@ -19,7 +19,6 @@ use Wexample\SymfonyApi\Exception\FileValidationException;
 use Wexample\SymfonyApi\Exception\InputValidationException;
 use Wexample\SymfonyApi\Exception\JsonEncodingException;
 use Wexample\SymfonyApi\Exception\MissingRequiredPropertyException;
-use Wexample\SymfonyApi\Exception\ValidationException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
 use Wexample\SymfonyApi\Validator\Constraint\JsonEncodingError;
 use Wexample\SymfonyApi\Validator\Constraint\MissingRequiredProperty;
@@ -113,7 +112,6 @@ class DtoValidationService
                 if (count($errors) > 0) {
                     throw new FileValidationException(
                         $errors,
-                        internalCode: FileValidationException::CODE_FILE_CONSTRAINT_VIOLATION
                     );
                 }
             }
@@ -147,7 +145,6 @@ class DtoValidationService
                 throw new MissingRequiredPropertyException(
                     $key,
                     $violations,
-                    internalCode: MissingRequiredPropertyException::CODE_MISSING_REQUIRED_PROPERTY
                 );
             }
         }
@@ -178,7 +175,6 @@ class DtoValidationService
                 // Create a specific exception for constraint violations
                 throw new InputValidationException(
                     $errors,
-                    internalCode: InputValidationException::CODE_INPUT_CONSTRAINT_VIOLATION
                 );
             }
         }
@@ -193,7 +189,6 @@ class DtoValidationService
         } catch (\Throwable $e) {
             throw new DeserializationException(
                 previous: $e,
-                internalCode: DeserializationException::CODE_TYPE_MISMATCH
             );
         }
 
@@ -201,7 +196,6 @@ class DtoValidationService
         if (count($errors) > 0) {
             throw new FieldValidationException(
                 $errors,
-                internalCode: FieldValidationException::CODE_FIELD_CONSTRAINT_VIOLATION
             );
         }
 
@@ -253,7 +247,6 @@ class DtoValidationService
                 $extraProperties,
                 $allowedProperties,
                 $violations,
-                internalCode: ExtraPropertyException::CODE_EXTRA_PROPERTY
             );
         }
     }
@@ -281,7 +274,6 @@ class DtoValidationService
      * @param array $data The data to validate and use for DTO creation
      * @param string $dtoClass The DTO class to instantiate
      * @return AbstractDto The created DTO instance
-     * @throws ValidationException When validation fails
      * @throws ReflectionException|JsonEncodingException
      */
     public function validateAndCreateDto(
@@ -300,7 +292,6 @@ class DtoValidationService
                 $e->getMessage(),
                 $violations,
                 $e->getCode(),
-                JsonEncodingException::CODE_JSON_ENCODING_ERROR,
                 previous: $e
             );
         }

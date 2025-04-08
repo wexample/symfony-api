@@ -33,7 +33,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
         string $propertyName,
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = null,
+        ?string $internalCode = self::CODE_MISSING_REQUIRED_PROPERTY,
         array $context = [],
         \Throwable $previous = null
     )

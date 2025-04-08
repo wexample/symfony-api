@@ -28,7 +28,7 @@ class JsonEncodingException extends ConstraintViolationException
         string $errorMessage,
         ConstraintViolationListInterface $violations,
         int $code = 0,
-        ?string $internalCode = null,
+        ?string $internalCode = self::CODE_JSON_ENCODING_ERROR,
         array $context = [],
         \Throwable $previous = null
     )
