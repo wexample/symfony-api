@@ -16,6 +16,7 @@ use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Exception\FieldValidationException;
 use Wexample\SymfonyApi\Exception\FileValidationException;
+use Wexample\SymfonyApi\Exception\InputValidationException;
 use Wexample\SymfonyApi\Exception\MissingRequiredPropertyException;
 use Wexample\SymfonyApi\Exception\ValidationException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
@@ -174,9 +175,9 @@ class DtoValidationService
 
             if (count($errors) > 0) {
                 // Create a specific exception for constraint violations
-                throw new ConstraintViolationException(
-                    'At least one constraint has been violated.',
-                    $errors
+                throw new InputValidationException(
+                    $errors,
+                    internalCode: InputValidationException::CODE_INPUT_CONSTRAINT_VIOLATION
                 );
             }
         }
