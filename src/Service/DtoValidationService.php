@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyApi\Service;
 
-use JsonException;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -13,12 +12,12 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
-use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Exception\ExtraPropertyException;
 use Wexample\SymfonyApi\Exception\FieldValidationException;
 use Wexample\SymfonyApi\Exception\FileValidationException;
 use Wexample\SymfonyApi\Exception\InputValidationException;
+use Wexample\SymfonyApi\Exception\JsonEncodingException;
 use Wexample\SymfonyApi\Exception\MissingRequiredPropertyException;
 use Wexample\SymfonyApi\Exception\ValidationException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
@@ -282,9 +281,8 @@ class DtoValidationService
      * @param array $data The data to validate and use for DTO creation
      * @param string $dtoClass The DTO class to instantiate
      * @return AbstractDto The created DTO instance
-     * @throws JsonException When JSON encoding fails
      * @throws ValidationException When validation fails
-     * @throws ReflectionException
+     * @throws ReflectionException|JsonEncodingException
      */
     public function validateAndCreateDto(
         array $data,
@@ -298,11 +296,12 @@ class DtoValidationService
             // Create violations for JSON encoding error
             $violations = $this->validator->validate(null, new JsonEncodingError($e->getMessage()));
 
-            throw new ConstraintViolationException(
-                'Failed to encode data to JSON: ' . $e->getMessage(),
+            throw new JsonEncodingException(
+                $e->getMessage(),
                 $violations,
                 $e->getCode(),
-                $e
+                JsonEncodingException::CODE_JSON_ENCODING_ERROR,
+                previous: $e
             );
         }
 
