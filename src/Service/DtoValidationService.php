@@ -15,6 +15,7 @@ use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Exception\FieldValidationException;
+use Wexample\SymfonyApi\Exception\FileValidationException;
 use Wexample\SymfonyApi\Exception\ValidationException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
 use Wexample\SymfonyApi\Validator\Constraint\JsonEncodingError;
@@ -107,9 +108,9 @@ class DtoValidationService
             if ($filesConstraints = $dtoClassType::getFilesConstraints()) {
                 $errors = $this->validator->validate($dto->getFiles(), $filesConstraints);
                 if (count($errors) > 0) {
-                    throw new ConstraintViolationException(
-                        'At least one constraint has been violated in sent files.',
-                        $errors
+                    throw new FileValidationException(
+                        $errors,
+                        internalCode: FileValidationException::CODE_FILE_CONSTRAINT_VIOLATION
                     );
                 }
             }
