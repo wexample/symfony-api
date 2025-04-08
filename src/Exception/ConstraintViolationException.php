@@ -11,6 +11,8 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  */
 class ConstraintViolationException extends AbstractApiException
 {
+    public const string CODE_SPECIFIC_NAME = 'SPECIFIC_NAME';
+
     /**
      * Creates a new constraint violation exception.
      *
@@ -23,12 +25,16 @@ class ConstraintViolationException extends AbstractApiException
         string $message,
         ConstraintViolationListInterface $violations,
         int $code = 0,
+        ?string $internalCode = null,
+        array $context = [],
         \Throwable $previous = null
     )
     {
         parent::__construct(
             $this->formatErrorMessage($message, $violations),
             $code,
+            $internalCode,
+            $context,
             $previous
         );
     }

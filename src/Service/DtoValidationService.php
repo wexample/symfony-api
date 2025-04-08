@@ -7,7 +7,6 @@ use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -185,7 +184,7 @@ class DtoValidationService
                 $dtoClassType,
                 DataHelper::FORMAT_JSON
             );
-        } catch (ExceptionInterface $e) {
+        } catch (\Throwable $e) {
             // Extract property name from deserialization error message
             $propertyName = 'unknown';
             $message = $e->getMessage();
@@ -194,6 +193,10 @@ class DtoValidationService
             // Example: "The type of the \"userId\" attribute for class..."
             if (preg_match('/The type of the "([^"]+)" attribute/', $message, $matches)) {
                 $propertyName = $matches[1];
+            } elseif (preg_match('/property ([^:]+)::/', $message, $matches)) {
+                // Extract property name from TypeError message
+                // Example: "Cannot assign string to property App\Api\Dto\Entity\Job\ImportJobValidationDto::$slot of type array"
+                $propertyName = str_replace('$', '', $matches[1]);
             }
 
             // Create violations for the deserialization error
@@ -203,8 +206,6 @@ class DtoValidationService
                 'Deserialization error: ' . $message,
                 $violations
             );
-        } catch (JsonException $e) {
-            throw $e;
         }
 
         $errors = $this->validator->validate($dto);
