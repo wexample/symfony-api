@@ -14,6 +14,7 @@ use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\DeserializationException;
+use Wexample\SymfonyApi\Exception\FieldValidationException;
 use Wexample\SymfonyApi\Exception\ValidationException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
 use Wexample\SymfonyApi\Validator\Constraint\JsonEncodingError;
@@ -193,11 +194,9 @@ class DtoValidationService
 
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
-            throw new ConstraintViolationException(
-                'At least one field constraint has been violated',
+            throw new FieldValidationException(
                 $errors,
-                // TODO this is an example.
-                internalCode: ConstraintViolationException::CODE_SPECIFIC_NAME
+                internalCode: FieldValidationException::CODE_FIELD_CONSTRAINT_VIOLATION
             );
         }
 
