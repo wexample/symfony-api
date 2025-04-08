@@ -13,8 +13,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyApi\Exception\ConstraintViolationException;
+use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Exception\ValidationException;
-use Wexample\SymfonyApi\Validator\Constraint\DeserializationError;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
 use Wexample\SymfonyApi\Validator\Constraint\JsonEncodingError;
 use Wexample\SymfonyApi\Validator\Constraint\MissingRequiredProperty;
@@ -185,26 +185,9 @@ class DtoValidationService
                 DataHelper::FORMAT_JSON
             );
         } catch (\Throwable $e) {
-            // Extract property name from deserialization error message
-            $propertyName = 'unknown';
-            $message = $e->getMessage();
-
-            // Try to extract property name from the error message
-            // Example: "The type of the \"userId\" attribute for class..."
-            if (preg_match('/The type of the "([^"]+)" attribute/', $message, $matches)) {
-                $propertyName = $matches[1];
-            } elseif (preg_match('/property ([^:]+)::/', $message, $matches)) {
-                // Extract property name from TypeError message
-                // Example: "Cannot assign string to property App\Api\Dto\Entity\Job\ImportJobValidationDto::$slot of type array"
-                $propertyName = str_replace('$', '', $matches[1]);
-            }
-
-            // Create violations for the deserialization error
-            $violations = $this->validator->validate(null, new DeserializationError($message, $propertyName));
-
-            throw new ConstraintViolationException(
-                'Deserialization error: ' . $message,
-                $violations
+            throw new DeserializationException(
+                previous: $e,
+                internalCode: DeserializationException::CODE_TYPE_MISMATCH
             );
         }
 
@@ -212,7 +195,9 @@ class DtoValidationService
         if (count($errors) > 0) {
             throw new ConstraintViolationException(
                 'At least one field constraint has been violated',
-                $errors
+                $errors,
+                // TODO this is an example.
+                internalCode: ConstraintViolationException::CODE_SPECIFIC_NAME
             );
         }
 
