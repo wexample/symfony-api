@@ -17,13 +17,14 @@ class DeserializationException extends AbstractApiException
      */
     public function __construct(
         \Throwable $previous,
+        string $message = 'Deserialization error',
         int $code = 0,
         ?string $internalCodeSuffix = self::CODE_TYPE_MISMATCH,
         array $context = [],
     )
     {
         parent::__construct(
-            'Deserialization error: ' . $previous->getMessage(),
+            $message,
             $code,
             $internalCodeSuffix,
             $context,
