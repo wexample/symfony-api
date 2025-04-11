@@ -113,20 +113,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
             $dto = $this->dtoValidationService->validateDtoFromRequest(
                 $request,
-                $instance,
-                function (
-                    string $message,
-                    ?ConstraintViolationListInterface $violations = null
-                ) use
-                (
-                    $event
-                ) {
-                    if ($violations) {
-                        $this->createErrorFromViolationList($event, $message, $violations);
-                    } else {
-                        $this->createErrorFromMessage($event, $message);
-                    }
-                }
+                $instance
             );
 
             if ($dto !== null) {

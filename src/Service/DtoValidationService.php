@@ -7,7 +7,9 @@ use ReflectionException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Optional;
+use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
@@ -17,10 +19,8 @@ use Wexample\SymfonyApi\Exception\ExtraPropertyException;
 use Wexample\SymfonyApi\Exception\FieldValidationException;
 use Wexample\SymfonyApi\Exception\FileValidationException;
 use Wexample\SymfonyApi\Exception\InputValidationException;
-use Wexample\SymfonyApi\Exception\JsonEncodingException;
 use Wexample\SymfonyApi\Exception\MissingRequiredPropertyException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
-use Wexample\SymfonyApi\Validator\Constraint\JsonEncodingError;
 use Wexample\SymfonyApi\Validator\Constraint\MissingRequiredProperty;
 use Wexample\SymfonyHelpers\Helper\DataHelper;
 
@@ -118,6 +118,68 @@ class DtoValidationService
     }
 
     /**
+     * Recursively validates raw data against the defined DTO structure.
+     *
+     * @param array $content The raw data as an associative array.
+     * @param string $dtoClassType The fully qualified name of the DTO class.
+     *
+     * @throws MissingRequiredPropertyException When a required property is missing.
+     */
+    protected function validateRawDataRecursive(
+        array $content,
+        string $dtoClassType
+    )
+    {
+        // Create a ReflectionClass instance to inspect all properties of the DTO class.
+        $reflection = new \ReflectionClass($dtoClassType);
+        $properties = $reflection->getProperties();
+
+        // Retrieve the list of required properties from the DTO.
+        $requiredProperties = $dtoClassType::getRequiredProperties();
+
+        // Iterate through all defined properties.
+        foreach ($properties as $property) {
+            $propertyName = $property->getName();
+
+            // If the property is required but not present in the content, raise an exception.
+            if (in_array($propertyName, $requiredProperties) && !array_key_exists($propertyName, $content)) {
+                $violations = $this->validator->validate(null, new MissingRequiredProperty($propertyName));
+                throw new MissingRequiredPropertyException($propertyName, $violations);
+            }
+
+            // If the data for this property exists in the content...
+            if (array_key_exists($propertyName, $content)) {
+                $propertyType = $property->getType();
+
+                if ($propertyType instanceof \ReflectionUnionType) {
+                    $types = $propertyType->getTypes();
+                } else {
+                    $types = [$propertyType->getName()];
+                }
+
+                foreach ($types as $type) {
+                    if (is_subclass_of($type, AbstractDto::class)) {
+                        $this->validateRawDataRecursive($content[$propertyName], $type);
+                    } elseif (is_array($content[$propertyName])) {
+                        $allAttributes = $property->getAttributes(All::class);
+
+                        foreach ($allAttributes as $allAttribute) {
+                            $allConstraint = $allAttribute->newInstance();
+                            foreach ($allConstraint->constraints as $constraint) {
+                                if ($constraint instanceof Type) {
+                                    foreach ($content[$propertyName] as $item) {
+                                        $this->validateRawDataRecursive($item, $constraint->type);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Validates a DTO from content data.
      *
      * @param array $content The content data as array
@@ -131,19 +193,10 @@ class DtoValidationService
         string $dtoClassType
     ): AbstractDto
     {
-        // Check required keys
-        $requiredKeys = $dtoClassType::getRequiredProperties();
-        foreach ($requiredKeys as $key) {
-            if (!array_key_exists($key, $content)) {
-                // Create a violation list with a single violation for the missing property
-                $violations = $this->validator->validate(null, new MissingRequiredProperty($key));
-
-                throw new MissingRequiredPropertyException(
-                    $key,
-                    $violations,
-                );
-            }
-        }
+        $this->validateRawDataRecursive(
+            $content,
+            $dtoClassType
+        );
 
         // Check for extra properties not defined in the DTO
         $this->validateExtraProperties($content, $dtoClassType);
@@ -195,7 +248,7 @@ class DtoValidationService
                 $errors,
             );
         }
-        
+
         // Then validate all nested DTOs recursively
         $this->validateDtoRecursively($dto);
 
@@ -281,21 +334,21 @@ class DtoValidationService
         if (count($errors) > 0) {
             throw new FieldValidationException($errors);
         }
-        
+
         // Continue recursion
         $this->validateDtoRecursively($dto);
     }
 
     /**
      * Recursively validates a DTO and all its nested DTOs.
-     * 
+     *
      * @param AbstractDto $dto The DTO to validate recursively
      * @throws FieldValidationException If validation fails for any nested DTO
      */
     private function validateDtoRecursively(AbstractDto $dto): void
     {
         $reflection = new \ReflectionObject($dto);
-        
+
         // Iterate through all properties of the DTO
         foreach ($reflection->getProperties() as $property) {
             if (!$property->isInitialized($dto)) {
@@ -303,12 +356,12 @@ class DtoValidationService
             }
 
             $value = $property->getValue($dto);
-            
+
             // Skip null values
             if ($value === null) {
                 continue;
             }
-            
+
             // If the property is an array, check each element
             if (is_array($value)) {
                 foreach ($value as $item) {
@@ -317,8 +370,7 @@ class DtoValidationService
                         $this->validateNestedDto($item);
                     }
                 }
-            } 
-            // If the property is a DTO, validate it recursively
+            } // If the property is a DTO, validate it recursively
             elseif ($value instanceof AbstractDto) {
                 $this->validateNestedDto($value);
             }

@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class MissingRequiredProperty extends Constraint
 {
-    public string $message = 'The key "{{ key }}" is missing in the data.';
+    public string $message = 'The required key "{{ key }}" is missing in the data.';
     public string $propertyName;
 
     public function __construct(string $propertyName, array $options = null)
