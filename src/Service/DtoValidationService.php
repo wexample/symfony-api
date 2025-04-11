@@ -302,6 +302,10 @@ class DtoValidationService
         
         // Iterate through all properties of the DTO
         foreach ($reflection->getProperties() as $property) {
+            if (!$property->isInitialized($dto)) {
+                continue;
+            }
+
             $value = $property->getValue($dto);
             
             // Skip null values
