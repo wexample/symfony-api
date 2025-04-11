@@ -192,7 +192,8 @@ class DtoValidationService
             );
         }
 
-        $errors = $this->validator->validate($dto);
+        // Validate the entire DTO object graph with recursive validation
+        $errors = $this->validator->validate($dto, null, ['Default', 'deep_validation']);
         if (count($errors) > 0) {
             throw new FieldValidationException(
                 $errors,
