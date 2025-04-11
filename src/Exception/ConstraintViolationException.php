@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\Exception;
 
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Wexample\SymfonyHelpers\Helper\ViolationHelper;
 
 /**
  * Exception for constraint violations in DTOs.
@@ -56,7 +57,7 @@ class ConstraintViolationException extends AbstractApiException
      * @param ConstraintViolationListInterface $violations The list of constraint violations
      * @return string The formatted error message
      */
-    private function formatErrorMessage(
+    public function formatErrorMessage(
         string $message,
         ConstraintViolationListInterface $violations
     ): string
@@ -78,7 +79,7 @@ class ConstraintViolationException extends AbstractApiException
                 $parts[] = "property: " . $property;
             }
 
-            $parts[] = $indent . "message: " . $violation->getMessage();
+            $parts[] = $indent . "message: " . ViolationHelper::getFormattedMessage($violation);
 
             if ($code = $violation->getCode()) {
                 $parts[] = $indent . "code: " . $code;
