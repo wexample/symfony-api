@@ -192,12 +192,16 @@ class DtoValidationService
             );
         }
 
+        // Validate the DTO itself first
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
             throw new FieldValidationException(
                 $errors,
             );
         }
+        
+        // Then validate all nested DTOs recursively
+        $this->validateDtoRecursively($dto);
 
         return $dto;
     }
@@ -268,6 +272,59 @@ class DtoValidationService
     }
 
 
+    /**
+     * Validates a nested DTO and continues recursive validation.
+     *
+     * @param AbstractDto $dto The nested DTO to validate
+     * @throws FieldValidationException If validation fails
+     */
+    private function validateNestedDto(AbstractDto $dto): void
+    {
+        // Validate the nested DTO
+        $errors = $this->validator->validate($dto);
+        if (count($errors) > 0) {
+            throw new FieldValidationException($errors);
+        }
+        
+        // Continue recursion
+        $this->validateDtoRecursively($dto);
+    }
+
+    /**
+     * Recursively validates a DTO and all its nested DTOs.
+     * 
+     * @param AbstractDto $dto The DTO to validate recursively
+     * @throws FieldValidationException If validation fails for any nested DTO
+     */
+    private function validateDtoRecursively(AbstractDto $dto): void
+    {
+        $reflection = new \ReflectionObject($dto);
+        
+        // Iterate through all properties of the DTO
+        foreach ($reflection->getProperties() as $property) {
+            $value = $property->getValue($dto);
+            
+            // Skip null values
+            if ($value === null) {
+                continue;
+            }
+            
+            // If the property is an array, check each element
+            if (is_array($value)) {
+                foreach ($value as $item) {
+                    // If the item is a DTO, validate it recursively
+                    if ($item instanceof AbstractDto) {
+                        $this->validateNestedDto($item);
+                    }
+                }
+            } 
+            // If the property is a DTO, validate it recursively
+            elseif ($value instanceof AbstractDto) {
+                $this->validateNestedDto($value);
+            }
+        }
+    }
+    
     /**
      * Validates data and creates a DTO instance.
      *
