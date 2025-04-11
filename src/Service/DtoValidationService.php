@@ -56,7 +56,6 @@ class DtoValidationService
         $dtoClassType = $instance->dto;
 
         $content = null;
-        $contentString = '';
 
         // Check if request is multipart/form-data
         if (str_contains($request->headers->get('Content-Type', ''), 'multipart/form-data')) {
@@ -74,7 +73,6 @@ class DtoValidationService
                 $jsonData = $request->request->get($fieldName);
                 if ($jsonData) {
                     $content = json_decode($jsonData, true);
-                    $contentString = $jsonData;
                     break;
                 }
             }
@@ -87,9 +85,8 @@ class DtoValidationService
             return null;
         }
 
-        $dto = $this->validateDto(
+        $dto = $this->createDto(
             $content,
-            $contentString,
             $dtoClassType
         );
 
@@ -129,9 +126,8 @@ class DtoValidationService
      * @return AbstractDto
      * @throws ReflectionException
      */
-    public function validateDto(
+    public function createDto(
         array $content,
-        string $contentString,
         string $dtoClassType
     ): AbstractDto
     {
@@ -182,7 +178,7 @@ class DtoValidationService
         try {
             // Constraints passed, now we create the actual dto.
             $dto = $this->serializer->deserialize(
-                $contentString,
+                json_encode($content),
                 $dtoClassType,
                 DataHelper::FORMAT_JSON
             );
@@ -327,40 +323,5 @@ class DtoValidationService
                 $this->validateNestedDto($value);
             }
         }
-    }
-    
-    /**
-     * Validates data and creates a DTO instance.
-     *
-     * @param array $data The data to validate and use for DTO creation
-     * @param string $dtoClass The DTO class to instantiate
-     * @return AbstractDto The created DTO instance
-     * @throws ReflectionException|JsonEncodingException
-     */
-    public function validateAndCreateDto(
-        array $data,
-        string $dtoClass
-    ): AbstractDto
-    {
-        // Convert array to JSON string
-        try {
-            $jsonString = json_encode($data, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            // Create violations for JSON encoding error
-            $violations = $this->validator->validate(null, new JsonEncodingError($e->getMessage()));
-
-            throw new JsonEncodingException(
-                $e->getMessage(),
-                $violations,
-                $e->getCode(),
-                previous: $e
-            );
-        }
-
-        return $this->validateDto(
-            $data,
-            $jsonString,
-            $dtoClass
-        );
     }
 }
