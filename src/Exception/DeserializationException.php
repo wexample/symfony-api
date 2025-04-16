@@ -24,7 +24,7 @@ class DeserializationException extends AbstractApiException
     )
     {
         parent::__construct(
-            $message,
+            $message . ': ' . $previous->getMessage(),
             $code,
             $internalCodeSuffix,
             $context,
