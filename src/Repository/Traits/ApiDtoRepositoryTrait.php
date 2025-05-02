@@ -8,7 +8,7 @@ use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 use Wexample\SymfonyHelpers\Entity\Traits\Manipulator\EntityManipulatorTrait;
 use Wexample\Helpers\Helper\ClassHelper;
 
-trait AbstractApiDtoRepository
+trait ApiDtoRepositoryTrait
 {
     use EntityManipulatorTrait;
 
