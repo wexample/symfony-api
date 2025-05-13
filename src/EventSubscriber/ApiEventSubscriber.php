@@ -160,14 +160,23 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         $message = $exception->getMessage();
         if ($this->parameterBag->get('api.debug') ?? false) {
             $flatTrace = [];
+
+            $flatTrace[] = [
+                'file'     => $exception->getFile(),
+                'line'     => $exception->getLine(),
+                'class'    => get_class($exception),
+                'function' => '<throw>',
+            ];
+
             foreach ($exception->getTrace() as $frame) {
                 $flatTrace[] = [
-                    'file' => $frame['file'] ?? '<internal>',
-                    'line' => $frame['line'] ?? null,
-                    'class' => $frame['class'] ?? null,
+                    'file'     => $frame['file']     ?? '<internal>',
+                    'line'     => $frame['line']     ?? null,
+                    'class'    => $frame['class']    ?? null,
                     'function' => $frame['function'] ?? null,
                 ];
             }
+
             $data = [
                 'trace' => $flatTrace,
             ];
