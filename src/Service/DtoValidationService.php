@@ -139,37 +139,55 @@ class DtoValidationService
 
         // Iterate through all defined properties.
         foreach ($properties as $property) {
-            $propertyName = $property->getName();
+            $name = $property->getName();
 
-            // If the property is required but not present in the content, raise an exception.
-            if (in_array($propertyName, $requiredProperties) && !array_key_exists($propertyName, $content)) {
-                $violations = $this->validator->validate(null, new MissingRequiredProperty($propertyName));
-                throw new MissingRequiredPropertyException($propertyName, $violations);
+            // Missing required?
+            if (in_array($name, $requiredProperties, true)
+                && !array_key_exists($name, $content)
+            ) {
+                $violations = $this->validator->validate(
+                    null,
+                    new MissingRequiredProperty($name)
+                );
+                throw new MissingRequiredPropertyException($name, $violations);
             }
 
-            // If the data for this property exists in the content...
-            if (array_key_exists($propertyName, $content)) {
-                $propertyType = $property->getType();
+            // Skip if no data for this property
+            if (!array_key_exists($name, $content)) {
+                continue;
+            }
 
-                if ($propertyType instanceof \ReflectionUnionType) {
-                    $types = $propertyType->getTypes();
-                } else {
-                    $types = [$propertyType->getName()];
-                }
+            $value = $content[$name];
+            $propertyType = $property->getType();
 
-                foreach ($types as $type) {
-                    if (is_subclass_of($type, AbstractDto::class)) {
-                        $this->validateRawDataRecursive($content[$propertyName], $type);
-                    } elseif (is_array($content[$propertyName])) {
-                        $allAttributes = $property->getAttributes(All::class);
+            // Handle nullable: if value is null and type allows null, skip deeper validation
+            if ($propertyType->allowsNull() && null === $value) {
+                continue;
+            }
 
-                        foreach ($allAttributes as $allAttribute) {
-                            $allConstraint = $allAttribute->newInstance();
-                            foreach ($allConstraint->constraints as $constraint) {
-                                if ($constraint instanceof Type) {
-                                    foreach ($content[$propertyName] as $item) {
-                                        $this->validateRawDataRecursive($item, $constraint->type);
+            // Normalize to an array of ReflectionNamedType
+            $typeRefs = $propertyType instanceof \ReflectionUnionType
+                ? $propertyType->getTypes()
+                : [$propertyType];
+
+            foreach ($typeRefs as $typeRef) {
+                $typeName = $typeRef->getName();
+
+                // Nested DTO → recurse
+                if (is_subclass_of($typeName, AbstractDto::class)) {
+                    $this->validateRawDataRecursive($value, $typeName);
+                } // Array of DTOs annotated with @All
+                elseif (is_array($value)) {
+                    foreach ($property->getAttributes(All::class) as $attr) {
+                        $all = $attr->newInstance();
+                        foreach ($all->constraints as $constraint) {
+                            if ($constraint instanceof Type) {
+                                foreach ($value as $item) {
+                                    // Skip null items if the item type allows null
+                                    if (null === $item && $typeRef->allowsNull()) {
+                                        continue;
                                     }
+                                    $this->validateRawDataRecursive($item, $constraint->type);
                                 }
                             }
                         }
