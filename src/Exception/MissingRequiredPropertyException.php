@@ -13,12 +13,12 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class MissingRequiredPropertyException extends ConstraintViolationException
 {
     public const string CODE_MISSING_REQUIRED_PROPERTY = 'MISSING_REQUIRED_PROPERTY';
-    
+
     /**
      * The name of the missing property.
      */
     private string $propertyName;
-    
+
     /**
      * Creates a new missing required property exception.
      *
@@ -32,6 +32,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
     public function __construct(
         string $propertyName,
         ConstraintViolationListInterface $violations,
+        string $dtoClassType,
         int $code = 0,
         ?string $internalCodeSuffix = self::CODE_MISSING_REQUIRED_PROPERTY,
         array $context = [],
@@ -39,9 +40,12 @@ class MissingRequiredPropertyException extends ConstraintViolationException
     )
     {
         $this->propertyName = $propertyName;
-        
+
         parent::__construct(
-            "The key '{$propertyName}' is missing in the data.",
+            sprintf(
+                "The key '{$propertyName}' is missing in the DTO %s",
+                $dtoClassType
+            ),
             $violations,
             $code,
             $internalCodeSuffix,
@@ -49,7 +53,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
             $previous
         );
     }
-    
+
     /**
      * Gets the name of the missing property.
      *
@@ -59,7 +63,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
     {
         return $this->propertyName;
     }
-    
+
     /**
      * {@inheritdoc}
      */

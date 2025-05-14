@@ -149,7 +149,11 @@ class DtoValidationService
                     null,
                     new MissingRequiredProperty($name)
                 );
-                throw new MissingRequiredPropertyException($name, $violations);
+                throw new MissingRequiredPropertyException(
+                    $name,
+                    $violations,
+                    $dtoClassType
+                );
             }
 
             // Skip if no data for this property
