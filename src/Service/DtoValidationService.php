@@ -268,6 +268,7 @@ class DtoValidationService
         if (count($errors) > 0) {
             throw new FieldValidationException(
                 $errors,
+                $dto
             );
         }
 
@@ -354,7 +355,7 @@ class DtoValidationService
         // Validate the nested DTO
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
-            throw new FieldValidationException($errors);
+            throw new FieldValidationException($errors, $dto);
         }
 
         // Continue recursion

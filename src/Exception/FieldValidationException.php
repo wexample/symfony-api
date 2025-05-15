@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\Exception;
 
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 
 /**
  * Exception for field constraint validation errors in DTOs.
@@ -19,6 +20,7 @@ class FieldValidationException extends ConstraintViolationException
      */
     public function __construct(
         ConstraintViolationListInterface $violations,
+        AbstractDto $dto,
         int $code = 0,
         ?string $internalCodeSuffix = self::CODE_FIELD_CONSTRAINT_VIOLATION,
         array $context = [],
@@ -26,7 +28,10 @@ class FieldValidationException extends ConstraintViolationException
     )
     {
         parent::__construct(
-            'At least one field constraint has been violated',
+            sprintf(
+                'At least one field constraint has been violated during validation of DTO : %s',
+                get_class($dto),
+            ),
             $violations,
             $code,
             $internalCodeSuffix,
