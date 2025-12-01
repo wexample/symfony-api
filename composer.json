@@ -1,35 +1,35 @@
 {
-    "name": "wexample/symfony-api",
-    "description": "A simple syntax to expose API in Symfony",
-    "type": "library",
-    "license": "MIT",
-    "version": "1.0.58",
-    "keywords": [
-        "symfony-ux"
-    ],
-    "autoload": {
-        "psr-4": {
-            "Wexample\\SymfonyApi\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "weeger",
-            "email": "romain.weeger@wexample.com"
-        }
-    ],
-    "require": {
-        "php": ">=8.2",
-        "wexample/symfony-testing": "^1.0.58",
-        "wexample/symfony-helpers": "^1.0.64",
-        "wexample/symfony-design-system": "^1.0.59"
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "php bin/console api:check-node-install"
-        ],
-        "post-update-cmd": [
-            "php bin/console api:check-node-install"
-        ]
+  "name": "wexample/symfony-api",
+  "description": "A simple syntax to expose API in Symfony",
+  "type": "library",
+  "license": "MIT",
+  "version": "1.0.58",
+  "keywords": [
+    "symfony-ux"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Wexample\\SymfonyApi\\": "src/"
     }
+  },
+  "authors": [
+    {
+      "name": "weeger",
+      "email": "romain.weeger@wexample.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "wexample/symfony-testing": "^1.0.58",
+    "wexample/symfony-helpers": "^1.0.64",
+    "wexample/symfony-design-system": "^1.0.59"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "php bin/console api:check-node-install"
+    ],
+    "post-update-cmd": [
+      "php bin/console api:check-node-install"
+    ]
+  }
 }
