@@ -4,9 +4,8 @@ namespace Wexample\SymfonyApi\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
-use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\Helpers\Helper\ClassHelper;
-
+use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 
 abstract class AbstractControllerEventSubscriber implements EventSubscriberInterface
 {
@@ -16,7 +15,7 @@ abstract class AbstractControllerEventSubscriber implements EventSubscriberInter
     ): array {
         $controllerData = $event->getController();
 
-        if (!is_array($controllerData) || !is_subclass_of($controllerData[0], AbstractApiController::class)) {
+        if (! is_array($controllerData) || ! is_subclass_of($controllerData[0], AbstractApiController::class)) {
             return [];
         }
 

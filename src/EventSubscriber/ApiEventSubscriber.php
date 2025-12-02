@@ -28,8 +28,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         private readonly ValidatorInterface $validator,
         private readonly ParameterBagInterface $parameterBag,
         private readonly DtoValidationService $dtoValidationService,
-    )
-    {
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -51,22 +50,21 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
     protected function createErrorFromMessage(
         KernelEvent $event,
         string $message
-    ): void
-    {
+    ): void {
         $this->createError(
             $event,
             $message,
             [
                 'type' => 'message',
-            ]);
+            ]
+        );
     }
 
     protected function createErrorFromViolationList(
         KernelEvent $event,
         string $message,
         ConstraintViolationListInterface $violations
-    ): void
-    {
+    ): void {
         $errors = [];
         foreach ($violations as $violation) {
             $errors[] = [
@@ -92,7 +90,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
     {
         $controller = $event->getController();
 
-        if (!is_array($controller)) {
+        if (! is_array($controller)) {
             return;
         }
 
@@ -126,7 +124,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
     {
         $response = $event->getControllerResult();
 
-        if (!$response instanceof ApiResponse) {
+        if (! $response instanceof ApiResponse) {
             return;
         }
 
@@ -143,7 +141,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
     {
         $request = $event->getRequest();
 
-        if (!RequestHelper::requestIsOnSubClassOf(
+        if (! RequestHelper::requestIsOnSubClassOf(
             $request,
             AbstractApiController::class
         )) {
@@ -162,17 +160,17 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
             $flatTrace = [];
 
             $flatTrace[] = [
-                'file'     => $exception->getFile(),
-                'line'     => $exception->getLine(),
-                'class'    => get_class($exception),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'class' => get_class($exception),
                 'function' => '<throw>',
             ];
 
             foreach ($exception->getTrace() as $frame) {
                 $flatTrace[] = [
-                    'file'     => $frame['file']     ?? '<internal>',
-                    'line'     => $frame['line']     ?? null,
-                    'class'    => $frame['class']    ?? null,
+                    'file' => $frame['file'] ?? '<internal>',
+                    'line' => $frame['line'] ?? null,
+                    'class' => $frame['class'] ?? null,
                     'function' => $frame['function'] ?? null,
                 ];
             }
@@ -212,7 +210,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         }
 
         foreach ($queryParameters as $key => $value) {
-            if (!isset($optionsAttributes[$key])) {
+            if (! isset($optionsAttributes[$key])) {
                 if (isset($optionsAttributes[EveryQueryOption::KEY])) {
                     continue;
                 }
@@ -220,10 +218,12 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 $this->createErrorFromMessage(
                     $event,
                     'Unknown given query option **' . $key . '**. '
-                    . (!empty($optionsAttributes)
+                    . (
+                        ! empty($optionsAttributes)
                         ? 'Allowed options are: ' . implode(', ', array_keys($optionsAttributes)) . '.'
                         : 'No query options are allowed.'
-                    ));
+                    )
+                );
 
                 return;
             }
@@ -241,6 +241,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                     'Query option **' . $key . '** does not match constraints.',
                     $violations
                 );
+
                 return;
             }
         }
@@ -253,10 +254,11 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         foreach ($optionsAttributes as $key => $attribute) {
             // Not sent.
             if (ClassHelper::classUsesTrait($attribute, QueryOptionConstrainedTrait::class)
-                && !array_key_exists($key, $queryParameters)
+                && ! array_key_exists($key, $queryParameters)
             ) {
                 if (true === $attribute->required) {
                     $this->createErrorFromMessage($event, 'Required query option **' . $key . '** is missing.');
+
                     return;
                 } else {
                     // Replace by default.
@@ -278,10 +280,9 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         KernelEvent $event,
         string $errorMessage,
         array $errorData = []
-    ): void
-    {
+    ): void {
         $event->setController(
-            fn() => AbstractApiController::apiResponseError(
+            fn () => AbstractApiController::apiResponseError(
                 $errorMessage,
                 $errorData
             )

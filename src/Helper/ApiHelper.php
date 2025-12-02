@@ -25,7 +25,7 @@ class ApiHelper
         Request $request,
         string $bearerIdentifier = ApiHelper::HEADER_BEARER_AUTHORIZATION_KEY
     ): ?string {
-        if (!$request->headers->get($bearerIdentifier)) {
+        if (! $request->headers->get($bearerIdentifier)) {
             return null;
         }
 

@@ -27,5 +27,5 @@ abstract class AbstractSimpleTypeQueryOption extends AbstractQueryOption
         return new Type($this->getSimpleTypeConstraint());
     }
 
-    abstract function getSimpleTypeConstraint(): string;
+    abstract public function getSimpleTypeConstraint(): string;
 }

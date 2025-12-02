@@ -17,7 +17,7 @@ class YearQueryOption extends AbstractQueryOption
         public mixed $default = null,
         bool $required = false,
     ) {
-        $this->default = !is_null($this->default) ? $this->default : DateHelper::getCurrentYearInt();
+        $this->default = ! is_null($this->default) ? $this->default : DateHelper::getCurrentYearInt();
 
         parent::__construct(
             $required

@@ -16,7 +16,7 @@ class MissingRequiredPropertyValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof MissingRequiredProperty) {
+        if (! $constraint instanceof MissingRequiredProperty) {
             throw new UnexpectedTypeException($constraint, MissingRequiredProperty::class);
         }
 

@@ -26,9 +26,10 @@ trait TextManipulationTestCaseTrait
     public function buildUniqueTitle(object|string $entity): string
     {
         return
-            substr(strtoupper(
-                ClassHelper::getTableizedName($entity)
-            ),
+            substr(
+                strtoupper(
+                    ClassHelper::getTableizedName($entity)
+                ),
                 0,
                 5
             ).'-'.uniqid();

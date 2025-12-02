@@ -3,10 +3,10 @@
 namespace Wexample\SymfonyApi\Repository\Traits;
 
 use Exception;
+use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 use Wexample\SymfonyHelpers\Entity\Traits\Manipulator\EntityManipulatorTrait;
-use Wexample\Helpers\Helper\ClassHelper;
 
 trait ApiDtoRepositoryTrait
 {
@@ -33,7 +33,7 @@ trait ApiDtoRepositoryTrait
 
         $updateMethod = $methodPrefix.$entityShortName;
 
-        if (!method_exists($this, $updateMethod)) {
+        if (! method_exists($this, $updateMethod)) {
             throw new \Exception("Update method \"$updateMethod\" not found on repository \"".static::class."\".");
         }
 

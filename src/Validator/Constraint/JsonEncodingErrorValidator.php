@@ -16,7 +16,7 @@ class JsonEncodingErrorValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof JsonEncodingError) {
+        if (! $constraint instanceof JsonEncodingError) {
             throw new UnexpectedTypeException($constraint, JsonEncodingError::class);
         }
 

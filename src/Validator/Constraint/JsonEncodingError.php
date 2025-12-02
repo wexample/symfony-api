@@ -15,7 +15,7 @@ class JsonEncodingError extends Constraint
     public function __construct(string $errorMessage, array $options = null)
     {
         $this->errorMessage = $errorMessage;
-        
+
         parent::__construct($options);
     }
 

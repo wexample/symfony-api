@@ -12,7 +12,7 @@ use Wexample\SymfonyHelpers\Helper\VariableHelper;
 final class ResponseController extends AbstractApiController
 {
     use SymfonyApiBundleClassTrait;
-    
+
     final public const ROUTE_SUCCESS = VariableHelper::SUCCESS;
     final public const ROUTE_ERROR = VariableHelper::ERROR;
 

@@ -4,8 +4,8 @@ namespace Wexample\SymfonyApi\Api\Dto;
 
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Collection;
 use Wexample\SymfonyApi\Api\Attribute\RequiredDtoProperty;
 
 abstract class AbstractDto
@@ -31,7 +31,7 @@ abstract class AbstractDto
         foreach ($reflectionClass->getProperties() as $property) {
             $attributes = $property->getAttributes(RequiredDtoProperty::class);
 
-            if (!empty($attributes)) {
+            if (! empty($attributes)) {
                 $requiredProperties[] = $property->getName();
             }
         }

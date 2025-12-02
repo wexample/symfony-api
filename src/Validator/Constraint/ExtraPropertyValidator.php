@@ -16,7 +16,7 @@ class ExtraPropertyValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof ExtraProperty) {
+        if (! $constraint instanceof ExtraProperty) {
             throw new UnexpectedTypeException($constraint, ExtraProperty::class);
         }
 

@@ -20,7 +20,7 @@ class ValidateRequestContent
             $this->dataFieldNames = [$dataFieldNames];
         } else {
             $this->dataFieldNames = array_map(
-                fn($field) => is_string($field) ? $field : $this->validateFieldPattern($field),
+                fn ($field) => is_string($field) ? $field : $this->validateFieldPattern($field),
                 $dataFieldNames
             );
         }
@@ -31,7 +31,7 @@ class ValidateRequestContent
      */
     private function validateFieldPattern(array $config): array
     {
-        if (!isset($config['pattern'])) {
+        if (! isset($config['pattern'])) {
             throw new \InvalidArgumentException('Field pattern configuration must include a "pattern" key');
         }
 
@@ -58,7 +58,7 @@ class ValidateRequestContent
             } else {
                 // Handle pattern matching
                 $pattern = $field['pattern'];
-                $matchingFields = array_filter($availableFields, function($name) use ($pattern) {
+                $matchingFields = array_filter($availableFields, function ($name) use ($pattern) {
                     return preg_match($this->patternToRegex($pattern), $name);
                 });
 
@@ -82,6 +82,7 @@ class ValidateRequestContent
         $pattern = preg_quote($pattern, '/');
         $pattern = str_replace('\*', '.*', $pattern);
         $pattern = preg_replace('/\\\{(\d+)\\\}/', '$1', $pattern);
+
         return '/^' . $pattern . '$/';
     }
 

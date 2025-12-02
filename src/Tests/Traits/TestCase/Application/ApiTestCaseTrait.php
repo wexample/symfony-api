@@ -4,8 +4,8 @@ namespace Wexample\SymfonyApi\Tests\Traits\TestCase\Application;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
-use Wexample\SymfonyHelpers\Controller\AbstractController;
 use Wexample\Helpers\Helper\TextHelper;
+use Wexample\SymfonyHelpers\Controller\AbstractController;
 
 trait ApiTestCaseTrait
 {
@@ -39,7 +39,8 @@ trait ApiTestCaseTrait
         string|int|float|bool $sentValue
     ): void {
         $this->goToRoute(
-            $controller::buildRouteName($route), [
+            $controller::buildRouteName($route),
+            [
                 $queryStringKey => $sentValue,
             ]
         );
@@ -61,7 +62,8 @@ trait ApiTestCaseTrait
         string|int|float|bool $expectedValue
     ): void {
         $this->goToRoute(
-            $controller::buildRouteName($route), [
+            $controller::buildRouteName($route),
+            [
                 $queryStringKey => $sentValue,
             ]
         );

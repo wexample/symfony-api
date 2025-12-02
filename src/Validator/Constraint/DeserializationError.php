@@ -17,7 +17,7 @@ class DeserializationError extends Constraint
     {
         $this->errorMessage = $errorMessage;
         $this->propertyName = $propertyName;
-        
+
         parent::__construct($options);
     }
 

@@ -9,7 +9,7 @@ use Wexample\SymfonyHelpers\Twig\AbstractExtension;
 class ApiExtension extends AbstractExtension
 {
     public function __construct(
-        readonly private ApiService $apiService
+        private readonly ApiService $apiService
     ) {
     }
 

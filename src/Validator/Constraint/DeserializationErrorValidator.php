@@ -16,7 +16,7 @@ class DeserializationErrorValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof DeserializationError) {
+        if (! $constraint instanceof DeserializationError) {
             throw new UnexpectedTypeException($constraint, DeserializationError::class);
         }
 

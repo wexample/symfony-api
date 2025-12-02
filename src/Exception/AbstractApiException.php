@@ -9,9 +9,9 @@ abstract class AbstractApiException extends AbstractException
     public function getInternalCodeParts(): array
     {
         return array_merge([
-            'API'
+            'API',
         ], $this->getApiInternalCodeParts());
     }
 
-    abstract function getApiInternalCodeParts(): array;
+    abstract public function getApiInternalCodeParts(): array;
 }

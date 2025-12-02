@@ -11,7 +11,7 @@ class MultipleTypesQueryOption extends AbstractQueryOption
 {
     public function __construct(
         public string $key,
-        readonly private array $types,
+        private readonly array $types,
         public mixed $default = null,
         bool $required = false
     ) {

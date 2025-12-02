@@ -15,7 +15,7 @@ class ExtraProperty extends Constraint
     public function __construct(string $propertyName, array $options = null)
     {
         $this->propertyName = $propertyName;
-        
+
         parent::__construct($options);
     }
 

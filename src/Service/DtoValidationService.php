@@ -35,8 +35,7 @@ class DtoValidationService
     public function __construct(
         private readonly ValidatorInterface $validator,
         private readonly SerializerInterface $serializer,
-    )
-    {
+    ) {
     }
 
     /**
@@ -50,8 +49,7 @@ class DtoValidationService
     public function validateDtoFromRequest(
         Request $request,
         ValidateRequestContent $instance
-    ): ?AbstractDto
-    {
+    ): ?AbstractDto {
         /** @var AbstractDto|string $dtoClassType */
         $dtoClassType = $instance->dto;
 
@@ -73,6 +71,7 @@ class DtoValidationService
                 $jsonData = $request->request->get($fieldName);
                 if ($jsonData) {
                     $content = json_decode($jsonData, true);
+
                     break;
                 }
             }
@@ -81,7 +80,7 @@ class DtoValidationService
             $content = json_decode($contentString, true);
         }
 
-        if (!$content) {
+        if (! $content) {
             return null;
         }
 
@@ -128,8 +127,7 @@ class DtoValidationService
     protected function validateRawDataRecursive(
         array $content,
         string $dtoClassType
-    )
-    {
+    ) {
         // Create a ReflectionClass instance to inspect all properties of the DTO class.
         $reflection = new \ReflectionClass($dtoClassType);
         $properties = $reflection->getProperties();
@@ -143,12 +141,13 @@ class DtoValidationService
 
             // Missing required?
             if (in_array($name, $requiredProperties, true)
-                && !array_key_exists($name, $content)
+                && ! array_key_exists($name, $content)
             ) {
                 $violations = $this->validator->validate(
                     null,
                     new MissingRequiredProperty($name)
                 );
+
                 throw new MissingRequiredPropertyException(
                     $name,
                     $violations,
@@ -157,7 +156,7 @@ class DtoValidationService
             }
 
             // Skip if no data for this property
-            if (!array_key_exists($name, $content)) {
+            if (! array_key_exists($name, $content)) {
                 continue;
             }
 
@@ -213,8 +212,7 @@ class DtoValidationService
     public function createDto(
         array $content,
         string $dtoClassType
-    ): AbstractDto
-    {
+    ): AbstractDto {
         $this->validateRawDataRecursive(
             $content,
             $dtoClassType
@@ -234,7 +232,7 @@ class DtoValidationService
             // Add every property name allows the field to exist in content.
             foreach ($reflectionClass->getProperties() as $property) {
                 $key = $property->getName();
-                if (!isset($constraints->fields[$key])) {
+                if (! isset($constraints->fields[$key])) {
                     $constraints->fields[$key] = new Optional();
                 }
             }
@@ -289,8 +287,7 @@ class DtoValidationService
     private function validateExtraProperties(
         array $content,
         string $dtoClassType
-    ): void
-    {
+    ): void {
         $reflectionClass = $this->getReflectionClass($dtoClassType);
         $allowedProperties = [];
 
@@ -302,12 +299,12 @@ class DtoValidationService
         // Check for extra properties
         $extraProperties = [];
         foreach (array_keys($content) as $key) {
-            if (!in_array($key, $allowedProperties)) {
+            if (! in_array($key, $allowedProperties)) {
                 $extraProperties[] = $key;
             }
         }
 
-        if (!empty($extraProperties)) {
+        if (! empty($extraProperties)) {
             // Create violations for each extra property
             $violations = new ConstraintViolationList();
 
@@ -336,7 +333,7 @@ class DtoValidationService
      */
     private function getReflectionClass(string $className): ReflectionClass
     {
-        if (!isset($this->reflectionCache[$className])) {
+        if (! isset($this->reflectionCache[$className])) {
             $this->reflectionCache[$className] = new ReflectionClass($className);
         }
 
@@ -374,7 +371,7 @@ class DtoValidationService
 
         // Iterate through all properties of the DTO
         foreach ($reflection->getProperties() as $property) {
-            if (!$property->isInitialized($dto)) {
+            if (! $property->isInitialized($dto)) {
                 continue;
             }
 

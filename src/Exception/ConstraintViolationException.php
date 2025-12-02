@@ -27,8 +27,7 @@ class ConstraintViolationException extends AbstractApiException
         ?string $internalCodeSuffix = null,
         array $context = [],
         \Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct(
             $this->formatErrorMessage($message, $violations),
             $code,
@@ -43,7 +42,7 @@ class ConstraintViolationException extends AbstractApiException
         return $this->violations;
     }
 
-    function getApiInternalCodeParts(): array
+    public function getApiInternalCodeParts(): array
     {
         return [
             'CV',
@@ -60,8 +59,7 @@ class ConstraintViolationException extends AbstractApiException
     public function formatErrorMessage(
         string $message,
         ConstraintViolationListInterface $violations
-    ): string
-    {
+    ): string {
         if (count($violations) === 0) {
             return $message;
         }
