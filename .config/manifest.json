@@ -1,7 +1,0 @@
-{
-  "bundles": {
-    "Wexample\\SymfonyApi\\WexampleSymfonyApiBundle": [
-      "all"
-    ]
-  }
-}
