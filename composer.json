@@ -21,7 +21,7 @@
   "require": {
     "php": ">=8.2",
     "wexample/symfony-testing": "1.0.58",
-    "wexample/symfony-helpers": "1.0.64",
+    "wexample/symfony-helpers": "1.0.66",
     "wexample/symfony-design-system": "1.0.59"
   },
   "scripts": {
