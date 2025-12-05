@@ -1,6 +1,6 @@
 # wexample/symfony-api
 
-Version: 1.0.64
+Version: 1.0.65
 
 ## Table of Contents
 
