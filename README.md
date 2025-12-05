@@ -2,6 +2,8 @@
 
 Version: 1.0.66
 
+A simple syntax to expose API in Symfony
+
 ## Table of Contents
 
 - [Api Reference](#api-reference)
@@ -124,6 +126,14 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 This package is part of the Wexample suite and is compatible with other suite packages.
 
 Refer to each package's documentation for specific version compatibility requirements.
+
+## Dependencies
+
+- php: >=8.2
+- wexample/symfony-testing: 1.0.58
+- wexample/symfony-helpers: 1.0.68
+- wexample/symfony-design-system: 1.0.60
+
 
 # About us
 
