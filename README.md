@@ -1,6 +1,6 @@
 # wexample/symfony-api
 
-Version: 1.0.67
+Version: 1.0.68
 
 A simple syntax to expose API in Symfony
 
