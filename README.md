@@ -1,8 +1,6 @@
 # wexample/symfony-api
 
-Version: 1.0.64
-
-A simple syntax to expose API in Symfony
+Version: 1.0.62
 
 ## Table of Contents
 
@@ -127,14 +125,17 @@ This package is part of the Wexample suite and is compatible with other suite pa
 
 Refer to each package's documentation for specific version compatibility requirements.
 
+<<<<<<< Updated upstream
 ## Dependencies
 
 - php: >=8.2
 - wexample/symfony-testing: 1.0.58
-- wexample/symfony-helpers: 1.0.68
-- wexample/symfony-design-system: 1.0.60
+- wexample/symfony-helpers: 1.0.66
+- wexample/symfony-design-system: 1.0.59
 
 
+=======
+>>>>>>> Stashed changes
 # About us
 
 [Wexample](https://wexample.com) stands as a cornerstone of the digital ecosystem — a collective of seasoned engineers, researchers, and creators driven by a relentless pursuit of technological excellence. More than a media platform, it has grown into a vibrant community where innovation meets craftsmanship, and where every line of code reflects a commitment to clarity, durability, and shared intelligence.
