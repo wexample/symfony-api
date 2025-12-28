@@ -1,4 +1,4 @@
-import Page from '@wexample/symfony-loader/js/class/Page';
+import Page from '@wexample/symfony-loader/js/Class/Page';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-bash.min.js';
 
