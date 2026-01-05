@@ -14,7 +14,7 @@
 
         <div class="blocks blocks-no-stretch">
             <div class="block">
-                {{ ('@WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description') | trans }}
+                {{ ('WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description') | trans }}
 
                 {% if apiRoute.requirements is not empty %}
                     <h3>{{ '@page::section_requirements' | trans }}</h3>

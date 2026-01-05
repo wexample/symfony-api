@@ -1,3 +1,3 @@
-import App from '@wexample/symfony-design-system/js/class/App';
+import App from '@wexample/symfony-loader/js/Class/App';
 
-new App();
+export default new App();
