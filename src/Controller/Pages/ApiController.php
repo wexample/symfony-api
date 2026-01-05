@@ -8,8 +8,8 @@ use Symfony\Component\Routing\RouterInterface;
 use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
-use Wexample\SymfonyLoader\Controller\AbstractPagesController;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
+use Wexample\SymfonyLoader\Controller\AbstractPagesController;
 
 #[Route(path: 'api/', name: 'api_')]
 final class ApiController extends AbstractPagesController

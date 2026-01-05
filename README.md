@@ -132,7 +132,7 @@ Refer to each package's documentation for specific version compatibility require
 - php: >=8.2
 - wexample/symfony-testing: 1.0.61
 - wexample/symfony-helpers: 1.0.72
-- wexample/symfony-design-system: 1.0.64
+- wexample/symfony-loader: 0.0.1
 
 
 # About us
