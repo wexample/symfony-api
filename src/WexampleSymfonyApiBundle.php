@@ -4,7 +4,7 @@ namespace Wexample\SymfonyApi;
 
 use Wexample\SymfonyHelpers\Class\AbstractBundle;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
-use Wexample\SymfonyLoader\Interface\LoaderBundleInterface;
+use Wexample\SymfonyHelpers\Interface\LoaderBundleInterface;
 
 class WexampleSymfonyApiBundle extends AbstractBundle implements LoaderBundleInterface
 {
