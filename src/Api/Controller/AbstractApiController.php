@@ -21,13 +21,6 @@ abstract class AbstractApiController extends AbstractController
     final public const ROUTES_PATH_PREFIX = VariableHelper::API;
     final public const ROUTES_NAME_PREFIX = VariableHelper::API;
 
-    final public const DEFAULT_ROUTE_NAME_CREATE = 'create';
-    final public const DEFAULT_ROUTE_NAME_DELETE = 'delete';
-    final public const DEFAULT_ROUTE_NAME_DETAIL = 'detail';
-    final public const DEFAULT_ROUTE_NAME_LIST = VariableHelper::LIST;
-    final public const DEFAULT_ROUTE_NAME_SHOW = VariableHelper::SHOW;
-    final public const DEFAULT_ROUTE_NAME_UPDATE = 'update';
-
     public static function apiResponseSuccess(
         string $message = null,
         mixed $data = null,

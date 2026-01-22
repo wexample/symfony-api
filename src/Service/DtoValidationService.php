@@ -80,7 +80,7 @@ class DtoValidationService
             $content = json_decode($contentString, true);
         }
 
-        if (! $content) {
+        if ($content === null) {
             return null;
         }
 
