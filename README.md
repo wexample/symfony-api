@@ -1,6 +1,6 @@
 # wexample/symfony-api
 
-Version: 1.0.82
+Version: 1.0.83
 
 A simple syntax to expose API in Symfony
 
@@ -130,9 +130,9 @@ Refer to each package's documentation for specific version compatibility require
 ## Dependencies
 
 - php: >=8.2
-- wexample/symfony-testing: 1.0.74
-- wexample/symfony-helpers: 1.0.87
-- wexample/symfony-loader: 0.0.14
+- wexample/symfony-testing: 1.0.75
+- wexample/symfony-helpers: 1.0.88
+- wexample/symfony-loader: 0.0.15
 
 
 # About us
