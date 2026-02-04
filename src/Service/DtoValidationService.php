@@ -185,12 +185,21 @@ class DtoValidationService
                         $all = $attr->newInstance();
                         foreach ($all->constraints as $constraint) {
                             if ($constraint instanceof Type) {
+                                $itemType = $constraint->type;
+                                if (! is_subclass_of($itemType, AbstractDto::class)) {
+                                    continue;
+                                }
+
                                 foreach ($value as $item) {
                                     // Skip null items if the item type allows null
                                     if (null === $item && $typeRef->allowsNull()) {
                                         continue;
                                     }
-                                    $this->validateRawDataRecursive($item, $constraint->type);
+                                    if (! is_array($item)) {
+                                        continue;
+                                    }
+
+                                    $this->validateRawDataRecursive($item, $itemType);
                                 }
                             }
                         }
