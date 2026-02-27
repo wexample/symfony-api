@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyApi\Service\FormProcessor;
 
-use RuntimeException;
 use Symfony\Component\Form\FormInterface;
 use Wexample\SymfonyForms\Form\Data\EntityEditFormData;
 use Wexample\SymfonyForms\Service\FormProcessor\AbstractFormProcessor;
@@ -47,17 +46,8 @@ abstract class AbstractApiEntityFormProcessor extends AbstractFormProcessor
 
     public function getSuccessRedirectUrl(FormInterface $form): ?string
     {
-        if (! $this->urlGenerator) {
-            return null;
-        }
-
-        $routeName = $this->getSuccessRedirectRouteName($form);
-        if (! is_string($routeName) || $routeName === '') {
-            return null;
-        }
-
         return $this->urlGenerator->generate(
-            $routeName,
+            $this->getSuccessRedirectRouteName($form),
             $this->getSuccessRedirectRouteParameters($form)
         );
     }
@@ -66,14 +56,6 @@ abstract class AbstractApiEntityFormProcessor extends AbstractFormProcessor
     {
         $controllerClass = $this->getSuccessRedirectControllerClass();
 
-        if (! is_string($controllerClass) || $controllerClass === '') {
-            return null;
-        }
-
-        if (! defined($controllerClass . '::ROUTE_INDEX')) {
-            return null;
-        }
-
         return $controllerClass::buildRouteName(
             $controllerClass::ROUTE_INDEX
         );
@@ -81,7 +63,7 @@ abstract class AbstractApiEntityFormProcessor extends AbstractFormProcessor
 
     protected function getSuccessRedirectRouteParameters(FormInterface $form): array
     {
-        return $this->getNestedRouteParameters();
+        return [];
     }
 
     protected function getSuccessRedirectControllerClass(): ?string
@@ -89,38 +71,11 @@ abstract class AbstractApiEntityFormProcessor extends AbstractFormProcessor
         return null;
     }
 
-    protected function getNestedRouteParameters(): array
-    {
-        $attributes = $this->request?->attributes?->all() ?? [];
-        $params = [];
-
-        foreach ($attributes as $key => $value) {
-            if ($key === 'secureId') {
-                continue;
-            }
-
-            if (
-                is_string($key)
-                && str_ends_with($key, 'SecureId')
-                && is_string($value)
-                && $value !== ''
-            ) {
-                $params[$key] = $value;
-            }
-        }
-
-        return $params;
-    }
-
     protected function getApiPayload(FormInterface $form): array
     {
         $data = $form->getData();
         if ($data instanceof EntityEditFormData) {
             $data = $data->getFormData();
-        }
-
-        if (! is_array($data)) {
-            throw new RuntimeException('Expected array data for api entity form.');
         }
 
         $fieldNames = $this->getPayloadFieldNames($form, $data);
