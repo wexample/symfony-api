@@ -22,7 +22,8 @@
         "php": ">=8.2",
         "wexample/symfony-testing": "*",
         "wexample/symfony-helpers": "*",
-        "wexample/symfony-loader": "*"
+        "wexample/symfony-loader": "*",
+        "wexample/symfony-forms": "*"
     },
     "scripts": {
         "post-install-cmd": [
