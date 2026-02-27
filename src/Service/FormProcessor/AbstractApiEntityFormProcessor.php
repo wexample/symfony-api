@@ -10,7 +10,7 @@ abstract class AbstractApiEntityFormProcessor extends AbstractFormProcessor
 {
     private ?array $lastResponse = null;
 
-    abstract protected static function getEntityClass(): string;
+    abstract public static function getEntityClass(): string;
 
     abstract protected function getApiClient(): object;
 
