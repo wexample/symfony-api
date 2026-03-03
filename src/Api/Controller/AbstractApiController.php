@@ -85,13 +85,12 @@ abstract class AbstractApiController extends AbstractController
     }
 
     public static function apiResponseValidationError(
-        string $message,
         ApiErrorDataInterface $data,
         bool $prettyPrint = null,
         int $code = null,
     ): ApiResponse {
         return self::apiResponseError(
-            message: $message,
+            message: $data->getErrorCode(),
             data: $data->toArray(),
             prettyPrint: $prettyPrint,
             code: $code

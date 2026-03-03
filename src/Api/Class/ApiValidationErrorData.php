@@ -5,6 +5,9 @@ namespace Wexample\SymfonyApi\Api\Class;
 final class ApiValidationErrorData implements ApiErrorDataInterface
 {
     public const string KIND_VALIDATION_COLLECTION = 'validation_collection';
+    public const string DEFAULT_ERROR_CODE = 'VALIDATION_ERROR';
+
+    private string $errorCode;
 
     /**
      * @var array<int, array{
@@ -22,9 +25,19 @@ final class ApiValidationErrorData implements ApiErrorDataInterface
     /** @var array<int, string> */
     private array $globalSummary = [];
 
-    public static function create(): self
+    public function __construct(string $errorCode = self::DEFAULT_ERROR_CODE)
     {
-        return new self();
+        $this->errorCode = $errorCode;
+    }
+
+    public static function create(string $errorCode = self::DEFAULT_ERROR_CODE): self
+    {
+        return new self($errorCode);
+    }
+
+    public function getErrorCode(): string
+    {
+        return $this->errorCode;
     }
 
     public function addIssue(
@@ -91,6 +104,7 @@ final class ApiValidationErrorData implements ApiErrorDataInterface
     public function toArray(): array
     {
         return [
+            'errorCode' => $this->errorCode,
             'kind' => self::KIND_VALIDATION_COLLECTION,
             'issues' => $this->issues,
             'summary' => [
@@ -101,4 +115,3 @@ final class ApiValidationErrorData implements ApiErrorDataInterface
         ];
     }
 }
-
