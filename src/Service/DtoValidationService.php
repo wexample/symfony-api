@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
+use Wexample\SymfonyApi\Api\Dto\AbstractCollectionDto;
 use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Exception\ExtraPropertyException;
@@ -163,6 +164,26 @@ class DtoValidationService
             $value = $content[$name];
             $propertyType = $property->getType();
 
+            if ($dtoClassType !== AbstractCollectionDto::class
+                && is_subclass_of($dtoClassType, AbstractCollectionDto::class)
+                && $dtoClassType::getCollectionKey() === $name
+                && is_array($value)
+            ) {
+                $itemDtoClass = $dtoClassType::getCollectionItemDtoClass();
+
+                if (is_subclass_of($itemDtoClass, AbstractDto::class)) {
+                    foreach ($value as $item) {
+                        if (! is_array($item)) {
+                            continue;
+                        }
+
+                        $this->validateRawDataRecursive($item, $itemDtoClass);
+                    }
+                }
+
+                continue;
+            }
+
             // Handle nullable: if value is null and type allows null, skip deeper validation
             if ($propertyType->allowsNull() && null === $value) {
                 continue;
@@ -185,12 +206,21 @@ class DtoValidationService
                         $all = $attr->newInstance();
                         foreach ($all->constraints as $constraint) {
                             if ($constraint instanceof Type) {
+                                $itemType = $constraint->type;
+                                if (! is_subclass_of($itemType, AbstractDto::class)) {
+                                    continue;
+                                }
+
                                 foreach ($value as $item) {
                                     // Skip null items if the item type allows null
                                     if (null === $item && $typeRef->allowsNull()) {
                                         continue;
                                     }
-                                    $this->validateRawDataRecursive($item, $constraint->type);
+                                    if (! is_array($item)) {
+                                        continue;
+                                    }
+
+                                    $this->validateRawDataRecursive($item, $itemType);
                                 }
                             }
                         }
@@ -249,9 +279,22 @@ class DtoValidationService
         }
 
         try {
+            $contentForDeserialization = $content;
+
+            // Prevent Symfony serializer from trying to instantiate abstract item types
+            // declared on collection DTO "entities" property.
+            if ($dtoClassType !== AbstractCollectionDto::class
+                && is_subclass_of($dtoClassType, AbstractCollectionDto::class)
+            ) {
+                $collectionKey = $dtoClassType::getCollectionKey();
+                if (array_key_exists($collectionKey, $contentForDeserialization)) {
+                    $contentForDeserialization[$collectionKey] = [];
+                }
+            }
+
             // Constraints passed, now we create the actual dto.
             $dto = $this->serializer->deserialize(
-                json_encode($content),
+                json_encode($contentForDeserialization),
                 $dtoClassType,
                 DataHelper::FORMAT_JSON
             );
@@ -259,6 +302,24 @@ class DtoValidationService
             throw new DeserializationException(
                 previous: $e,
             );
+        }
+
+        if ($dto instanceof AbstractCollectionDto) {
+            $itemDtoClass = $dto::getCollectionItemDtoClass();
+            $items = [];
+            $collectionKey = $dto::getCollectionKey();
+
+            if (is_subclass_of($itemDtoClass, AbstractDto::class)) {
+                foreach (($content[$collectionKey] ?? []) as $itemContent) {
+                    if (! is_array($itemContent)) {
+                        continue;
+                    }
+
+                    $items[] = $this->createDto($itemContent, $itemDtoClass);
+                }
+            }
+
+            $dto->setCollectionItems($items);
         }
 
         // Validate the DTO itself first

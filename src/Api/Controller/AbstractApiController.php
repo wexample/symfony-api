@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
+use Wexample\SymfonyApi\Api\Class\ApiErrorDataInterface;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
@@ -56,9 +57,7 @@ abstract class AbstractApiController extends AbstractController
             $content[ApiHelper::KEY_RESPONSE_MESSAGE] = $message;
         }
 
-        if (! is_null($data)) {
-            $content[ApiHelper::KEY_RESPONSE_DATA] = $data;
-        }
+        $content[ApiHelper::KEY_RESPONSE_DATA] = !is_null($data) ? $data : (object) [];
 
         return new ApiResponse(
             $content,
@@ -80,6 +79,19 @@ abstract class AbstractApiController extends AbstractController
             $data,
             $prettyPrint,
             $code
+        );
+    }
+
+    public static function apiResponseValidationError(
+        ApiErrorDataInterface $data,
+        bool $prettyPrint = null,
+        int $code = null,
+    ): ApiResponse {
+        return self::apiResponseError(
+            message: $data->getErrorCode(),
+            data: $data->toArray(),
+            prettyPrint: $prettyPrint,
+            code: $code
         );
     }
 
