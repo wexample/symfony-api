@@ -3,7 +3,7 @@
   "description": "A simple syntax to expose API in Symfony",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.84",
+  "version": "1.0.86",
   "keywords": [
     "symfony-ux"
   ],
@@ -20,10 +20,10 @@
   ],
   "require": {
     "php": ">=8.2",
-    "wexample/symfony-testing": "1.0.77",
-    "wexample/symfony-helpers": "1.0.90",
-    "wexample/symfony-loader": "0.0.17",
-    "wexample/symfony-forms": "1.0.76"
+    "wexample/symfony-testing": "1.0.78",
+    "wexample/symfony-helpers": "1.0.91",
+    "wexample/symfony-loader": "0.0.18",
+    "wexample/symfony-forms": "1.0.77"
   },
   "scripts": {
     "post-install-cmd": [

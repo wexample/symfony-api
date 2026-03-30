@@ -57,7 +57,7 @@ abstract class AbstractApiController extends AbstractController
             $content[ApiHelper::KEY_RESPONSE_MESSAGE] = $message;
         }
 
-        $content[ApiHelper::KEY_RESPONSE_DATA] = !is_null($data) ? $data : (object) [];
+        $content[ApiHelper::KEY_RESPONSE_DATA] = ! is_null($data) ? $data : (object) [];
 
         return new ApiResponse(
             $content,
