@@ -47,8 +47,7 @@ class ExtraPropertyException extends ConstraintViolationException
         ?string $internalCodeSuffix = self::CODE_EXTRA_PROPERTY,
         array $context = [],
         \Throwable $previous = null
-    )
-    {
+    ) {
         $this->extraProperties = $extraProperties;
         $this->allowedProperties = $allowedProperties;
 
@@ -93,7 +92,7 @@ class ExtraPropertyException extends ConstraintViolationException
     {
         return [
             ...parent::getApiInternalCodeParts(),
-            'EXTRA'
+            'EXTRA',
         ];
     }
 }

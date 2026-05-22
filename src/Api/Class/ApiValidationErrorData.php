@@ -64,7 +64,7 @@ final class ApiValidationErrorData implements ApiErrorDataInterface
         if ('' === $path) {
             $this->globalSummary[] = $code;
         } else {
-            if (!isset($this->fieldSummary[$path])) {
+            if (! isset($this->fieldSummary[$path])) {
                 $this->fieldSummary[$path] = [];
             }
 

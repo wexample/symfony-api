@@ -37,8 +37,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
         ?string $internalCodeSuffix = self::CODE_MISSING_REQUIRED_PROPERTY,
         array $context = [],
         \Throwable $previous = null
-    )
-    {
+    ) {
         $this->propertyName = $propertyName;
 
         parent::__construct(
@@ -71,7 +70,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
     {
         return [
             ...parent::getApiInternalCodeParts(),
-            'MISSING'
+            'MISSING',
         ];
     }
 }

@@ -25,8 +25,7 @@ class FieldValidationException extends ConstraintViolationException
         ?string $internalCodeSuffix = self::CODE_FIELD_CONSTRAINT_VIOLATION,
         array $context = [],
         \Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct(
             sprintf(
                 'At least one field constraint has been violated during validation of DTO : %s',
@@ -47,7 +46,7 @@ class FieldValidationException extends ConstraintViolationException
     {
         return [
             ...parent::getApiInternalCodeParts(),
-            'FIELD'
+            'FIELD',
         ];
     }
 }

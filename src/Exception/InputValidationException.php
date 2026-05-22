@@ -23,8 +23,7 @@ class InputValidationException extends ConstraintViolationException
         ?string $internalCodeSuffix = self::CODE_INPUT_CONSTRAINT_VIOLATION,
         array $context = [],
         \Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct(
             'At least one constraint has been violated.',
             $violations,
@@ -42,7 +41,7 @@ class InputValidationException extends ConstraintViolationException
     {
         return [
             ...parent::getApiInternalCodeParts(),
-            'INPUT'
+            'INPUT',
         ];
     }
 }

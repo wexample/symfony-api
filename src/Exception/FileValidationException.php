@@ -13,7 +13,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class FileValidationException extends ConstraintViolationException
 {
     public const string CODE_FILE_CONSTRAINT_VIOLATION = 'FILE_CONSTRAINT_VIOLATION';
-    
+
     /**
      * Creates a new file validation exception.
      */
@@ -23,8 +23,7 @@ class FileValidationException extends ConstraintViolationException
         ?string $internalCodeSuffix = self::CODE_FILE_CONSTRAINT_VIOLATION,
         array $context = [],
         \Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct(
             'At least one constraint has been violated in sent files.',
             $violations,
@@ -34,7 +33,7 @@ class FileValidationException extends ConstraintViolationException
             $previous
         );
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -42,7 +41,7 @@ class FileValidationException extends ConstraintViolationException
     {
         return [
             ...parent::getApiInternalCodeParts(),
-            'FILE'
+            'FILE',
         ];
     }
 }

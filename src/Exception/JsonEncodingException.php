@@ -31,8 +31,7 @@ class JsonEncodingException extends ConstraintViolationException
         ?string $internalCodeSuffix = self::CODE_JSON_ENCODING_ERROR,
         array $context = [],
         \Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct(
             'Failed to encode data to JSON: ' . $errorMessage,
             $violations,
@@ -50,7 +49,7 @@ class JsonEncodingException extends ConstraintViolationException
     {
         return [
             ...parent::getApiInternalCodeParts(),
-            'JSON'
+            'JSON',
         ];
     }
 }
