@@ -1,6 +1,6 @@
 # symfony_api
 
-Version: 1.0.89
+Version: 1.0.90
 
 A simple syntax to expose API in Symfony
 
@@ -29,9 +29,9 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 
 - php: >=8.2
 - wexample/symfony-testing: *
-- wexample/symfony-helpers: >=1.0.93
-- wexample/symfony-loader: >=0.0.21
-- wexample/symfony-forms: >=1.0.80
+- wexample/symfony-helpers: >=2.0.0
+- wexample/symfony-loader: *
+- wexample/symfony-forms: *
 
 ## Versioning & Compatibility Policy
 
