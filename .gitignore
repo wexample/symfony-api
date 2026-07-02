@@ -43,3 +43,13 @@ coverage*.lcov
 .scannerwork
 /vendor
 /node_modules
+/logs/
+/log/
+/.cache/
+/cache/
+/tmp/
+/temp/
+/build/
+/dist/
+/out/
+/coverage/
