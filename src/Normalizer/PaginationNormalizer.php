@@ -10,13 +10,20 @@ class PaginationNormalizer implements NormalizerInterface
     public function normalizePagination(
         int $page,
         ?int $length,
-        array $items
+        array $items,
+        ?bool $hasMore = null
     ) {
+        $pagination = [
+            'page' => $page,
+            'length' => $length,
+        ];
+
+        if ($hasMore !== null) {
+            $pagination['hasMore'] = $hasMore;
+        }
+
         return [
-            'pagination' => [
-                'page' => $page,
-                'length' => $length,
-            ],
+            'pagination' => $pagination,
             'items' => $items,
         ];
     }
@@ -35,7 +42,8 @@ class PaginationNormalizer implements NormalizerInterface
         return $this->normalizePagination(
             page: $object["page"] ?? 0,
             length: $object["length"] ?? 10,
-            items: $object["items"] ?? []
+            items: $object["items"] ?? [],
+            hasMore: $object["hasMore"] ?? null
         );
     }
 
