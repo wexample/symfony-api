@@ -12,8 +12,8 @@
                     href="{{ api_url }}">{{ api_url }}</a>
         </h3>
 
-        <div class="blocks blocks-no-stretch">
-            <div class="block">
+        <div class="stack--horizontal">
+            <div class="block block--body">
                 {{ ('WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description') | trans }}
 
                 {% if apiRoute.requirements is not empty %}
@@ -41,7 +41,7 @@
                     </ul>
                 {% endif %}
             </div>
-            <div class="block blocks-col">
+            <div class="block block--body">
                 <div class="highlight-code">
                     <pre class="language-bash line-numbers"><code>curl {{ api_url }}</code></pre>
                 </div>

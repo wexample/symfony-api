@@ -1,14 +1,6 @@
-{%- extends '@WexampleSymfonyLoaderBundle/layouts/black/layout.html.twig' -%}
+{%- extends '@front/layouts/private/layout.html.twig' -%}
 
-{%- set layout_path = layout_path|default(_self) -%}
-
-{%- block layout_composer_html -%}
-    <div class="container-medium">
-        {% if page_title is defined %}
-            <h1>{{ page_title | trans }}</h1>
-        {% endif %}
-        <div class="page-content-body">
-            {{ block('page') }}
-        </div>
-    </div>
+{%- block layout_config -%}
+    {{- render_pass.layoutRenderNode.setDefaultView(_self) -}}
+    {{ parent() }}
 {%- endblock -%}
