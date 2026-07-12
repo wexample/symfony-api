@@ -1,14 +1,8 @@
 import Page from '@wexample/symfony-loader/js/Class/Page';
-import Prism from 'prismjs';
-import 'prismjs/components/prism-bash.min.js';
+import { initCodeBlocks } from '@wexample/symfony-design-system/assets/ts/code-block';
 
 export default class extends Page {
-  async pageReady() {
-    this.el.querySelectorAll('.highlight-code pre').forEach((elCode) => {
-      Prism.highlightElement(
-        elCode as HTMLElement,
-        Prism.languages.bash
-      );
-    })
-  }
+    async pageReady() {
+        await initCodeBlocks(this.el);
+    }
 }

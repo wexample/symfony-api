@@ -42,9 +42,7 @@
                 {% endif %}
             </div>
             <div class="block block--body">
-                <div class="highlight-code">
-                    <pre class="language-bash line-numbers"><code>curl {{ api_url }}</code></pre>
-                </div>
+                {{ include('@WexampleSymfonyDesignSystemBundle/partials/code-block.html.twig', {lang: 'bash', code: 'curl ' ~ api_url}) }}
             </div>
         </div>
         <br>
