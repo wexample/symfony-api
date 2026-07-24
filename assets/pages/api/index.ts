@@ -1,5 +1,5 @@
 import Page from '@wexample/symfony-loader/js/Class/Page';
-import { initCodeBlocks } from '@wexample/symfony-design-system/ts/code-block';
+import { initCodeBlocks } from '@wexample/symfony-content/ts/code-block';
 
 export default class extends Page {
     async pageReady() {
