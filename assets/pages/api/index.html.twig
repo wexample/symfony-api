@@ -1,57 +1,43 @@
 {%- extends '@front/layouts/private/layout.html.twig' -%}
 
 {%- block page_body -%}
-    {% for apiRoute in apiRoutes %}
-        {% set api_url = api_build_example_url(apiRoute.name) %}
-        <h2>
-            <a href="{{ apiRoute.path }}">{{ apiRoute.path }}</a>
-        </h2>
-        <h3>
-            <a
-                    target="_blank"
-                    href="{{ api_url }}">{{ api_url }}</a>
-        </h3>
+    <div class="doc">
+        {% for apiRoute in apiRoutes %}
+            {% set api_url = api_build_example_url(apiRoute.name) %}
+            <div class="doc-section">
+                <div class="doc-section--description">
+                    <h2><a href="{{ apiRoute.path }}">{{ apiRoute.path }}</a></h2>
+                    <p>{{ ('WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description') | trans }}</p>
 
-        <div class="stack--horizontal">
-            <div class="block block--body">
-                {{ ('WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description') | trans }}
+                    {% if apiRoute.requirements is not empty %}
+                        <h3>{{ '@page::section_requirements' | trans }}</h3>
+                        <ul>
+                            {% for name,constraint in apiRoute.requirements %}
+                                <li>
+                                    <strong>{{ name }}</strong>
+                                    <p>{{ constraint }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
 
-                {% if apiRoute.requirements is not empty %}
-                    <h3>{{ '@page::section_requirements' | trans }}</h3>
-
-                    <ul>
-                        {% for name,constraint in apiRoute.requirements %}
-                            <li>
-                                <h4>{{ name }}</h4>
-                                <p>{{ constraint }}</p>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
-                {% if apiRoute.queryParameters is not empty %}
-                    <h3>{{ '@page::section_query' | trans }}</h3>
-                    <ul>
-                        {% for queryParameter in apiRoute.queryParameters %}
-                            <li>
-                                <h4>{{ queryParameter }}</h4>
-                                <p> {{ ('api.' ~ apiRoute.name ~ '::query.' ~ (queryParameter | u.snake)) | trans }}</p>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                    {% if apiRoute.queryParameters is not empty %}
+                        <h3>{{ '@page::section_query' | trans }}</h3>
+                        <ul>
+                            {% for queryParameter in apiRoute.queryParameters %}
+                                <li>
+                                    <strong>{{ queryParameter }}</strong>
+                                    <p>{{ ('api.' ~ apiRoute.name ~ '::query.' ~ (queryParameter | u.snake)) | trans }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div class="doc-section--code block block--body">
+                    <a target="_blank" href="{{ api_url }}">{{ api_url }}</a>
+                    {{ include('@WexampleSymfonyDesignSystemBundle/partials/code-block.html.twig', {lang: 'bash', code: 'curl ' ~ api_url}) }}
+                </div>
             </div>
-            <div class="block block--body">
-                {{ include('@WexampleSymfonyDesignSystemBundle/partials/code-block.html.twig', {lang: 'bash', code: 'curl ' ~ api_url}) }}
-            </div>
-        </div>
-        <br>
-        <br>
-        <br>
-        <br>
-    {% endfor %}
-    <br>
-    <br>
-    <br>
-    <br>
+        {% endfor %}
+    </div>
 {%- endblock -%}
