@@ -23,7 +23,8 @@
     "wexample/symfony-testing": ">=1.0.86",
     "wexample/symfony-helpers": ">=4.0.0",
     "wexample/symfony-loader": ">=2.0.0",
-    "wexample/symfony-forms": ">=1.0.85"
+    "wexample/symfony-forms": ">=1.0.85",
+    "wexample/symfony-content": ">=1.0.0"
   },
   "scripts": {
     "post-install-cmd": [
