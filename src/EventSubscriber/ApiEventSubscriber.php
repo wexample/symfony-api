@@ -156,7 +156,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
         $data = null;
         $message = $exception->getMessage();
-        if ($this->parameterBag->get('api.debug') ?? false) {
+        if ($this->parameterBag->get('kernel.debug')) {
             $flatTrace = [];
 
             $flatTrace[] = [
