@@ -64,6 +64,13 @@ class ExportEntitiesCommand extends Command
 
             unset($data['visibility']);
 
+            // Flatten pseudocode items wrapper — extract the entity class directly
+            if (isset($data['items'][0])) {
+                $data = $data['items'][0];
+            }
+
+            $data['name'] = basename($yamlFile, '.yml');
+
             file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n");
             $exported++;
         }
