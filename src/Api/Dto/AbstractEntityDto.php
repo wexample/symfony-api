@@ -3,7 +3,6 @@
 namespace Wexample\SymfonyApi\Api\Dto;
 
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
-use Wexample\SymfonyMoney\Entity\Currency;
 
 abstract class AbstractEntityDto extends AbstractDto
 {
