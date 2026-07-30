@@ -97,7 +97,9 @@ abstract class AbstractApiController extends AbstractController
         );
     }
 
-    public static function apiResponsePaginated(
+    // Kept out of the public surface: Symfony treats every public controller
+    // method as an action and would try to autowire the PaginationDto.
+    protected static function apiResponsePaginated(
         PaginationDto $pagination,
         array $items
     ): ApiResponse {
@@ -113,7 +115,7 @@ abstract class AbstractApiController extends AbstractController
      * Builds the pagination asked by the request. A total left to null tells the
      * client the count is unavailable, which degrades the pager to prev/next.
      */
-    public static function getQueryOptionPagination(
+    protected static function getQueryOptionPagination(
         Request $request,
         ?int $total = null
     ): PaginationDto {
