@@ -9,9 +9,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Class\ApiErrorDataInterface;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
+use Wexample\SymfonyApi\Api\Dto\PaginationDto;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
 use Wexample\SymfonyHelpers\Helper\DateHelper;
@@ -96,18 +98,42 @@ abstract class AbstractApiController extends AbstractController
     }
 
     public static function apiResponsePaginated(
-        int $page,
-        ?int $length,
+        PaginationDto $pagination,
         array $items
     ): ApiResponse {
         return self::apiResponseCollection(
             items: $items,
             extraInfo: [
-                'pagination' => [
-                    'page' => $page,
-                    'length' => $length,
-                ],
+                'pagination' => $pagination->toArray(),
             ]
+        );
+    }
+
+    /**
+     * Builds the pagination asked by the request. A total left to null tells the
+     * client the count is unavailable, which degrades the pager to prev/next.
+     */
+    public static function getQueryOptionPagination(
+        Request $request,
+        ?int $total = null
+    ): PaginationDto {
+        $length = self::getQueryOptionValue(
+            $request,
+            VariableHelper::LENGTH,
+            LengthQueryOption::DEFAULT_PAGE_LENGTH
+        );
+
+        $page = self::getQueryOptionValue(
+            $request,
+            VariableHelper::PAGE,
+            0
+        );
+
+        return new PaginationDto(
+            page: max(0, (int) $page),
+            // A zero or negative length means "no limit".
+            length: max(0, (int) $length) ?: null,
+            total: $total
         );
     }
 

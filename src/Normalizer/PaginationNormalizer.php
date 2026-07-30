@@ -4,59 +4,31 @@ namespace Wexample\SymfonyApi\Normalizer;
 
 use ArrayObject;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Wexample\SymfonyApi\Api\Dto\PaginationDto;
 
 class PaginationNormalizer implements NormalizerInterface
 {
-    public function normalizePagination(
-        int $page,
-        ?int $length,
-        array $items,
-        ?bool $hasMore = null
-    ) {
-        $pagination = [
-            'page' => $page,
-            'length' => $length,
-        ];
-
-        if ($hasMore !== null) {
-            $pagination['hasMore'] = $hasMore;
-        }
-
-        return [
-            'pagination' => $pagination,
-            'items' => $items,
-        ];
-    }
-
     /**
-     * @param array       $object
-     * @param string|null $format
-     * @param array       $context
-     * @return array|string|int|float|bool|ArrayObject|null
+     * @param PaginationDto $data
      */
     public function normalize(
-        mixed $object,
+        mixed $data,
         ?string $format = null,
         array $context = []
     ): array|string|int|float|bool|ArrayObject|null {
-        return $this->normalizePagination(
-            page: $object["page"] ?? 0,
-            length: $object["length"] ?? 10,
-            items: $object["items"] ?? [],
-            hasMore: $object["hasMore"] ?? null
-        );
+        return $data->toArray();
     }
 
     public function supportsNormalization(
         mixed $data,
-        string $format = null,
+        ?string $format = null,
         array $context = []
     ): bool {
-        return true;
+        return $data instanceof PaginationDto;
     }
 
     public function getSupportedTypes(?string $format): array
     {
-        return ['array' => true];
+        return [PaginationDto::class => true];
     }
 }
