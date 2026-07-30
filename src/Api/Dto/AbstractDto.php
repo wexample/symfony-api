@@ -3,12 +3,14 @@
 namespace Wexample\SymfonyApi\Api\Dto;
 
 use ReflectionClass;
+use ReflectionProperty;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Collection;
 use Wexample\SymfonyApi\Api\Attribute\RequiredDtoProperty;
+use Wexample\SymfonyHelpers\Interface\NormalizableDataInterface;
 
-abstract class AbstractDto
+abstract class AbstractDto implements NormalizableDataInterface
 {
     /** @var \Symfony\Component\HttpFoundation\File\UploadedFile[] */
     protected array $files = [];
@@ -53,5 +55,18 @@ abstract class AbstractDto
     public function getFiles(): array
     {
         return $this->files;
+    }
+
+    public function toArray(): array
+    {
+        $data = [];
+
+        foreach ((new ReflectionClass($this))->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            if (! $property->isStatic() && $property->isInitialized($this)) {
+                $data[$property->getName()] = $property->getValue($this);
+            }
+        }
+
+        return $data;
     }
 }
