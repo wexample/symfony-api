@@ -37,12 +37,13 @@ class ExportEntitiesCommand extends Command
         $sourceDir = $this->resolvePath($projectDir, $input->getOption('source'));
         $outputDir = $this->resolvePath($projectDir, $input->getOption('output'));
 
-        if (!is_dir($sourceDir)) {
+        if (! is_dir($sourceDir)) {
             $output->writeln(sprintf('<error>Source directory not found: %s</error>', $sourceDir));
+
             return Command::FAILURE;
         }
 
-        if (!is_dir($outputDir)) {
+        if (! is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
 
@@ -59,6 +60,7 @@ class ExportEntitiesCommand extends Command
                     unlink($jsonFile);
                     $removed++;
                 }
+
                 continue;
             }
 

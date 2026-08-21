@@ -12,6 +12,7 @@ abstract class AbstractEntityDto extends AbstractDto
     {
         $dto = new static();
         $dto->secureId = $entity->getSecureId();
+
         return $dto;
     }
 }
