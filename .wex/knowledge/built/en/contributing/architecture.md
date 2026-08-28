@@ -1,19 +1,3 @@
-# symfony_api
-
-Version: 3.0.0
-
-`wexample/symfony-api` is a Symfony bundle that gives backend developers a declarative, attribute-driven way to expose REST endpoints: controller methods return `ApiResponse`, request bodies are validated against a DTO via `#[ValidateRequestContent]`, and query parameters are typed and constrained through a family of `#[QueryOption]` attributes. It targets Symfony applications (PHP ≥ 8.2) inside the Wexample suite that need structured JSON APIs without hand-rolling serialization or validation boilerplate.
-
-## Table of Contents
-
-- [Architecture](#architecture)
-- [Integration in the Suite](#integration-in-the-suite)
-- [Dependencies](#dependencies)
-- [Versioning & Compatibility Policy](#versioning--compatibility-policy)
-- [License](#license)
-- [About us](#about-us)
-- [Migration Notes](#migration-notes)
-
 ## Architecture
 
 The package is a Symfony bundle. Every HTTP call that touches a route owned by a subclass of `AbstractApiController` passes through the same pipeline:
@@ -142,52 +126,3 @@ src/Controller/Pages/ApiController.php renders a human-readable index of the app
 ### Test utilities
 
 src/Tests/Traits/TestCase/Application/ApiTestCaseTrait.php provides convenience methods for functional tests: `apiParseResponse`, `applicationParseResponse`, `goToSimpleRouteAndAssertSuccess`, `goToSimpleRouteAndAssertFailedTypeRestriction`, `goToSimpleRouteAndAssertErrorWhenMissing`, and `checkApiQueryOptionIntType`. The bundle also ships two test controllers under `src/Api/Controller/Test/` (`ResponseController` and `QueryOptionController`) that are registered by `routes.yaml` and serve as targets for the built-in test suite.
-
-## Integration in the Suite
-
-This package is part of the Wexample Suite — a collection of high-quality, modular tools designed to work seamlessly together across multiple languages and environments.
-
-### Related Packages
-
-The suite includes packages for configuration management, file handling, prompts, and more. Each package can be used independently or as part of the integrated suite.
-
-Visit the [Wexample Suite documentation](https://docs.wexample.com) for the complete package ecosystem.
-
-## Dependencies
-
-- php: >=8.2
-- wexample/symfony-testing: >=1.0.86
-- wexample/symfony-helpers: >=5.0.0
-- wexample/symfony-loader: >=4.0.0
-- wexample/symfony-forms: >=2.0.0
-- wexample/symfony-content: >=2.0.0
-
-## Versioning & Compatibility Policy
-
-Wexample packages follow **Semantic Versioning** (SemVer):
-
-- **MAJOR**: Breaking changes
-- **MINOR**: New features, backward compatible
-- **PATCH**: Bug fixes, backward compatible
-
-We maintain backward compatibility within major versions and provide clear migration guides for breaking changes.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-Free to use in both personal and commercial projects.
-
-## About us
-
-[Wexample](https://wexample.com) stands as a cornerstone of the digital ecosystem — a collective of seasoned engineers, researchers, and creators driven by a relentless pursuit of technological excellence. More than a media platform, it has grown into a vibrant community where innovation meets craftsmanship, and where every line of code reflects a commitment to clarity, durability, and shared intelligence.
-
-This packages suite embodies this spirit. Trusted by professionals and enthusiasts alike, it delivers a consistent, high-quality foundation for modern development — open, elegant, and battle-tested. Its reputation is built on years of collaboration, refinement, and rigorous attention to detail, making it a natural choice for those who demand both robustness and beauty in their tools.
-
-Wexample cultivates a culture of mastery. Each package, each contribution carries the mark of a community that values precision, ethics, and innovation — a community proud to shape the future of digital craftsmanship.
-
-## Migration Notes
-
-When upgrading between major versions, refer to the migration guides in the documentation.
-
-Breaking changes are clearly documented with upgrade paths and examples.
