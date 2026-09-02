@@ -6,12 +6,12 @@ use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 
 abstract class AbstractEntityDto extends AbstractDto
 {
-    public string $secureId;
+    public string $id;
 
     public static function fromEntity(AbstractEntity $entity): self
     {
         $dto = new static();
-        $dto->secureId = $entity->getSecureId();
+        $dto->id = (string) $entity->getId();
 
         return $dto;
     }

@@ -86,9 +86,7 @@ class {$entityNormalizerClass} extends AbstractEntityNormalizer
         ?string \$format = null,
         array \$context = []
     ): array|string|int|float|bool|ArrayObject|null {
-        return parent::normalizeEntity(\$entity, \$format, \$context) + [
-                'secureId' => \$entity->getSecureId(),
-            ];
+        return parent::normalizeEntity(\$entity, \$format, \$context);
     }
 }
 PHP;

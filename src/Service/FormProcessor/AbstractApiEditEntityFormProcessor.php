@@ -14,7 +14,7 @@ abstract class AbstractApiEditEntityFormProcessor extends AbstractApiEntityFormP
         if ($data instanceof EntityEditFormData) {
             $entity = $this->getApiClient()
                 ->getRepository($data->getEntityType())
-                ->fetch($data->getSecureId());
+                ->fetch($data->getId());
 
             $data->setEntity($entity);
 
