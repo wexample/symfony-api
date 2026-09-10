@@ -21,6 +21,10 @@ trait QueryOptionConstrainedTrait
 
     public function getRequestValue(Request $request): mixed
     {
-        return $request->get($this->key) ?: $this->default;
+        $value = $request->get($this->key);
+
+        // Not a falsy test: a zero is a value the caller meant, and the pagination
+        // reads it as "no limit". Only an absent or empty parameter is a default.
+        return ($value === null || $value === '') ? $this->default : $value;
     }
 }
