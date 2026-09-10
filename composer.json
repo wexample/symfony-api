@@ -19,7 +19,7 @@
     }
   ],
   "require": {
-    "php": ">=8.2",
+    "php": ">=8.5",
     "wexample/symfony-testing": ">=1.0.86",
     "wexample/symfony-helpers": ">=7.0.0",
     "wexample/symfony-loader": ">=5.0.0",
@@ -33,5 +33,10 @@
     "post-update-cmd": [
       "php bin/console api:check-node-install"
     ]
+  },
+  "extra": {
+    "install": {
+      "bundle_env": "all"
+    }
   }
 }
