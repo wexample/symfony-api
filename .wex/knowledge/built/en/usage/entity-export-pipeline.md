@@ -35,6 +35,29 @@ Options : `--data-dir` (défaut: `front/data/entity`), `--output-dir` (défaut: 
 
 Produit : `front/js/Entity/<Entity>.ts`, `front/js/Repository/<Entity>Repository.ts`, `front/js/Common/generatedEntitySchemas.ts`, `front/js/Common/generatedRepositories.ts`
 
+## Entités définies dans un bundle
+
+Les trois commandes tournent depuis l'app — seule elle a un kernel à scanner — mais une entité définie dans un bundle appartient au bundle, et c'est là que ses artefacts doivent atterrir : le package les livre ensuite à toutes les apps qui l'installent.
+
+Il suffit de pointer les chemins sur le package, symlinké dans `vendor/` en dev :
+
+```bash
+PKG=vendor/wexample/symfony-ai
+
+php bin/console pseudocode:generate:pseudocode $PKG/pseudocode $PKG/src -r
+php bin/console api:export:entities --source=$PKG/pseudocode/entity --output=$PKG/assets/data/entity
+node node_modules/@wexample/js-api/bin/generate-entities.mjs --data-dir=$PKG/assets/data/entity --output-dir=$PKG/assets
+node node_modules/@wexample/js-api/bin/generate-repositories.mjs --data-dir=$PKG/assets/data/entity --output-dir=$PKG/assets
+```
+
+Trois pièges :
+
+- L'argument source de `pseudocode:generate:pseudocode` est `src`, pas `src/Entity` : le processor ajoute `Entity` lui-même.
+- Les scripts JS ne lisent que la forme `--option=valeur`. En `--option valeur` l'argument est ignoré sans un mot, et la génération repart sur les défauts de l'app.
+- La commande pseudocode ajoute au passage les `additionalSources` configurées dans l'app, donc des entités venues d'ailleurs. Supprimer les `.yml` étrangers avant l'export JSON.
+
+Le layout obtenu est celui de `symfony-money` : `assets/data/entity/<entity>.json`, `assets/Entity/<Entity>.ts`, `assets/Repository/<Entity>Repository.ts`. Le `.ts` importe son schéma en relatif, donc l'ensemble se déplace d'un bloc.
+
 ## Entités issues d'un package vendor
 
 Si l'entité est définie dans un package npm (ex: `@wexample/js-money`), ajouter dans le YAML et le JSON :
