@@ -10,11 +10,17 @@ use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
  */
 class PaginationDto
 {
+    public readonly int $page;
+
     public function __construct(
-        public readonly int $page = 0,
+        int $page = 0,
         public readonly ?int $length = LengthQueryOption::DEFAULT_PAGE_LENGTH,
         public readonly ?int $total = null,
     ) {
+        // A negative page counts back from the end, -1 being the last one. A caller
+        // reading a collection newest first cannot know how many pages there are
+        // before it has asked, and this is how it asks.
+        $this->page = max(0, $page < 0 ? ($this->getPagesCount() ?? 1) + $page : $page);
     }
 
     public function withTotal(?int $total): self

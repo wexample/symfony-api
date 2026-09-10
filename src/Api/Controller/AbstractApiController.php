@@ -132,7 +132,9 @@ abstract class AbstractApiController extends AbstractController
         );
 
         return new PaginationDto(
-            page: max(0, (int) $page),
+            // Negatives are left alone: the pagination reads them as pages counted
+            // back from the end.
+            page: (int) $page,
             // A zero or negative length means "no limit".
             length: max(0, (int) $length) ?: null,
             total: $total
