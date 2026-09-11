@@ -10,7 +10,7 @@ use Wexample\SymfonyApi\Tests\Traits\TestCase\Application\ApiTestCaseTrait;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\TextManipulationTestCaseTrait;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyHelpers\Helper\ArrayHelper;
-use Wexample\SymfonyHelpers\Helper\DateHelper;
+use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 use Wexample\SymfonyTesting\Tests\AbstractRoleControllerTestCase;

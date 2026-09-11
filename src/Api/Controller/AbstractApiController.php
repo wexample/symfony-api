@@ -16,7 +16,7 @@ use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Dto\PaginationDto;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
-use Wexample\SymfonyHelpers\Helper\DateHelper;
+use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
 abstract class AbstractApiController extends AbstractController

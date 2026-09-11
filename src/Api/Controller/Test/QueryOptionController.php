@@ -16,7 +16,7 @@ use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
-use Wexample\SymfonyHelpers\Helper\DateHelper;
+use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 

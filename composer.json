@@ -20,6 +20,7 @@
   ],
   "require": {
     "php": ">=8.5",
+    "wexample/php-date": ">=1.0.2",
     "wexample/symfony-testing": ">=1.0.86",
     "wexample/symfony-helpers": ">=7.0.0",
     "wexample/symfony-loader": ">=5.0.0",
