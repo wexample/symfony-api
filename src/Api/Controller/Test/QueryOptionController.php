@@ -20,7 +20,7 @@ use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Route(path: '_test/api/query-option/', name: '_test_query_option_')]
+#[Route(path: '_test/api/query-option/', name: 'test_query_option_')]
 final class QueryOptionController extends AbstractApiController
 {
     use SymfonyApiBundleClassTrait;
