@@ -6,7 +6,7 @@ git:
 global:
   name: symfony_api
   type: app
-  version: 5.0.2
+  version: 5.0.3
 wex:
   migration: 5
   version: 6.0.136
