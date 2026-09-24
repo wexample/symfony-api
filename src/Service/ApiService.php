@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\Service;
 
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Exception\InvalidParameterException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Wexample\Helpers\Helper\TextHelper;
@@ -35,7 +36,18 @@ class ApiService
             );
         }
 
-        return $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost().
-            $this->router->generate($routeName, $routeParameters);
+        $request = $this->requestStack->getCurrentRequest();
+
+        try {
+            $path = $this->router->generate($routeName, $routeParameters);
+        } catch (InvalidParameterException) {
+            // An example that does not fit the route — none was written, and
+            // what stands in for it fails a uuid requirement — is not worth a
+            // broken page: the path is shown as declared, its parameters left
+            // for the reader to fill.
+            $path = $request->getBaseUrl().$route->getPath();
+        }
+
+        return $request->getSchemeAndHttpHost().$path;
     }
 }

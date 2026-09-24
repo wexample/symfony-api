@@ -1,0 +1,10 @@
+# What a query parameter means on any route that takes it. A route that means
+# something more by one says so under its own name, api.<route>::query.<key>.
+search: Text to look for.
+length: How many results to return at most.
+page: Which page of results to return.
+display_format: The shape the entities are returned in.
+filter_tag: Only what carries this tag.
+year: Only what belongs to this year.
+id: The identifier of one entity.
+_all: Every result at once, without pages.

@@ -7,7 +7,14 @@
             <div class="doc-section">
                 <div class="doc-section--description">
                     <h2><a href="{{ apiRoute.path }}">{{ apiRoute.path }}</a></h2>
-                    <p>{{ ('WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description') | trans }}</p>
+                    {#- A route of another bundle has no description here unless
+                        someone wrote one: said when there is one, left out when
+                        there is not — a key printed as text tells nothing. -#}
+                    {% set description_key = 'WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description' %}
+                    {% set description = description_key | trans %}
+                    {% if description != description_key %}
+                        <p>{{ description }}</p>
+                    {% endif %}
 
                     {% if apiRoute.requirements is not empty %}
                         <h3>{{ '@page::section_requirements' | trans }}</h3>
@@ -27,7 +34,20 @@
                             {% for queryParameter in apiRoute.queryParameters %}
                                 <li>
                                     <strong>{{ queryParameter }}</strong>
-                                    <p>{{ ('api.' ~ apiRoute.name ~ '::query.' ~ (queryParameter | u.snake)) | trans }}</p>
+                                    {#- What the route says of its own parameter, else
+                                        what the parameter means wherever it is taken —
+                                        a page or a length is the same on every route —
+                                        else nothing. -#}
+                                    {% set query_name = queryParameter | u.snake %}
+                                    {% set route_key = 'api.' ~ apiRoute.name ~ '::query.' ~ query_name %}
+                                    {% set generic_key = 'WexampleSymfonyApiBundle.api.query::' ~ query_name %}
+                                    {% set query_description = route_key | trans %}
+                                    {% if query_description == route_key %}
+                                        {% set query_description = generic_key | trans %}
+                                    {% endif %}
+                                    {% if query_description != generic_key %}
+                                        <p>{{ query_description }}</p>
+                                    {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>

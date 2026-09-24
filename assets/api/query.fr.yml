@@ -1,0 +1,8 @@
+search: Texte à rechercher.
+length: Nombre maximum de résultats renvoyés.
+page: Page de résultats à renvoyer.
+display_format: Forme sous laquelle les entités sont renvoyées.
+filter_tag: Seulement ce qui porte ce tag.
+year: Seulement ce qui appartient à cette année.
+id: Identifiant d'une entité.
+_all: Tous les résultats d'un coup, sans pagination.
