@@ -24,11 +24,11 @@ Options : `--source` (défaut: `pseudocode/entity`), `--output` (défaut: `front
 
 Produit : `front/data/entity/<entity>.json`
 
-### 3. Générer les classes TypeScript (js-api)
+### 3. Générer les classes TypeScript (js-api-entity)
 
 ```bash
-node node_modules/@wexample/js-api/bin/generate-entities.mjs
-node node_modules/@wexample/js-api/bin/generate-repositories.mjs
+node node_modules/@wexample/js-api-entity/bin/generate-entities.mjs
+node node_modules/@wexample/js-api-entity/bin/generate-repositories.mjs
 ```
 
 Options : `--data-dir` (défaut: `front/data/entity`), `--output-dir` (défaut: `front/js`).
@@ -46,8 +46,8 @@ PKG=vendor/wexample/symfony-ai
 
 php bin/console pseudocode:generate:pseudocode $PKG/pseudocode $PKG/src -r
 php bin/console api:export:entities --source=$PKG/pseudocode/entity --output=$PKG/assets/data/entity
-node node_modules/@wexample/js-api/bin/generate-entities.mjs --data-dir=$PKG/assets/data/entity --output-dir=$PKG/assets
-node node_modules/@wexample/js-api/bin/generate-repositories.mjs --data-dir=$PKG/assets/data/entity --output-dir=$PKG/assets
+node node_modules/@wexample/js-api-entity/bin/generate-entities.mjs --data-dir=$PKG/assets/data/entity --output-dir=$PKG/assets
+node node_modules/@wexample/js-api-entity/bin/generate-repositories.mjs --data-dir=$PKG/assets/data/entity --output-dir=$PKG/assets
 ```
 
 Trois pièges :
