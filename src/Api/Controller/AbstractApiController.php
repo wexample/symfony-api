@@ -25,10 +25,10 @@ abstract class AbstractApiController extends AbstractController
     final public const ROUTES_NAME_PREFIX = VariableHelper::API;
 
     public static function apiResponseSuccess(
-        string $message = null,
+        ?string $message = null,
         mixed $data = null,
         string $status = ApiHelper::RESPONSE_TYPE_SUCCESS,
-        bool $prettyPrint = null
+        ?bool $prettyPrint = null
     ): ApiResponse {
         return self::apiResponse(
             $message,
@@ -39,11 +39,11 @@ abstract class AbstractApiController extends AbstractController
     }
 
     public static function apiResponse(
-        string $message = null,
-        string $type = null,
+        ?string $message = null,
+        ?string $type = null,
         mixed $data = null,
-        bool $prettyPrint = null,
-        int $code = null
+        ?bool $prettyPrint = null,
+        ?int $code = null
     ): ApiResponse {
         if (is_null($code)) {
             $code = ApiHelper::RESPONSE_TYPE_FAILURE === $type
@@ -72,8 +72,8 @@ abstract class AbstractApiController extends AbstractController
         string|Exception $message,
         mixed $data = null,
         string $type = ApiHelper::RESPONSE_TYPE_FAILURE,
-        bool $prettyPrint = null,
-        int $code = null,
+        ?bool $prettyPrint = null,
+        ?int $code = null,
     ): ApiResponse {
         return self::apiResponse(
             $message instanceof Exception ? $message->getMessage() : $message,
@@ -86,8 +86,8 @@ abstract class AbstractApiController extends AbstractController
 
     public static function apiResponseValidationError(
         ApiErrorDataInterface $data,
-        bool $prettyPrint = null,
-        int $code = null,
+        ?bool $prettyPrint = null,
+        ?int $code = null,
     ): ApiResponse {
         return self::apiResponseError(
             message: $data->getErrorCode(),

@@ -13,7 +13,7 @@ class DeserializationError extends Constraint
     public string $errorMessage;
     public string $propertyName;
 
-    public function __construct(string $errorMessage, string $propertyName, array $options = null)
+    public function __construct(string $errorMessage, string $propertyName, ?array $options = null)
     {
         $this->errorMessage = $errorMessage;
         $this->propertyName = $propertyName;

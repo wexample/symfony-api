@@ -12,7 +12,7 @@ class MissingRequiredProperty extends Constraint
     public string $message = 'The required key "{{ key }}" is missing in the data.';
     public string $propertyName;
 
-    public function __construct(string $propertyName, array $options = null)
+    public function __construct(string $propertyName, ?array $options = null)
     {
         $this->propertyName = $propertyName;
 

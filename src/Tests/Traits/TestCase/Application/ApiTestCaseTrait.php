@@ -25,7 +25,7 @@ trait ApiTestCaseTrait
     }
 
 
-    public function applicationParseResponse(Response $response = null): object
+    public function applicationParseResponse(?Response $response = null): object
     {
         return $this->apiParseResponse(
             $response ?? $this->client->getResponse()

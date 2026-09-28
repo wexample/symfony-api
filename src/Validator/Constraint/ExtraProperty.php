@@ -12,7 +12,7 @@ class ExtraProperty extends Constraint
     public string $message = 'The property "{{ property }}" is not defined in the DTO.';
     public string $propertyName;
 
-    public function __construct(string $propertyName, array $options = null)
+    public function __construct(string $propertyName, ?array $options = null)
     {
         $this->propertyName = $propertyName;
 

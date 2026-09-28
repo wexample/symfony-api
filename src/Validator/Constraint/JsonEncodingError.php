@@ -12,7 +12,7 @@ class JsonEncodingError extends Constraint
     public string $message = 'Failed to encode data to JSON: {{ message }}';
     public string $errorMessage;
 
-    public function __construct(string $errorMessage, array $options = null)
+    public function __construct(string $errorMessage, ?array $options = null)
     {
         $this->errorMessage = $errorMessage;
 
