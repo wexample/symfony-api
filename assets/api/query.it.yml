@@ -1,0 +1,8 @@
+search: 'Testo da cercare.'
+length: 'Quanti risultati restituire al massimo.'
+page: 'Quale pagina di risultati restituire.'
+display_format: 'La forma in cui le entità vengono restituite.'
+filter_tag: 'Solo ciò che porta questo tag.'
+year: "Solo ciò che appartiene a quest'anno."
+id: "L'identificatore di un'entità."
+_all: 'Tutti i risultati insieme, senza pagine.'

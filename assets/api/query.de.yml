@@ -1,0 +1,8 @@
+search: 'Text, nach dem gesucht werden soll.'
+length: 'Wie viele Ergebnisse maximal zurückgegeben werden sollen.'
+page: 'Welche Seite der Ergebnisse zurückgegeben werden soll.'
+display_format: 'Die Form, in der die Entitäten zurückgegeben werden.'
+filter_tag: 'Nur das, was dieses Tag trägt.'
+year: 'Nur das, was zu diesem Jahr gehört.'
+id: 'Die Kennung einer Entität.'
+_all: 'Alle Ergebnisse auf einmal, ohne Seiten.'
