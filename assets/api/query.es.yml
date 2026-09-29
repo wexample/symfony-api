@@ -1,0 +1,8 @@
+search: 'Texto a buscar.'
+length: 'Cuántos resultados devolver como máximo.'
+page: 'Qué página de resultados devolver.'
+display_format: 'La forma en que se devuelven las entidades.'
+filter_tag: 'Solo lo que lleva esta etiqueta.'
+year: 'Solo lo que pertenece a este año.'
+id: 'El identificador de una entidad.'
+_all: 'Todos los resultados de una vez, sin páginas.'
