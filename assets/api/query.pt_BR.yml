@@ -1,0 +1,8 @@
+search: 'Texto a ser procurado.'
+length: 'Quantos resultados retornar no máximo.'
+page: 'Qual página de resultados retornar.'
+display_format: 'A forma como as entidades são retornadas.'
+filter_tag: 'Apenas o que possui essa tag.'
+year: 'Apenas o que pertence a este ano.'
+id: 'O identificador de uma entidade.'
+_all: 'Todos os resultados de uma vez, sem páginas.'

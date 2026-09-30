@@ -1,0 +1,8 @@
+search: 'Teks yang dicari.'
+length: 'Jumlah maksimum hasil yang akan ditampilkan.'
+page: 'Halaman hasil yang akan ditampilkan.'
+display_format: 'Bentuk entitas yang ditampilkan.'
+filter_tag: 'Hanya yang memiliki tag ini.'
+year: 'Hanya yang termasuk tahun ini.'
+id: 'Pengidentifikasi satu entitas.'
+_all: 'Semua hasil sekaligus, tanpa halaman.'

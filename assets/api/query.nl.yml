@@ -1,0 +1,8 @@
+search: 'Tekst om naar te zoeken.'
+length: 'Hoeveel resultaten er maximaal moeten worden teruggegeven.'
+page: 'Welke pagina met resultaten er moet worden teruggegeven.'
+display_format: 'De vorm waarin de entiteiten worden teruggegeven.'
+filter_tag: 'Alleen wat dit label heeft.'
+year: 'Alleen wat van dit jaar is.'
+id: 'De identificator van één entiteit.'
+_all: "Alle resultaten tegelijk, zonder pagina's."
