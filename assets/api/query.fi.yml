@@ -1,8 +1,0 @@
-search: 'Etsittävä teksti.'
-length: 'Maksimimäärä palautettavia tuloksia.'
-page: 'Mikä tulossivu palautetaan.'
-display_format: 'Mikä muoto entiteeteillä on.'
-filter_tag: 'Vain tämä tagi sisältävät.'
-year: 'Vain tämäntänä vuonna kuuluvat.'
-id: 'Yhden entiteetin tunniste.'
-_all: 'Kaikki tulokset kerralla, ilman sivuja.'

@@ -1,8 +1,0 @@
-search: 'Nội dung cần tìm.'
-length: 'Số lượng kết quả tối đa để trả về.'
-page: 'Trang kết quả nào để trả về.'
-display_format: 'Hình thức mà các thực thể được trả về.'
-filter_tag: 'Chỉ những cái mang thẻ này.'
-year: 'Chỉ những cái thuộc về năm nay.'
-id: 'Mã định danh của một thực thể.'
-_all: 'Tất cả kết quả một lúc, không phân trang.'

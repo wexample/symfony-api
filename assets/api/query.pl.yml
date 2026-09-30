@@ -1,8 +1,0 @@
-search: 'Tekst do wyszukania.'
-length: 'Ile wyników zwrócić maksymalnie.'
-page: 'Którą stronę wyników zwrócić.'
-display_format: 'Forma, w jakiej zwracane są encje.'
-filter_tag: 'Tylko to, co nosi tę etykietę.'
-year: 'Tylko to, co należy do tego roku.'
-id: 'Identyfikator jednej encji.'
-_all: 'Wszystkie wyniki naraz, bez stron.'

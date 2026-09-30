@@ -1,0 +1,138 @@
+en:
+  page_title: API
+  page_icon: ph:bold/code
+
+  section_requirements: Path variables
+  section_query: Query parameters
+
+ar:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'متطلبات المتغيرات المسار'
+  section_query: 'معلمات الاستعلام'
+
+bn:
+  page_title: এপিআই
+  page_icon: 'ph:bold/code'
+  section_requirements: 'পথ ভেরিয়েবল'
+  section_query: 'কোয়েরি প্যারামিটার'
+
+de:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: Pfadvariablen
+  section_query: Abfrageparameter
+
+es:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Variables de ruta'
+  section_query: 'Parámetros de consulta'
+
+fa:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'متغیرهای مسیر'
+  section_query: 'پارامترهای جستجو'
+
+fi:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Polku muuttujat'
+  section_query: Kyselyparametrit
+
+fr:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Variables de chemin'
+  section_query: 'Paramètres de requête'
+
+he:
+  page_title: 'ממשק API'
+  page_icon: 'ph:bold/code'
+  section_requirements: 'משתני נתיב'
+  section_query: 'פרמטרי חיפוש'
+
+hi:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Path variables'
+  section_query: 'Query parameters'
+
+id:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Variabel jalur'
+  section_query: 'Parameter kueri'
+
+it:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Variabili di percorso'
+  section_query: 'Parametri di query'
+
+ja:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: パス変数
+  section_query: クエリパラメータ
+
+ko:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: '경로 변수'
+  section_query: '쿼리 매개변수'
+
+nl:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: Padvariabelen
+  section_query: Vraagparameters
+
+pl:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Zmienne ścieżki'
+  section_query: 'Parametry zapytania'
+
+pt_BR:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Variáveis de caminho'
+  section_query: 'Parâmetros de consulta'
+
+ru:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Переменные пути'
+  section_query: 'Параметры запроса'
+
+th:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: ตัวแปรในเส้นทาง
+  section_query: พารามิเตอร์การค้นหา
+
+tr:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Yol değişkenleri'
+  section_query: 'Sorgu parametreleri'
+
+ur:
+  page_title: 'اے پی آئی'
+  page_icon: 'ph:bold/code'
+  section_requirements: 'راستے کی متغیرات'
+  section_query: 'سوال کے متغیرات'
+
+vi:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 'Biến đường dẫn'
+  section_query: 'Tham số truy vấn'
+
+zh:
+  page_title: API
+  page_icon: 'ph:bold/code'
+  section_requirements: 路径变量
+  section_query: 查询参数

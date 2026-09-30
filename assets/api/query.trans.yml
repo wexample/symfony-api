@@ -1,0 +1,231 @@
+en:
+  # What a query parameter means on any route that takes it. A route that means
+  # something more by one says so under its own name, api.<route>::query.<key>.
+  search: Text to look for.
+  length: How many results to return at most.
+  page: Which page of results to return.
+  display_format: The shape the entities are returned in.
+  filter_tag: Only what carries this tag.
+  year: Only what belongs to this year.
+  id: The identifier of one entity.
+  _all: Every result at once, without pages.
+
+ar:
+  search: 'نص للبحث عنه.'
+  length: 'عدد النتائج التي يجب إرجاعها كحد أقصى.'
+  page: 'أي صفحة من النتائج يجب إرجاعها.'
+  display_format: 'شكل الكيانات التي يتم إرجاعها.'
+  filter_tag: 'فقط ما يحمل هذا الوسم.'
+  year: 'فقط ما ينتمي إلى هذا العام.'
+  id: 'معرف كيان واحد.'
+  _all: 'كل النتائج دفعة واحدة، دون صفحات.'
+
+bn:
+  search: 'যা খুঁজতে হবে সেই টেক্সট।'
+  length: 'সর্বাধিক কতগুলি ফলাফল ফেরত দিতে হবে।'
+  page: 'ফলাফলের কোন পৃষ্ঠা ফেরত দিতে হবে।'
+  display_format: 'যেভাবে উপাদানগুলি ফেরত দেওয়া হয়।'
+  filter_tag: 'সুধু যা এই ট্যাগ বহন করে।'
+  year: 'সুধু যা এই বছরে অন্তর্ভুক্ত।'
+  id: 'একটি উপাদানের শনাক্তকারী।'
+  _all: 'একসাথে সব ফলাফল, পৃষ্ঠা ছাড়া।'
+
+de:
+  search: 'Text, nach dem gesucht werden soll.'
+  length: 'Wie viele Ergebnisse maximal zurückgegeben werden sollen.'
+  page: 'Welche Seite der Ergebnisse zurückgegeben werden soll.'
+  display_format: 'Die Form, in der die Entitäten zurückgegeben werden.'
+  filter_tag: 'Nur das, was dieses Tag trägt.'
+  year: 'Nur das, was zu diesem Jahr gehört.'
+  id: 'Die Kennung einer Entität.'
+  _all: 'Alle Ergebnisse auf einmal, ohne Seiten.'
+
+es:
+  search: 'Texto a buscar.'
+  length: 'Cuántos resultados devolver como máximo.'
+  page: 'Qué página de resultados devolver.'
+  display_format: 'La forma en que se devuelven las entidades.'
+  filter_tag: 'Solo lo que lleva esta etiqueta.'
+  year: 'Solo lo que pertenece a este año.'
+  id: 'El identificador de una entidad.'
+  _all: 'Todos los resultados de una vez, sin páginas.'
+
+fa:
+  search: 'متنی که باید جستجو شود.'
+  length: 'حداکثر تعداد نتایج برای بازگشت.'
+  page: 'کدام صفحه از نتایج باید بازگردانده شود.'
+  display_format: 'شکل ارائه موجودیت‌ها.'
+  filter_tag: 'فقط مواردی که این برچسب را دارند.'
+  year: 'فقط مواردی که به این سال تعلق دارند.'
+  id: 'شناسه یک موجودیت.'
+  _all: 'هر نتیجه به طور همزمان، بدون صفحات.'
+
+fi:
+  search: 'Etsittävä teksti.'
+  length: 'Maksimimäärä palautettavia tuloksia.'
+  page: 'Mikä tulossivu palautetaan.'
+  display_format: 'Mikä muoto entiteeteillä on.'
+  filter_tag: 'Vain tämä tagi sisältävät.'
+  year: 'Vain tämäntänä vuonna kuuluvat.'
+  id: 'Yhden entiteetin tunniste.'
+  _all: 'Kaikki tulokset kerralla, ilman sivuja.'
+
+fr:
+  search: Texte à rechercher.
+  length: Nombre maximum de résultats renvoyés.
+  page: Page de résultats à renvoyer.
+  display_format: Forme sous laquelle les entités sont renvoyées.
+  filter_tag: Seulement ce qui porte ce tag.
+  year: Seulement ce qui appartient à cette année.
+  id: Identifiant d'une entité.
+  _all: Tous les résultats d'un coup, sans pagination.
+
+he:
+  search: 'טקסט לחיפוש.'
+  length: 'כמה תוצאות להחזיר לכל היותר.'
+  page: 'איזו עמודה של תוצאות להחזיר.'
+  display_format: 'הצורה שבה יש להחזיר את הישויות.'
+  filter_tag: 'רק מה שנושא תג זה.'
+  year: 'רק מה ששייך לשנה זו.'
+  id: 'המאפיין של ישות אחת.'
+  _all: 'כל התוצאות בבת אחת, ללא עמודים.'
+
+hi:
+  search: 'खोजने के लिए पाठ।'
+  length: 'अधिकतम कितने परिणाम लौटाने हैं।'
+  page: 'कौन सा परिणाम पृष्ठ लौटाना है।'
+  display_format: 'जिस रूप में संस्थाएँ लौटाई जाती हैं।'
+  filter_tag: 'केवल वही जो इस टैग को ले जाता है।'
+  year: 'केवल वही जो इस वर्ष से संबंधित है।'
+  id: 'एक संस्था की पहचानकर्ता।'
+  _all: 'एक साथ हर परिणाम, बिना पृष्ठों के।'
+
+id:
+  search: 'Teks yang dicari.'
+  length: 'Jumlah maksimum hasil yang akan ditampilkan.'
+  page: 'Halaman hasil yang akan ditampilkan.'
+  display_format: 'Bentuk entitas yang ditampilkan.'
+  filter_tag: 'Hanya yang memiliki tag ini.'
+  year: 'Hanya yang termasuk tahun ini.'
+  id: 'Pengidentifikasi satu entitas.'
+  _all: 'Semua hasil sekaligus, tanpa halaman.'
+
+it:
+  search: 'Testo da cercare.'
+  length: 'Quanti risultati restituire al massimo.'
+  page: 'Quale pagina di risultati restituire.'
+  display_format: 'La forma in cui le entità vengono restituite.'
+  filter_tag: 'Solo ciò che porta questo tag.'
+  year: "Solo ciò che appartiene a quest'anno."
+  id: "L'identificatore di un'entità."
+  _all: 'Tutti i risultati insieme, senza pagine.'
+
+ja:
+  search: 検索するテキスト。
+  length: 最大で返す結果の数。
+  page: 返す結果のページ。
+  display_format: エンティティが返される形式。
+  filter_tag: このタグを持つもののみ。
+  year: 今年に属するもののみ。
+  id: 1つのエンティティの識別子。
+  _all: すべての結果を一度に、ページなしで。
+
+ko:
+  search: '찾고자 하는 텍스트입니다.'
+  length: '최대 몇 개의 결과를 반환할지입니다.'
+  page: '어떤 페이지의 결과를 반환할지입니다.'
+  display_format: '엔티티가 반환되는 형식입니다.'
+  filter_tag: '이 태그가 있는 것만.'
+  year: '올해에 해당하는 것만.'
+  id: '하나의 엔티티 식별자입니다.'
+  _all: '모든 결과를 한 번에, 페이지 없이.'
+
+nl:
+  search: 'Tekst om naar te zoeken.'
+  length: 'Hoeveel resultaten er maximaal moeten worden teruggegeven.'
+  page: 'Welke pagina met resultaten er moet worden teruggegeven.'
+  display_format: 'De vorm waarin de entiteiten worden teruggegeven.'
+  filter_tag: 'Alleen wat dit label heeft.'
+  year: 'Alleen wat van dit jaar is.'
+  id: 'De identificator van één entiteit.'
+  _all: "Alle resultaten tegelijk, zonder pagina's."
+
+pl:
+  search: 'Tekst do wyszukania.'
+  length: 'Ile wyników zwrócić maksymalnie.'
+  page: 'Którą stronę wyników zwrócić.'
+  display_format: 'Forma, w jakiej zwracane są encje.'
+  filter_tag: 'Tylko to, co nosi tę etykietę.'
+  year: 'Tylko to, co należy do tego roku.'
+  id: 'Identyfikator jednej encji.'
+  _all: 'Wszystkie wyniki naraz, bez stron.'
+
+pt_BR:
+  search: 'Texto a ser procurado.'
+  length: 'Quantos resultados retornar no máximo.'
+  page: 'Qual página de resultados retornar.'
+  display_format: 'A forma como as entidades são retornadas.'
+  filter_tag: 'Apenas o que possui essa tag.'
+  year: 'Apenas o que pertence a este ano.'
+  id: 'O identificador de uma entidade.'
+  _all: 'Todos os resultados de uma vez, sem páginas.'
+
+ru:
+  search: 'Текст для поиска.'
+  length: 'Максимальное количество возвращаемых результатов.'
+  page: 'С какой страницы результатов начинать.'
+  display_format: 'Формат, в котором возвращаются сущности.'
+  filter_tag: 'Только то, что имеет этот тег.'
+  year: 'Только то, что относится к этому году.'
+  id: 'Идентификатор одной сущности.'
+  _all: 'Все результаты сразу, без страниц.'
+
+th:
+  search: ข้อความที่ต้องการค้นหา
+  length: จำนวนผลลัพธ์สูงสุดที่จะแสดง
+  page: หน้าผลลัพธ์ที่ต้องการแสดง
+  display_format: รูปแบบที่แสดงผลข้อมูลต่างๆ
+  filter_tag: เฉพาะสิ่งที่มีแท็กนี้เท่านั้น
+  year: เฉพาะสิ่งที่เป็นของปีนี้
+  id: รหัสระบุของข้อมูลหนึ่งรายการ
+  _all: 'ผลลัพธ์ทั้งหมดในครั้งเดียว โดยไม่มีหน้าหมายเลข.'
+
+tr:
+  search: 'Aranacak metin.'
+  length: 'En fazla kaç sonuç döndürülecek.'
+  page: 'Hangi sonuç sayfası döndürülecek.'
+  display_format: 'Varlıkların döndürüleceği şekil.'
+  filter_tag: 'Sadece bu etiketi taşıyanlar.'
+  year: 'Sadece bu yıla ait olanlar.'
+  id: 'Bir varlığın tanımlayıcısı.'
+  _all: 'Her sonucu bir kerede, sayfalar olmadan.'
+
+ur:
+  search: 'متن جس کی تلاش کرنی ہے۔'
+  length: 'زیادہ سے زیادہ کتنے نتائج واپس کرنے ہیں۔'
+  page: 'نتائج کا کون سا صفحہ واپس کرنا ہے۔'
+  display_format: 'جس شکل میں اشیاء واپس کی جائیں گی۔'
+  filter_tag: 'صرف وہ جو اس ٹیگ کو رکھتا ہے۔'
+  year: 'صرف وہ جو اس سال سے تعلق رکھتا ہے۔'
+  id: 'ایک شے کی شناخت۔'
+  _all: 'ایک ساتھ ہر نتیجہ، بغیر صفحات کے۔'
+
+vi:
+  search: 'Nội dung cần tìm.'
+  length: 'Số lượng kết quả tối đa để trả về.'
+  page: 'Trang kết quả nào để trả về.'
+  display_format: 'Hình thức mà các thực thể được trả về.'
+  filter_tag: 'Chỉ những cái mang thẻ này.'
+  year: 'Chỉ những cái thuộc về năm nay.'
+  id: 'Mã định danh của một thực thể.'
+  _all: 'Tất cả kết quả một lúc, không phân trang.'
+
+zh:
+  search: 要查找的文本。
+  length: 最多返回多少结果。
+  page: 返回哪个结果页面。
+  display_format: 实体返回的格式。
+  filter_tag: 仅限于带有此标签的内容。
+  year: 仅限于属于这一年的内容。
+  id: 一个实体的标识符。
+  _all: 一次性返回所有结果，无需分页。

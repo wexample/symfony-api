@@ -1,0 +1,68 @@
+en:
+  description: This information page lists all available API routes.
+
+ar:
+  description: 'صفحة المعلومات هذه تعرض جميع مسارات واجهة برمجة التطبيقات المتاحة.'
+
+bn:
+  description: 'এই তথ্য পৃষ্ঠা সমস্ত উপলব্ধ API রুটের তালিকা দেয়।'
+
+de:
+  description: 'Diese Informationsseite listet alle verfügbaren API-Routen auf.'
+
+es:
+  description: 'Esta página de información enumera todas las rutas de API disponibles.'
+
+fa:
+  description: 'این صفحه اطلاعات، تمام مسیرهای API موجود را فهرست می‌کند.'
+
+fi:
+  description: 'Tältä tietosivulta löydät kaikki käytettävissä olevat API-reitit.'
+
+fr:
+  description: Cette page d'information.
+
+he:
+  description: 'דף מידע זה מציג את כל מסלולי ה-API הזמינים.'
+
+hi:
+  description: 'यह सूचना पृष्ठ सभी उपलब्ध एपीआई मार्गों की सूची देता है।'
+
+id:
+  description: 'Halaman informasi ini mencantumkan semua rute API yang tersedia.'
+
+it:
+  description: 'Questa pagina informativa elenca tutti i percorsi API disponibili.'
+
+ja:
+  description: この情報ページには、利用可能なすべてのAPIルートが一覧表示されています。
+
+ko:
+  description: '이 정보 페이지는 사용 가능한 모든 API 경로를 나열합니다.'
+
+nl:
+  description: 'Deze informatiepagina toont alle beschikbare API-routes.'
+
+pl:
+  description: 'Ta strona informacyjna zawiera wszystkie dostępne trasy API.'
+
+pt_BR:
+  description: 'Esta página de informações lista todas as rotas de API disponíveis.'
+
+ru:
+  description: 'Эта информационная страница содержит все доступные маршруты API.'
+
+th:
+  description: 'หน้าข้อมูลนี้แสดงรายการเส้นทาง API ที่มีอยู่ทั้งหมด.'
+
+tr:
+  description: 'Bu bilgi sayfası mevcut olan tüm API yollarını listeler.'
+
+ur:
+  description: 'یہ معلوماتی صفحہ تمام دستیاب API راستوں کی فہرست دیتا ہے۔'
+
+vi:
+  description: 'Trang thông tin này liệt kê tất cả các đường dẫn API có sẵn.'
+
+zh:
+  description: 此信息页面列出了所有可用的API路由。

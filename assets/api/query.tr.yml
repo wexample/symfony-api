@@ -1,8 +1,0 @@
-search: 'Aranacak metin.'
-length: 'En fazla kaç sonuç döndürülecek.'
-page: 'Hangi sonuç sayfası döndürülecek.'
-display_format: 'Varlıkların döndürüleceği şekil.'
-filter_tag: 'Sadece bu etiketi taşıyanlar.'
-year: 'Sadece bu yıla ait olanlar.'
-id: 'Bir varlığın tanımlayıcısı.'
-_all: 'Her sonucu bir kerede, sayfalar olmadan.'
