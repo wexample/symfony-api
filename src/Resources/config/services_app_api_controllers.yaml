@@ -1,0 +1,6 @@
+services:
+    App\Api\Controller\:
+        resource: '%kernel.project_dir%/src/Api/Controller/*'
+        autowire: true
+        autoconfigure: true
+        tags: ['controller.service_arguments']

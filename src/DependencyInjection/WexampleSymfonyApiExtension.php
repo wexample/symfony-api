@@ -11,10 +11,16 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
         array $configs,
         ContainerBuilder $container
     ): void {
-        $this->loadConfig(
+        $loader = $this->loadConfig(
             __DIR__,
             $container
         );
+
+        // The application's API controllers, when it has that directory: a
+        // glob on a missing one stops the container from compiling.
+        if (is_dir($container->getParameter('kernel.project_dir') . '/src/Api/Controller')) {
+            $loader->load('services_app_api_controllers.yaml');
+        }
 
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
