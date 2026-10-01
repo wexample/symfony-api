@@ -21,6 +21,24 @@ class ApiHelper
     final public const HEADER_BEARER_AUTHORIZATION_KEY = "Authorization";
     final public const HEADER_BEARER_AUTHORIZATION_PREFIX = "Bearer ";
 
+    /**
+     * What `Request::get()` read before HttpFoundation 8 removed it: the
+     * routing attributes, then the query string, then the form body.
+     */
+    public static function getRequestParameter(
+        Request $request,
+        string $key,
+        mixed $default = null
+    ): mixed {
+        foreach ([$request->attributes, $request->query, $request->request] as $bag) {
+            if ($bag->has($key)) {
+                return $bag->all()[$key];
+            }
+        }
+
+        return $default;
+    }
+
     public static function extractBearerTokenFromRequest(
         Request $request,
         string $bearerIdentifier = ApiHelper::HEADER_BEARER_AUTHORIZATION_KEY

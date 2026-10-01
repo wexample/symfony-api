@@ -48,8 +48,7 @@ final class QueryOptionController extends AbstractApiController
         $data = [];
 
         foreach (self::TEST_CUSTOM_TYPES as $type) {
-            $data[VariableHelper::CUSTOM.'_'.$type] = $request->get(
-                VariableHelper::CUSTOM.'-'.$type
+            $data[VariableHelper::CUSTOM.'_'.$type] = ApiHelper::getRequestParameter($request, VariableHelper::CUSTOM.'-'.$type
             );
         }
 
@@ -61,8 +60,7 @@ final class QueryOptionController extends AbstractApiController
     public function displayFormat(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
-            ApiHelper::DISPLAY_FORMAT => $request->get(
-                ApiHelper::_KEBAB_DISPLAY_FORMAT
+            ApiHelper::DISPLAY_FORMAT => ApiHelper::getRequestParameter($request, ApiHelper::_KEBAB_DISPLAY_FORMAT
             ),
         ]);
     }
@@ -72,8 +70,7 @@ final class QueryOptionController extends AbstractApiController
     public function filterTag(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
-            ApiHelper::FILTER_TAG => $request->get(
-                ApiHelper::_KEBAB_FILTER_TAG
+            ApiHelper::FILTER_TAG => ApiHelper::getRequestParameter($request, ApiHelper::_KEBAB_FILTER_TAG
             ),
         ]);
     }
@@ -83,8 +80,7 @@ final class QueryOptionController extends AbstractApiController
     public function id(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
-            VariableHelper::ID => $request->get(
-                VariableHelper::ID
+            VariableHelper::ID => ApiHelper::getRequestParameter($request, VariableHelper::ID
             ),
         ]);
     }
@@ -94,8 +90,7 @@ final class QueryOptionController extends AbstractApiController
     public function length(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
-            VariableHelper::LENGTH => $request->get(
-                VariableHelper::LENGTH
+            VariableHelper::LENGTH => ApiHelper::getRequestParameter($request, VariableHelper::LENGTH
             ),
         ]);
     }
@@ -105,8 +100,7 @@ final class QueryOptionController extends AbstractApiController
     public function page(Request $request): ApiResponse
     {
         return self::apiResponseSuccess([
-            VariableHelper::PAGE => $request->get(
-                VariableHelper::PAGE
+            VariableHelper::PAGE => ApiHelper::getRequestParameter($request, VariableHelper::PAGE
             ),
         ]);
     }

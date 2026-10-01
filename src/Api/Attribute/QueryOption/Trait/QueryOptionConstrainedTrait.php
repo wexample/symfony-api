@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait;
 
 use Symfony\Component\HttpFoundation\Request;
+use Wexample\SymfonyApi\Helper\ApiHelper;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Type;
 
@@ -21,7 +22,7 @@ trait QueryOptionConstrainedTrait
 
     public function getRequestValue(Request $request): mixed
     {
-        $value = $request->get($this->key);
+        $value = ApiHelper::getRequestParameter($request, $this->key);
 
         // Not a falsy test: a zero is a value the caller meant, and the pagination
         // reads it as "no limit". Only an absent or empty parameter is a default.
