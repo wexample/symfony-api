@@ -3,7 +3,7 @@
 namespace Wexample\SymfonyApi\Api\Controller\Test;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\Type;
 use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\CustomQueryOption;

@@ -2,7 +2,7 @@
 
 namespace Wexample\SymfonyApi\Api\Controller\Test;
 
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
