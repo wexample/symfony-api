@@ -17,7 +17,7 @@ Passed in chat by the owner, after the review of Sapiens' list endpoints todo (`
 
 ## Reply
 
-**Verdict: real gap, implemented, no demo.** Commits `77bbf71` (found on the way; its `AbstractApiController` part rides with the feature) and FEATURE_COMMIT. 7 new tests (51 in the suite) on the fixture app. Not checked in Sapiens.
+**Verdict: real gap, implemented, no demo.** Commits `77bbf71` (found on the way; its `AbstractApiController` part rides with the feature) and `44a3ed5`. 7 new tests (51 in the suite) on the fixture app. Not checked in Sapiens.
 
 **The package now.** `#[SortQueryOption(allowed: ['lastName', 'establishment' => 'establishment.name'], default: 'lastName', tieBreaker: 'id')]` and `AbstractApiController::applyQueryOptionSort($request, $queryBuilder)`. `?sort=a,-b`: several terms, `-` descending; a value outside the whitelist — or an array — is a `400` listing the allowed names; only declared expressions reach the DQL. The order is replaced, and ends on the tie-breaker (`id` by default) so pages never overlap on equal values — checked on the DQL, since SQLite hides the problem. Documented by the OpenAPI bridge. Doc: `usage/list-endpoints` (pagination, search, sort together).
 
