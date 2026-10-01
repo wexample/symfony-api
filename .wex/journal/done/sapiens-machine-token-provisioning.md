@@ -61,7 +61,7 @@ The client specifications say the device "reactivates its token" every night at 
 
 ## Reply
 
-**Verdict: real gap, implemented, no demo** — both lines, plus the fix. Commits: see the two following this file's (`fix(config)` then `feat(security)`). 21 integration tests over the HTTP kernel of the SQLite fixture app, the journal test mutation-checked (failure listener removed → fails). Not checked in a real app: Sapiens does not install `symfony-api`.
+**Verdict: real gap, implemented, no demo** — both lines, plus the fix. Commits `79980b0` (fix) and `70dbbe5` (feature). 21 integration tests over the HTTP kernel of the SQLite fixture app, the journal test mutation-checked (failure listener removed → fails). Not checked in a real app: Sapiens does not install `symfony-api`.
 
 **The package now.**
 - §0 — `src/Api/Controller/` of the host is registered only when it exists (extension, `services_app_api_controllers.yaml`). The fixture kernel boots without it.
