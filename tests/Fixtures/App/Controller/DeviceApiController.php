@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
+use Wexample\SymfonyApi\Exception\BatchItemRejectedException;
 use Wexample\SymfonyApi\Interface\MachineClientInterface;
 use Wexample\SymfonyApi\Service\BatchReceiverService;
 use Wexample\SymfonyApi\Service\MachineTokenService;
@@ -44,6 +45,10 @@ class DeviceApiController extends AbstractApiController
                 $reading->value = $item->value;
                 $reading->code = $item->code;
                 $entityManager->persist($reading);
+
+                if (ReadingDto::VALUE_REFUSED === $item->value) {
+                    throw new BatchItemRejectedException('DEVICE_MISMATCH', 'The reading does not belong to this device.');
+                }
 
                 if (ReadingDto::VALUE_THAT_FAILS === $item->value) {
                     throw new RuntimeException('Processor failure.');

@@ -10,6 +10,7 @@ use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Enum\MachineSecurityEventType;
 use Wexample\SymfonyApi\Enum\MachineTokenRefusalCause;
+use Wexample\SymfonyApi\Exception\MachineTokenThrottledException;
 use Wexample\SymfonyApi\Service\MachineSecurityJournalService;
 
 /**
@@ -24,6 +25,8 @@ class MachineTokenAuthenticationFailureHandler implements
 
     final public const string MESSAGE_REQUIRED = 'Authentication required.';
 
+    final public const string MESSAGE_THROTTLED = 'Too many requests.';
+
     public function __construct(
         private readonly MachineSecurityJournalService $journal,
     ) {
@@ -33,6 +36,19 @@ class MachineTokenAuthenticationFailureHandler implements
         Request $request,
         AuthenticationException $exception
     ): Response {
+        for ($previous = $exception; null !== $previous; $previous = $previous->getPrevious()) {
+            if ($previous instanceof MachineTokenThrottledException) {
+                // The same for every caller: it tells nothing of the token.
+                $response = AbstractApiController::apiResponseError(
+                    message: self::MESSAGE_THROTTLED,
+                    code: Response::HTTP_TOO_MANY_REQUESTS
+                )->toJsonResponse();
+                $response->headers->set('Retry-After', (string) max(1, $previous->retryAfter->getTimestamp() - time()));
+
+                return $response;
+            }
+        }
+
         return $this->createResponse(
             self::MESSAGE_INVALID,
             'Bearer error="invalid_token"'

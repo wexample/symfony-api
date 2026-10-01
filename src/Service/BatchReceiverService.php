@@ -29,8 +29,10 @@ use Wexample\SymfonyApi\Api\Dto\AbstractDto;
 use Wexample\SymfonyApi\Entity\AbstractIdempotencyRecord;
 use Wexample\SymfonyApi\Enum\BatchItemOutcome;
 use Wexample\SymfonyApi\Event\ApiBatchEvent;
+use Wexample\SymfonyApi\Exception\BatchItemRejectedException;
 use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\DeserializationException;
+use Wexample\SymfonyApi\Helper\ApiVersionHelper;
 use Wexample\SymfonyApi\Helper\IdempotencyHelper;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 
@@ -72,7 +74,8 @@ class BatchReceiverService
      * @param class-string<AbstractDto> $itemDtoClass
      * @param callable(AbstractDto, UserInterface): mixed $processor Persists
      *     one item; what it returns — JSON-encodable — goes in the report and is
-     *     given back on a replay. After a failed item the entity manager is
+     *     given back on a replay. It refuses an item on a rule of its own by
+     *     throwing BatchItemRejectedException. After a failed item the entity manager is
      *     cleared: the processor reads what it needs again, from the user it
      *     is given rather than one captured beforehand.
      */
@@ -98,7 +101,9 @@ class BatchReceiverService
             scope: $scope,
             itemClass: $itemDtoClass,
             summary: $report->getSummary(),
+            rejectionCodes: $report->getRejectionCodes(),
             route: $request->attributes->get('_route'),
+            apiVersion: ApiVersionHelper::fromPath($request->getPathInfo()),
             requestId: $request->headers->get('X-Request-Id'),
         ));
 
@@ -220,6 +225,16 @@ class BatchReceiverService
             $report->add($index, $key, BatchItemOutcome::ACCEPTED, $result);
 
             return $user;
+        } catch (BatchItemRejectedException $exception) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+
+            $report->add($index, $key, BatchItemOutcome::REJECTED, errors: ApiValidationErrorData::create()
+                ->addGlobalIssue($exception->rejectionCode, $exception->getMessage())
+                ->toArray());
+
+            return $this->resetEntityManager($entityManager, $user);
         } catch (Throwable $exception) {
             if ($connection->isTransactionActive()) {
                 $connection->rollBack();

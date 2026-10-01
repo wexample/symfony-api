@@ -26,6 +26,8 @@ trait MachineTokenTestTrait
         // The database lives in memory: a rebooted kernel would start on an
         // empty one at every request.
         $this->client->disableReboot();
+        // The rate limiters count in a cache that outlives the test.
+        self::getContainer()->get('cache.rate_limiter')->clear();
 
         $this->entityManager = self::getContainer()->get('doctrine')->getManager();
         (new SchemaTool($this->entityManager))->createSchema(

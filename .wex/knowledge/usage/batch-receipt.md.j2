@@ -58,7 +58,7 @@ public function readings(Request $request, BatchReceiverService $batchReceiverSe
 }
 ```
 
-The processor persists; the receiver flushes and commits. It gets the authenticated user as second argument: use that one, not one captured before the call — after a failed item the entity manager is cleared (or replaced, when the failure closed it), and the user is read again. Its return value must encode to JSON; it is stored with the key and given back on a replay. An exception it throws is logged at `error` and reported as `error`, without its message.
+The processor persists; the receiver flushes and commits. It gets the authenticated user as second argument: use that one, not one captured before the call — after a failed item the entity manager is cleared (or replaced, when the failure closed it), and the user is read again. Its return value must encode to JSON; it is stored with the key and given back on a replay. To refuse an item on a rule of its own — it does not belong to the sender, it contradicts what is stored — the processor throws `BatchItemRejectedException('CODE', 'message')`: the item is rolled back and reported `rejected` with that code and message, and its key stays free, so a replay is refused again rather than stored. Any other exception is logged at `error` and reported as `error`, without its message.
 
 ## Storage
 
@@ -86,7 +86,7 @@ A batch needs an authenticated sender: without one the receiver throws `AccessDe
 
 ## Journal
 
-One `ApiBatchEvent` per batch — scope, item DTO class, the summary of outcomes, route, `X-Request-Id` — written by default to the Monolog channel `api_batch` at `info`. The items themselves belong to the application.
+One `ApiBatchEvent` per batch — scope, item DTO class, the summary of outcomes, how many rejected items carry each code (`rejection_codes`, validation codes included), route, API version, `X-Request-Id` — written by default to the Monolog channel `api_batch` at `info`. The items themselves belong to the application.
 
 ## Not covered
 

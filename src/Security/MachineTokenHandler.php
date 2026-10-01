@@ -7,10 +7,13 @@ use LogicException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Security\Http\AccessToken\AccessTokenHandlerInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Wexample\SymfonyApi\DependencyInjection\WexampleSymfonyApiExtension;
 use Wexample\SymfonyApi\Enum\MachineTokenRefusalCause;
 use Wexample\SymfonyApi\Exception\MachineTokenRefusedException;
+use Wexample\SymfonyApi\Exception\MachineTokenThrottledException;
 use Wexample\SymfonyApi\Helper\MachineTokenHelper;
 use Wexample\SymfonyApi\Service\MachineTokenService;
 
@@ -48,6 +51,12 @@ class MachineTokenHandler implements AccessTokenHandlerInterface
         private readonly string $prefix,
         #[Autowire(param: 'api_machine_token_roles')]
         private readonly array $allowedRoles,
+        #[Autowire(param: 'api_machine_token_rate_limit_enabled')]
+        private readonly bool $rateLimitEnabled,
+        #[Autowire(service: 'limiter.' . WexampleSymfonyApiExtension::LIMITER_MACHINE_CLIENT)]
+        private readonly RateLimiterFactoryInterface $clientLimiter,
+        #[Autowire(service: 'limiter.' . WexampleSymfonyApiExtension::LIMITER_MACHINE_IP_FAILURES)]
+        private readonly RateLimiterFactoryInterface $ipFailuresLimiter,
     ) {
     }
 
@@ -65,6 +74,15 @@ class MachineTokenHandler implements AccessTokenHandlerInterface
 
         $request = $this->requestStack->getMainRequest();
         $request?->attributes->set(self::REQUEST_ATTRIBUTE_HINT, $hint);
+
+        // An address that failed too often is stopped before the database.
+        if ($this->rateLimitEnabled && $request) {
+            $limit = $this->ipFailuresLimiter->create($request->getClientIp())->consume(0);
+
+            if (0 === $limit->getRemainingTokens()) {
+                throw new MachineTokenThrottledException(MachineTokenThrottledException::LIMIT_IP, $limit->getRetryAfter());
+            }
+        }
 
         $token = $this->machineTokenService->findTokenBySecret($accessToken);
         $now = new DateTimeImmutable();
@@ -94,6 +112,14 @@ class MachineTokenHandler implements AccessTokenHandlerInterface
             ]);
 
             throw new MachineTokenRefusedException(MachineTokenRefusalCause::ROLE_NOT_ALLOWED, $hint, $client);
+        }
+
+        if ($this->rateLimitEnabled) {
+            $limit = $this->clientLimiter->create($token->getClient()->getUserIdentifier())->consume();
+
+            if (! $limit->isAccepted()) {
+                throw new MachineTokenThrottledException(MachineTokenThrottledException::LIMIT_CLIENT, $limit->getRetryAfter(), $client);
+            }
         }
 
         $request?->attributes->set(self::REQUEST_ATTRIBUTE_TOKEN, $token);

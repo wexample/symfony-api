@@ -63,6 +63,10 @@ wexample_symfony_api:
     prefix: mt_                           # readable start of every token
     roles: [ROLE_MACHINE]                 # the only roles a client may carry
     last_used_interval: 60                # seconds between two writes of the last use
+    rate_limit:
+      enabled: true
+      client: { limit: 600, interval: '1 hour' }        # requests per authenticated client
+      ip_failures: { limit: 30, interval: '15 minutes' } # failed attempts per address
 
 # config/packages/security.yaml
 security:
@@ -120,8 +124,9 @@ Every fact is dispatched as a `MachineSecurityEvent`, of the same shape as the `
 | `machine_token.rotated` | `rotate()` — `extra.previous_tokens`, `extra.previous_expire_at` |
 | `machine_token.revoked` | `revoke()`, or `revokeAll()` with `extra.scope: all` |
 | `machine_token.refused` | a request refused, `cause` among `missing`, `unknown`, `revoked`, `expired`, `role_not_allowed`, `client_disabled` |
+| `machine_token.throttled` | a request over a limit, `cause` `client` or `ip`, `extra.retry_after` |
 
-Each carries `user_id` (the client), `firewall`, `ip`, `user_agent`, `request_id` (the `X-Request-Id` header, or one generated per request), a UTC timestamp and `extra.token_hint`. A presented string that does not start with the configured prefix is not hinted: it may be someone else's secret.
+Each carries `user_id` (the client), `firewall`, `ip`, `user_agent`, `request_id` (the `X-Request-Id` header, or one generated per request), a UTC timestamp, `extra.token_hint` and `extra.api_version` (see `usage/versioning`). A presented string that does not start with the configured prefix is not hinted: it may be someone else's secret.
 
 By default the events are written to the Monolog channel `machine_security`, at `warning` for refusals and `info` otherwise. The response never changes with the cause.
 
@@ -132,9 +137,10 @@ By default the events are written to the Monolog channel `machine_security`, at 
 - **Roles.** A client carrying a role outside `machine_token.roles` is refused, and the reason is logged at `error`. The check fails closed: a machine client given `ROLE_ADMIN` by mistake opens nothing.
 - **Separation.** On a `stateless` firewall, a page session cookie authenticates nothing and no response sets a cookie. A bearer token sent to a page authenticates nothing, as long as the page firewall carries no `access_token` authenticator.
 - **Logs.** With Monolog installed, any token in any record of any channel — message, context, exception messages and their previous ones — is replaced by its hint, and a foreign bearer value or `access_token` query parameter is masked whole. The router logs every request URI, and a 404 quotes the referer.
+- **Rate limit.** A safety net, not a quota, on by default. Two sliding windows, declared by the bundle in `framework.rate_limiter` (`api_machine_client`, `api_machine_ip_failures`): requests per authenticated client — a batch is one request —, and failed attempts per address, checked **before** the token is looked up, so a flood of unknown tokens costs no query. Successes do not count against an address. Over either: `429`, `Retry-After`, `{"type":"error","code":429,"message":"Too many requests.","data":{}}` — the same for a valid token and an unknown one. Behind a proxy, set `framework.trusted_proxies`, or every device shares the proxy's address. Per-route quotas are the application's business: Symfony's `RateLimiterFactory` in the controller.
 - **Last use.** `dateLastUsed` is written at most once per `last_used_interval`, after every check passed.
 - **Replaceable.** Controllers read the client through `#[CurrentUser] MachineClientInterface`. A JWT or OIDC handler can take the place of `MachineTokenHandler` without touching them.
 
 ## Not covered
 
-Rate limiting per token and API versioning are separate capabilities. HTTPS is enforced by the proxy, not by the package: an API listening on plain HTTP has already leaked the token once it reaches the application.
+HTTPS is enforced by the proxy, not by the package: an API listening on plain HTTP has already leaked the token once it reaches the application.

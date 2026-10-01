@@ -28,7 +28,8 @@
     "wexample/symfony-content": ">=4.0.0",
     "doctrine/orm": "^3.0",
     "symfony/security-bundle": "^7.4",
-    "symfony/validator": "^7.4"
+    "symfony/validator": "^7.4",
+    "symfony/rate-limiter": "^7.4"
   },
   "autoload-dev": {
     "psr-4": {

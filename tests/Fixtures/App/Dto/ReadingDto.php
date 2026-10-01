@@ -10,6 +10,8 @@ class ReadingDto extends AbstractDto
 {
     final public const float VALUE_THAT_FAILS = 66.6;
 
+    final public const float VALUE_REFUSED = 13.0;
+
     #[RequiredDtoProperty]
     #[Assert\Range(min: 0, max: 100)]
     public float $value;

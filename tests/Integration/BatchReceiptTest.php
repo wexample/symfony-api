@@ -144,6 +144,34 @@ class BatchReceiptTest extends WebTestCase
         $this->assertSame('accepted', $retry['data']['items'][0]['outcome']);
     }
 
+    public function testProcessorRefusalIsARejectionThatConsumesNoKey(): void
+    {
+        $batch = [
+            ['key' => 'k1', 'data' => ['value' => 1]],
+            ['key' => 'k2', 'data' => ['value' => ReadingDto::VALUE_REFUSED]],
+            ['key' => 'k3', 'data' => ['value' => 3]],
+        ];
+
+        $first = $this->sendBatch($batch);
+
+        $this->assertSame(['accepted', 'rejected', 'accepted'], array_column($first['data']['items'], 'outcome'));
+        $refused = $first['data']['items'][1]['errors'];
+        $this->assertSame('DEVICE_MISMATCH', $refused['issues'][0]['code']);
+        $this->assertSame('The reading does not belong to this device.', $refused['issues'][0]['message']);
+        // The refused item persisted before throwing: none of it remains.
+        $this->assertSame([1.0, 3.0], $this->getStoredValues());
+
+        $replay = $this->sendBatch($batch);
+        $this->assertSame(['duplicate', 'rejected', 'duplicate'], array_column($replay['data']['items'], 'outcome'));
+        $this->assertSame('DEVICE_MISMATCH', $replay['data']['items'][1]['errors']['issues'][0]['code']);
+
+        $journal = array_values(array_filter(
+            $this->getLogHandler()->getRecords(),
+            fn (LogRecord $record) => 'api_batch' === $record->channel
+        ));
+        $this->assertSame(['DEVICE_MISMATCH' => 1], $journal[0]->context['rejection_codes']);
+    }
+
     public function testBatchOverTheLimitIsRefusedWhole(): void
     {
         $items = array_map(

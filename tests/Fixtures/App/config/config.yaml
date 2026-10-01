@@ -18,8 +18,16 @@ wexample_symfony_api:
   machine_token:
     token_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\DeviceToken
     prefix: fx_dev_
+    rate_limit:
+      client: { limit: 20, interval: '1 hour' }
+      ip_failures: { limit: 8, interval: '1 hour' }
   batch:
     record_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\IdempotencyRecord
+  versions:
+    v1:
+      deprecation: '2026-09-01'
+      sunset: '2027-03-01'
+      link: 'https://example.com/api/v1-sunset'
 
 security:
   providers:

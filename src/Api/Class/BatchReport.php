@@ -48,6 +48,30 @@ final class BatchReport
     }
 
     /**
+     * How many rejected items carry each code, validation codes included.
+     *
+     * @return array<string, int>
+     */
+    public function getRejectionCodes(): array
+    {
+        $codes = [];
+
+        foreach ($this->items as $item) {
+            if (BatchItemOutcome::REJECTED->value !== $item['outcome']) {
+                continue;
+            }
+
+            foreach (array_unique(array_column($item['errors']['issues'] ?? [], 'code')) as $code) {
+                $codes[$code] = ($codes[$code] ?? 0) + 1;
+            }
+        }
+
+        ksort($codes);
+
+        return $codes;
+    }
+
+    /**
      * @return array<string, int> Every outcome, zero included.
      */
     public function getSummary(): array

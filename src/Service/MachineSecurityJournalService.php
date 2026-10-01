@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Wexample\SymfonyApi\Enum\MachineSecurityEventType;
 use Wexample\SymfonyApi\Event\MachineSecurityEvent;
+use Wexample\SymfonyApi\Helper\ApiVersionHelper;
 use Wexample\SymfonyApi\Interface\MachineClientInterface;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 
@@ -53,7 +54,10 @@ class MachineSecurityJournalService
             ip: $request?->getClientIp(),
             userAgent: $request?->headers->get('User-Agent'),
             requestId: $this->getRequestId(),
-            extra: ['token_hint' => $tokenHint] + $extra,
+            extra: [
+                'token_hint' => $tokenHint,
+                'api_version' => $request ? ApiVersionHelper::fromPath($request->getPathInfo()) : null,
+            ] + $extra,
         ));
     }
 
