@@ -55,16 +55,7 @@ class DeviceApiController extends AbstractApiController
             // Typed: SQLite stores the UUID as binary.
             ->setParameter('device', $device->getId(), UuidType::NAME);
 
-        $total = (int) (clone $queryBuilder)->select('COUNT(reading.id)')->getQuery()->getSingleScalarResult();
-        $pagination = self::getQueryOptionPagination($request, $total);
-
-        $readings = self::applyQueryOptionSort($request, $queryBuilder)
-            ->setFirstResult($pagination->getOffset())
-            ->setMaxResults($pagination->length)
-            ->getQuery()
-            ->getResult();
-
-        return self::apiResponsePaginated($pagination, array_map(
+        return self::apiResponseQueryPage($request, $queryBuilder, fn (array $readings) => array_map(
             fn (Reading $reading) => ['value' => $reading->value, 'code' => $reading->code],
             $readings
         ));

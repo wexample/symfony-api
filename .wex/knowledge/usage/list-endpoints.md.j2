@@ -8,25 +8,19 @@
 #[SortQueryOption(
     allowed: ['lastName', 'birthDate', 'establishment' => 'establishment.name'],
     default: 'lastName',
+    emptyLast: true,
 )]                                 // ?sort=lastName,-birthDate
 public function patients(Request $request, PatientRepository $patients): ApiResponse
 {
-    $queryBuilder = $patients->createListQueryBuilderForCaller(
-        self::getQueryOptionValue($request, 'search', null)
+    return self::apiResponseQueryPage(
+        $request,
+        $patients->createListQueryBuilderForCaller(self::getQueryOptionValue($request, 'search', null)),
+        fn (array $page) => array_map(PatientListDto::fromEntity(...), $page)
     );
-
-    $total = (int) (clone $queryBuilder)->select('COUNT(patient.id)')->getQuery()->getSingleScalarResult();
-    $pagination = self::getQueryOptionPagination($request, $total);
-
-    $page = self::applyQueryOptionSort($request, $queryBuilder)
-        ->setFirstResult($pagination->getOffset())
-        ->setMaxResults($pagination->length)
-        ->getQuery()
-        ->getResult();
-
-    return self::apiResponsePaginated($pagination, array_map(PatientListDto::fromEntity(...), $page));
 }
 ```
+
+`apiResponseQueryPage()` counts on the query it is given (`COUNT(DISTINCT root)`, its scope and search included), applies `?sort=` when the route declares it, cuts the page, and hands the page's entities to the callable together — what each row needs from elsewhere is read once for the page. A query fetch-joining a collection cannot be cut this way. `applyQueryOptionSort()` and `getQueryOptionPagination()` remain, for a list built otherwise.
 
 The response is the one `js-api-entity`'s `fetchListPaginated()` reads: `data.items`, and `data.pagination` = `{page, length, total, pagesCount, hasMore}`. A query parameter the route does not declare is refused with a `400`.
 
@@ -39,6 +33,7 @@ The response is the one `js-api-entity`'s `fetchListPaginated()` reads: `data.it
 - `default` applies when `sort` is absent; it is checked against `allowed` when the attribute is read.
 - `applyQueryOptionSort()` **replaces** any order the query builder had, then appends the tie-breaker — `id` of the root alias by default, `tieBreaker: null` to drop it — unless the order already ends on it. Without it, rows of equal value may come back in a different order from one page to the next on PostgreSQL, and a row can appear on two pages or none.
 - A name asked twice counts once, at its first place.
+- `emptyLast: true` sends the rows with nothing to sort on to the end, whichever way the list runs: PostgreSQL puts NULL first in a descending order, and DQL has no `NULLS LAST`.
 
 The OpenAPI bridge documents the parameter with its default and its allowed names (`usage/openapi`).
 

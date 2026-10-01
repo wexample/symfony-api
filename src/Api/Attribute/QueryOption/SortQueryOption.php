@@ -41,12 +41,16 @@ class SortQueryOption extends AbstractQueryOption
      * @param string|null $default The order when none is asked, same syntax.
      * @param string|null $tieBreaker A unique property of the root entity,
      *     added last so that rows of equal values keep one order across pages.
+     * @param bool $emptyLast Rows with nothing to sort on go last whichever
+     *     way the list runs — PostgreSQL puts NULL first in a descending
+     *     order, and DQL has no NULLS LAST.
      */
     public function __construct(
         array $allowed,
         ?string $default = null,
         public readonly ?string $tieBreaker = 'id',
         bool $required = false,
+        public readonly bool $emptyLast = false,
     ) {
         $normalized = [];
         foreach ($allowed as $name => $expression) {
@@ -116,9 +120,17 @@ class SortQueryOption extends AbstractQueryOption
         $queryBuilder->resetDQLPart('orderBy');
         $expressions = [];
 
-        foreach ($this->parseTerms($value) as $term) {
+        foreach ($this->parseTerms($value) as $index => $term) {
             $expression = $this->allowed[$term['name']] ?? $rootAlias . '.' . $term['name'];
             $expressions[] = $expression;
+
+            if ($this->emptyLast) {
+                $flag = 'sort_empty_' . $index;
+                $queryBuilder
+                    ->addSelect('CASE WHEN ' . $expression . ' IS NULL THEN 1 ELSE 0 END AS HIDDEN ' . $flag)
+                    ->addOrderBy($flag, 'ASC');
+            }
+
             $queryBuilder->addOrderBy($expression, $term['descending'] ? 'DESC' : 'ASC');
         }
 

@@ -190,6 +190,42 @@ abstract class AbstractApiController extends AbstractController
      * Orders the query as the request asks, within what the route's
      * #[SortQueryOption] allows — or by its default.
      */
+    /**
+     * One page of a list, read off a query builder that already holds its
+     * scope and its search: counted on that same query — a total counted
+     * otherwise tells how many rows exist outside what the caller may see —,
+     * ordered by `?sort=` when the route declares it, then cut to the page
+     * asked for. A builder fetch-joining a collection cannot be cut this way.
+     *
+     * @param callable(array): array $normalize The page's entities to items,
+     *     read together — what each needs from elsewhere is read once.
+     */
+    protected static function apiResponseQueryPage(
+        Request $request,
+        QueryBuilder $queryBuilder,
+        callable $normalize
+    ): ApiResponse {
+        $rootAlias = $queryBuilder->getRootAliases()[0];
+        $total = (int) (clone $queryBuilder)
+            ->select('COUNT(DISTINCT ' . $rootAlias . ')')
+            ->resetDQLPart('orderBy')
+            ->getQuery()
+            ->getSingleScalarResult();
+        $pagination = self::getQueryOptionPagination($request, $total);
+
+        if (self::findMethodAttribute($request, SortQueryOption::KEY)) {
+            self::applyQueryOptionSort($request, $queryBuilder, $rootAlias);
+        }
+
+        $entities = $queryBuilder
+            ->setFirstResult($pagination->getOffset())
+            ->setMaxResults($pagination->length ?: null)
+            ->getQuery()
+            ->getResult();
+
+        return self::apiResponsePaginated($pagination, $normalize($entities));
+    }
+
     protected static function applyQueryOptionSort(
         Request $request,
         QueryBuilder $queryBuilder,

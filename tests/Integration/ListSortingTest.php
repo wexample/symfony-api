@@ -85,6 +85,22 @@ class ListSortingTest extends WebTestCase
         $this->assertStringEndsWith('ORDER BY reading.value ASC, reading.id ASC', $option->apply($queryBuilder(), 'value,-value')->getDQL());
     }
 
+    public function testEmptyValuesGoLastBothWays(): void
+    {
+        $option = new SortQueryOption(allowed: ['code'], emptyLast: true);
+        $queryBuilder = fn () => $this->entityManager->createQueryBuilder()
+            ->select('reading')->from(Reading::class, 'reading');
+
+        foreach (['code' => 'ASC', '-code' => 'DESC'] as $sort => $direction) {
+            $dql = $option->apply($queryBuilder(), $sort)->getDQL();
+
+            $this->assertStringContainsString('CASE WHEN reading.code IS NULL THEN 1 ELSE 0 END AS HIDDEN sort_empty_0', $dql);
+            $this->assertStringEndsWith('ORDER BY sort_empty_0 ASC, reading.code ' . $direction . ', reading.id ASC', $dql);
+        }
+
+        $this->assertStringNotContainsString('sort_empty', (new SortQueryOption(allowed: ['code']))->apply($queryBuilder(), 'code')->getDQL());
+    }
+
     public function testNameOutsideTheWhitelistIsRefused(): void
     {
         foreach (['id', 'value;DROP TABLE reading', 'reading.value', '--value', 'value,', 'code,secret'] as $sort) {
