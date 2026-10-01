@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\Validator\Constraints\Type as TypeConstraint;
 use Wexample\SymfonyApi\Api\Attribute\ApiBatch;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\SortQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
@@ -87,6 +88,10 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
 
             if (null !== $option->default) {
                 Util::modifyAnnotationValue($schema, 'default', $option->default);
+            }
+
+            if ($option instanceof SortQueryOption) {
+                Util::modifyAnnotationValue($parameter, 'description', 'Sort by ' . implode(', ', array_keys($option->allowed)) . ', separated by commas, "-" before a name for descending.');
             }
         }
 

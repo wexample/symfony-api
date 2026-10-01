@@ -4,13 +4,16 @@ namespace Wexample\SymfonyApi\Api\Controller;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\ORM\QueryBuilder;
 use Exception;
+use LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\SortQueryOption;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Class\ApiErrorDataInterface;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
@@ -183,6 +186,26 @@ abstract class AbstractApiController extends AbstractController
         return $default;
     }
 
+    /**
+     * Orders the query as the request asks, within what the route's
+     * #[SortQueryOption] allows — or by its default.
+     */
+    protected static function applyQueryOptionSort(
+        Request $request,
+        QueryBuilder $queryBuilder,
+        ?string $rootAlias = null
+    ): QueryBuilder {
+        $option = self::findMethodAttribute($request, SortQueryOption::KEY);
+
+        if (! $option instanceof SortQueryOption) {
+            throw new LogicException('Declare #[SortQueryOption] on the route to sort its list.');
+        }
+
+        $value = $request->attributes->get(SortQueryOption::KEY);
+
+        return $option->apply($queryBuilder, is_string($value) ? $value : null, $rootAlias);
+    }
+
     protected static function findMethodAttribute(
         Request $request,
         string $name
@@ -214,9 +237,9 @@ abstract class AbstractApiController extends AbstractController
                 implode(
                     '-',
                     [
-                        $request->get($keyYear) ?? DateHelper::getCurrentYearInt(),
-                        $request->get($keyMonth) ?? '01',
-                        $request->get($keyDay) ?? '01',
+                        ApiHelper::getRequestParameter($request, $keyYear) ?? DateHelper::getCurrentYearInt(),
+                        ApiHelper::getRequestParameter($request, $keyMonth) ?? '01',
+                        ApiHelper::getRequestParameter($request, $keyDay) ?? '01',
                     ]
                 )
             );

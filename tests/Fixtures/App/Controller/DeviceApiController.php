@@ -5,10 +5,14 @@ namespace Wexample\SymfonyApi\Tests\Fixtures\App\Controller;
 use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Wexample\SymfonyApi\Api\Attribute\ApiBatch;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\PageQueryOption;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\SortQueryOption;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Exception\BatchItemRejectedException;
@@ -29,6 +33,41 @@ class DeviceApiController extends AbstractApiController
             'identifier' => $client->getUserIdentifier(),
             'roles' => $client->getRoles(),
         ]);
+    }
+
+    /**
+     * The readings of the calling device, a page at a time.
+     */
+    #[Route(path: 'readings', name: 'readings_list', methods: ['GET'])]
+    #[PageQueryOption]
+    #[LengthQueryOption]
+    #[SortQueryOption(allowed: ['value', 'code', 'device' => 'device.id'], default: '-value')]
+    public function listReadings(
+        Request $request,
+        #[CurrentUser] Device $device,
+        EntityManagerInterface $entityManager
+    ): ApiResponse {
+        $queryBuilder = $entityManager->createQueryBuilder()
+            ->select('reading')
+            ->from(Reading::class, 'reading')
+            ->join('reading.device', 'device')
+            ->where('device.id = :device')
+            // Typed: SQLite stores the UUID as binary.
+            ->setParameter('device', $device->getId(), UuidType::NAME);
+
+        $total = (int) (clone $queryBuilder)->select('COUNT(reading.id)')->getQuery()->getSingleScalarResult();
+        $pagination = self::getQueryOptionPagination($request, $total);
+
+        $readings = self::applyQueryOptionSort($request, $queryBuilder)
+            ->setFirstResult($pagination->getOffset())
+            ->setMaxResults($pagination->length)
+            ->getQuery()
+            ->getResult();
+
+        return self::apiResponsePaginated($pagination, array_map(
+            fn (Reading $reading) => ['value' => $reading->value, 'code' => $reading->code],
+            $readings
+        ));
     }
 
     #[Route(path: 'readings', name: 'readings', methods: ['POST'])]
