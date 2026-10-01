@@ -28,5 +28,11 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             'api_test_error_log_length',
             $config['test_error_log_length']
         );
+
+        $machineToken = $config['machine_token'];
+        $container->setParameter('api_machine_token_class', $machineToken['token_class']);
+        $container->setParameter('api_machine_token_prefix', $machineToken['prefix']);
+        $container->setParameter('api_machine_token_roles', $machineToken['roles']);
+        $container->setParameter('api_machine_token_last_used_interval', $machineToken['last_used_interval']);
     }
 }

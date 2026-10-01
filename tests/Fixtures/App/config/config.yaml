@@ -1,0 +1,61 @@
+framework:
+  test: true
+  secret: "test"
+  session:
+    storage_factory_id: session.storage.factory.mock_file
+
+doctrine:
+  orm:
+    enable_native_lazy_objects: true
+    mappings:
+      FixtureApp:
+        type: attribute
+        dir: '%kernel.project_dir%/Entity'
+        prefix: 'Wexample\SymfonyApi\Tests\Fixtures\App\Entity'
+        is_bundle: false
+
+wexample_symfony_api:
+  machine_token:
+    token_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\DeviceToken
+    prefix: fx_dev_
+
+security:
+  providers:
+    people:
+      memory:
+        users:
+          jane: { password: secret, roles: [ROLE_USER] }
+  firewalls:
+    # Before the page firewall, which would otherwise match it first.
+    machine:
+      pattern: ^/api/device/
+      stateless: true
+      access_token:
+        token_handler: Wexample\SymfonyApi\Security\MachineTokenHandler
+        failure_handler: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
+      entry_point: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
+    main:
+      lazy: true
+      provider: people
+  access_control:
+    - { path: ^/api/device/, roles: ROLE_MACHINE }
+    - { path: ^/page, roles: ROLE_USER }
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Wexample\SymfonyApi\Tests\Fixtures\App\Controller\:
+    resource: '../Controller/'
+    tags: ['controller.service_arguments']
+
+  # symfony-testing registers it with the string '@kernel' instead of a
+  # reference, which only YAML turns into the kernel service.
+  Wexample\SymfonyHelpers\Service\BundleService:
+    arguments: ['@kernel']
+
+wexample_symfony_loader:
+  front_paths:
+    front: '%kernel.project_dir%/../front/'

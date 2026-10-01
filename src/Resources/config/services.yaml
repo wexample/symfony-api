@@ -10,7 +10,7 @@ services:
 
     # Used to validate api urls requests arguments.
     Wexample\SymfonyApi\:
-        resource: '../../{Command,Service,Twig}'
+        resource: '../../{Command,Security,Service,Twig}'
         tags: ['controller.service_arguments']
 
     Wexample\SymfonyApi\EventSubscriber\:

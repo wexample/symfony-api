@@ -1,0 +1,87 @@
+## Machine clients
+
+A machine client is a program calling the API in its own name — a device, a server — with no password, no session and no cookie. It presents a token of its own on every request, in `Authorization: Bearer`, to a firewall of its own.
+
+The package relies on the native `access_token` authenticator of Symfony and ships what it lacks:
+
+| Piece | Role |
+|---|---|
+| `MachineClientInterface` | Implemented by the application's client entity. `UserInterface`, role `ROLE_MACHINE`. |
+| `MachineClientTrait` | `getRoles()` returning `ROLE_MACHINE` only, an empty `eraseCredentials()`. |
+| `AbstractMachineToken` | One token of a client: hash, hint, creation, expiration, revocation, last use. Several per client. |
+| `MachineTokenService::generateSecret()` | Gives a token a new secret and returns it in plain, the only time it exists. |
+| `MachineTokenHandler` | The `token_handler`: hash lookup, usability, roles check, last use. |
+| `MachineTokenAuthenticationFailureHandler` | The `failure_handler` and `entry_point`: a 401 in the API envelope. |
+
+## Entities
+
+```php
+#[ORM\Entity]
+class Device extends AbstractEntity implements MachineClientInterface
+{
+    use MachineClientTrait;
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->getId();
+    }
+}
+
+#[ORM\Entity]
+class DeviceToken extends AbstractMachineToken
+{
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private Device $device;
+
+    public function getClient(): Device
+    {
+        return $this->device;
+    }
+}
+```
+
+`AbstractMachineToken` is not a mapped superclass: its columns land in the application table. Generate a migration after extending it.
+
+## Configuration
+
+```yaml
+# config/packages/wexample_symfony_api.yaml
+wexample_symfony_api:
+  machine_token:
+    token_class: App\Entity\DeviceToken   # required, null by default
+    prefix: mt_                           # readable start of every token
+    roles: [ROLE_MACHINE]                 # the only roles a client may carry
+    last_used_interval: 60                # seconds between two writes of the last use
+
+# config/packages/security.yaml
+security:
+  firewalls:
+    # Before the page firewall, which would otherwise match first.
+    machine:
+      pattern: ^/api/device/
+      stateless: true
+      access_token:
+        token_handler: Wexample\SymfonyApi\Security\MachineTokenHandler
+        failure_handler: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
+      entry_point: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
+    main:
+      # …
+  access_control:
+    - { path: ^/api/device/, roles: ROLE_MACHINE }
+```
+
+Leave `token_extractors` unset: the default reads the header alone. A token accepted from the query string ends in the access logs of every proxy on the way.
+
+## Behaviour
+
+- **Storage.** A token is `{prefix}` followed by 43 random base62 characters (256 bits). The database holds its SHA-256, which is enough for a random secret and allows a direct lookup, and a hint — the prefix and six characters — to name it in a log or a ticket.
+- **Refusal.** An unknown, revoked or expired token gets one response: `401`, `WWW-Authenticate: Bearer error="invalid_token"`, `{"type":"error","code":401,"message":"Invalid credentials.","data":{}}`. A request with no token gets the same envelope, `Authentication required.` and `WWW-Authenticate: Bearer`.
+- **Roles.** A client carrying a role outside `machine_token.roles` is refused like a bad token, and the reason is logged at `error`. The check fails closed: a machine client given `ROLE_ADMIN` by mistake opens nothing.
+- **Separation.** On a `stateless` firewall, a page session cookie authenticates nothing and no response sets a cookie. A bearer token sent to a page authenticates nothing, as long as the page firewall carries no `access_token` authenticator.
+- **Last use.** `dateLastUsed` is written at most once per `last_used_interval`, not on every request.
+- **Replaceable.** Controllers read the client through `#[CurrentUser] MachineClientInterface`. A JWT or OIDC handler can take the place of `MachineTokenHandler` without touching them.
+
+## Not covered
+
+Provisioning and revoking tokens from a screen, journalising refusals, rate limiting per token and API versioning are separate capabilities. HTTPS is enforced by the proxy, not by the package: an API listening on plain HTTP has already leaked the token once it reaches the application.
