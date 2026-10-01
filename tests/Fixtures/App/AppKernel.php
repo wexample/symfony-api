@@ -10,6 +10,7 @@ use Wexample\SymfonyApi\WexampleSymfonyApiBundle;
 use Wexample\SymfonyLoader\WexampleSymfonyLoaderBundle;
 use Wexample\SymfonyTesting\Tests\Fixtures\AbstractFixtureKernel;
 use Wexample\SymfonyTranslations\WexampleSymfonyTranslationsBundle;
+use Wexample\SymfonySecurity\WexampleSymfonySecurityBundle;
 
 class AppKernel extends AbstractFixtureKernel
 {
@@ -23,6 +24,7 @@ class AppKernel extends AbstractFixtureKernel
         return [
             new SecurityBundle(),
             new MonologBundle(),
+            new WexampleSymfonySecurityBundle(),
             new NelmioApiDocBundle(),
             new WexampleSymfonyLoaderBundle(),
             new WexampleSymfonyTranslationsBundle(),

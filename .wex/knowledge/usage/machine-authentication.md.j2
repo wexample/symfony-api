@@ -13,7 +13,7 @@ The package relies on the native `access_token` authenticator of Symfony and shi
 | `MachineTokenHandler` | The `token_handler`: hash lookup, revocation, expiration, roles check. |
 | `MachineTokenAuthenticationFailureHandler` | The `failure_handler` and `entry_point`: a 401 in the API envelope. |
 | `MachineTokenSecuritySubscriber` | Writes the last use once every check passed, journals each refusal with its cause. |
-| `MachineTokenRedactionProcessor` | Replaces any token by its hint in every log record, exceptions included; the walk is `symfony-security`'s `AbstractSecretRedactionProcessor`. |
+| `MachineTokenLogMasker` | Replaces any token by its hint in every log record, exceptions included, through `symfony-security`'s redaction processor. |
 | `api:machine-token:*` | Console commands to issue, list and revoke. |
 
 ## Entities
