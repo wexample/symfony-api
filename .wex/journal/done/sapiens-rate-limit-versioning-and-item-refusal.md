@@ -41,7 +41,7 @@ Deployed devices cannot all be updated at once: an old firmware must keep workin
 
 ## Reply
 
-**Verdict: real gap, implemented, no demo** — the three sections; one part of §3 pushed back. Commits `c305c54` (fix found on the way) and FEATURE_COMMIT. 39 integration tests over the HTTP kernel of the SQLite fixture app, asserting exact codes, headers and journal entries. Not checked in a real app: Sapiens does not install `symfony-api`.
+**Verdict: real gap, implemented, no demo** — the three sections; one part of §3 pushed back. Commits `c305c54` (fix found on the way) and `e11ef27`. 39 integration tests over the HTTP kernel of the SQLite fixture app, asserting exact codes, headers and journal entries. Not checked in a real app: Sapiens does not install `symfony-api`.
 
 **The package now.**
 - **§1** — `BatchItemRejectedException('CODE', 'message')` thrown by a processor: item rolled back (what it persisted included), reported `rejected` with that code and message, key not consumed — a replay is refused again. `ApiBatchEvent` gains `rejection_codes` (count per code, validation codes included). Any other exception stays `error`.
