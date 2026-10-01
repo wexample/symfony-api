@@ -27,7 +27,7 @@ Evaluate `nelmio/api-doc-bundle` before writing a generator: if it reads attribu
 
 ## Reply
 
-**Verdict: real gap, implemented on `nelmio/api-doc-bundle`, no demo.** Commit FEATURE_COMMIT. 5 new tests (44 in the suite) on the fixture app. Not checked in a real app: Sapiens does not install `symfony-api`.
+**Verdict: real gap, implemented on `nelmio/api-doc-bundle`, no demo.** Commits `6382f49` (fix) and `9ac4c79`. 5 new tests (44 in the suite) on the fixture app. Not checked in a real app: Sapiens does not install `symfony-api`.
 
 **Nelmio, evaluated: kept.** v5.12 installs on Symfony 7.4 / PHP 8.5, writes OpenAPI 3.1, reads DTO types and Symfony constraints itself, splits documents by path pattern (areas = versions), dumps them from the console, and is extended by tagged route describers. Writing a generator would have redone all of that. The package ships a bridge only — `ApiRouteDescriber`, registered when nelmio is installed (`suggest`, not `require`).
 
