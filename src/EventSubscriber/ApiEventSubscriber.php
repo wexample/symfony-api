@@ -18,7 +18,10 @@ use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTr
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionTrait;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
+use Wexample\SymfonyApi\Api\Class\ApiValidationErrorData;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
+use Wexample\SymfonyApi\Exception\ConstraintViolationException;
+use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Service\DtoValidationService;
 use Wexample\SymfonyHelpers\Helper\RequestHelper;
 
@@ -156,6 +159,24 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
         $data = null;
         $message = $exception->getMessage();
+
+        // A body refused by #[ValidateRequestContent] is the caller's mistake.
+        if ($exception instanceof ConstraintViolationException || $exception instanceof DeserializationException) {
+            $code = Response::HTTP_BAD_REQUEST;
+        }
+
+        if ($exception instanceof ConstraintViolationException) {
+            $errors = ApiValidationErrorData::create();
+            foreach ($exception->getViolations() as $violation) {
+                $errors->addIssue(
+                    (string) ($violation->getCode() ?? 'INVALID'),
+                    $violation->getPropertyPath(),
+                    (string) $violation->getMessage()
+                );
+            }
+            $data = $errors->toArray();
+        }
+
         if ($this->parameterBag->get('kernel.debug')) {
             $flatTrace = [];
 
@@ -175,7 +196,7 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 ];
             }
 
-            $data = [
+            $data = ($data ?? []) + [
                 'trace' => $flatTrace,
             ];
         }
