@@ -4,44 +4,26 @@ namespace Wexample\SymfonyApi\Tests\Integration;
 
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\SchemaTool;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\InMemoryUser;
-use Wexample\SymfonyApi\Service\MachineTokenService;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Device;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\DeviceToken;
+use Wexample\SymfonyApi\Tests\Traits\MachineTokenTestTrait;
 
 /**
  * A machine firewall on /api/device/, next to a page firewall with a session.
  */
 class MachineTokenAuthenticationTest extends WebTestCase
 {
-    private const string WHOAMI_PATH = '/api/device/whoami';
-
-    private KernelBrowser $client;
-
-    private EntityManagerInterface $entityManager;
+    use MachineTokenTestTrait;
 
     private Device $device;
 
     protected function setUp(): void
     {
-        $this->client = static::createClient();
-        // The database lives in memory: a rebooted kernel would start on an
-        // empty one at every request.
-        $this->client->disableReboot();
-
-        $this->entityManager = self::getContainer()->get('doctrine')->getManager();
-        (new SchemaTool($this->entityManager))->createSchema(
-            $this->entityManager->getMetadataFactory()->getAllMetadata()
-        );
-
-        $this->device = new Device();
-        $this->entityManager->persist($this->device);
-        $this->entityManager->flush();
+        $this->setUpMachineTokenApp();
+        $this->device = $this->createDevice();
     }
 
     public function testValidTokenAuthenticatesItsClient(): void
@@ -180,25 +162,14 @@ class MachineTokenAuthenticationTest extends WebTestCase
     private function createToken(?DateTimeImmutable $dateExpiration = null): array
     {
         $token = (new DeviceToken())
-            ->setDevice($this->device)
+            ->setClient($this->device)
             ->setDateExpiration($dateExpiration);
-        $plain = self::getContainer()->get(MachineTokenService::class)->generateSecret($token);
+        $plain = $this->getMachineTokenService()->generateSecret($token);
 
         $this->entityManager->persist($token);
         $this->entityManager->flush();
 
         return [$plain, $token];
-    }
-
-    private function requestWhoami(?string $token): ?array
-    {
-        $this->client->request(
-            'GET',
-            self::WHOAMI_PATH,
-            server: null === $token ? [] : ['HTTP_AUTHORIZATION' => 'Bearer ' . $token]
-        );
-
-        return json_decode($this->client->getResponse()->getContent(), true);
     }
 
     private function describeRefusal(Response $response): array

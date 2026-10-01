@@ -23,6 +23,12 @@ class Device extends AbstractEntity implements MachineClientInterface
     #[ORM\Column(type: Types::JSON)]
     private array $extraRoles = [];
 
+    /**
+     * A switch of the application's own, read by its user checker.
+     */
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $enabled = true;
+
     public function getUserIdentifier(): string
     {
         return (string) $this->getId();
@@ -31,6 +37,18 @@ class Device extends AbstractEntity implements MachineClientInterface
     public function getRoles(): array
     {
         return [...$this->getMachineRoles(), ...$this->extraRoles];
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
     }
 
     public function setExtraRoles(array $extraRoles): self

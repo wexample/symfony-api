@@ -8,6 +8,9 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
+use Wexample\SymfonyApi\Enum\MachineSecurityEventType;
+use Wexample\SymfonyApi\Enum\MachineTokenRefusalCause;
+use Wexample\SymfonyApi\Service\MachineSecurityJournalService;
 
 /**
  * The refusal of a machine firewall: a 401 in the API envelope, the same for
@@ -20,6 +23,11 @@ class MachineTokenAuthenticationFailureHandler implements
     final public const string MESSAGE_INVALID = 'Invalid credentials.';
 
     final public const string MESSAGE_REQUIRED = 'Authentication required.';
+
+    public function __construct(
+        private readonly MachineSecurityJournalService $journal,
+    ) {
+    }
 
     public function onAuthenticationFailure(
         Request $request,
@@ -35,6 +43,12 @@ class MachineTokenAuthenticationFailureHandler implements
         Request $request,
         ?AuthenticationException $authException = null
     ): Response {
+        // A presented token that failed is journalled by the failure event.
+        $this->journal->record(
+            MachineSecurityEventType::REFUSED,
+            cause: MachineTokenRefusalCause::MISSING->value
+        );
+
         return $this->createResponse(
             self::MESSAGE_REQUIRED,
             'Bearer'

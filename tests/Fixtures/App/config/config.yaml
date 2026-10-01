@@ -34,6 +34,7 @@ security:
         token_handler: Wexample\SymfonyApi\Security\MachineTokenHandler
         failure_handler: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
       entry_point: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
+      user_checker: Wexample\SymfonyApi\Tests\Fixtures\App\Security\DeviceChecker
     main:
       lazy: true
       provider: people
@@ -47,6 +48,9 @@ services:
     autoconfigure: true
     public: true
 
+  Wexample\SymfonyApi\Tests\Fixtures\App\Security\:
+    resource: '../Security/'
+
   Wexample\SymfonyApi\Tests\Fixtures\App\Controller\:
     resource: '../Controller/'
     tags: ['controller.service_arguments']
@@ -59,3 +63,10 @@ services:
 wexample_symfony_loader:
   front_paths:
     front: '%kernel.project_dir%/../front/'
+
+# Every record of every channel, kept for the tests to read.
+monolog:
+  handlers:
+    test:
+      type: test
+      level: debug

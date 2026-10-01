@@ -8,10 +8,13 @@ The package relies on the native `access_token` authenticator of Symfony and shi
 |---|---|
 | `MachineClientInterface` | Implemented by the application's client entity. `UserInterface`, role `ROLE_MACHINE`. |
 | `MachineClientTrait` | `getRoles()` returning `ROLE_MACHINE` only, an empty `eraseCredentials()`. |
-| `AbstractMachineToken` | One token of a client: hash, hint, creation, expiration, revocation, last use. Several per client. |
-| `MachineTokenService::generateSecret()` | Gives a token a new secret and returns it in plain, the only time it exists. |
-| `MachineTokenHandler` | The `token_handler`: hash lookup, usability, roles check, last use. |
+| `AbstractMachineToken` | One token of a client: hash, hint, label, creation, expiration, revocation, last use. Several per client. |
+| `MachineTokenService` | `issue()`, `rotate()`, `revoke()`, `revokeAll()`, lookups. The plain secret is returned once, when it is made. |
+| `MachineTokenHandler` | The `token_handler`: hash lookup, revocation, expiration, roles check. |
 | `MachineTokenAuthenticationFailureHandler` | The `failure_handler` and `entry_point`: a 401 in the API envelope. |
+| `MachineTokenSecuritySubscriber` | Writes the last use once every check passed, journals each refusal with its cause. |
+| `MachineTokenRedactionProcessor` | Replaces any token by its hint in every log record, exceptions included. |
+| `api:machine-token:*` | Console commands to issue, list and revoke. |
 
 ## Entities
 
@@ -38,10 +41,17 @@ class DeviceToken extends AbstractMachineToken
     {
         return $this->device;
     }
+
+    public function setClient(MachineClientInterface $client): static
+    {
+        $this->device = $client;
+
+        return $this;
+    }
 }
 ```
 
-`AbstractMachineToken` is not a mapped superclass: its columns land in the application table. Generate a migration after extending it.
+`AbstractMachineToken` is not a mapped superclass: its columns land in the application table. Generate a migration after extending it. The package finds the client class through the one single-valued association of the token class whose target implements `MachineClientInterface`.
 
 ## Configuration
 
@@ -65,6 +75,7 @@ security:
         token_handler: Wexample\SymfonyApi\Security\MachineTokenHandler
         failure_handler: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
       entry_point: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
+      user_checker: App\Security\DeviceChecker   # optional, to switch a client off
     main:
       # …
   access_control:
@@ -73,15 +84,57 @@ security:
 
 Leave `token_extractors` unset: the default reads the header alone. A token accepted from the query string ends in the access logs of every proxy on the way.
 
+## Issuing, rotating, revoking
+
+```php
+$secret = $machineTokenService->issue($device, new DateTimeImmutable('+1 year'), 'commissioning');
+$secret = $machineTokenService->rotate($device, new DateInterval('P1D'));   // old tokens expire in a day
+$machineTokenService->revoke($token);
+$machineTokenService->revokeAll($device);
+```
+
+- `issue()` returns the secret once; only its hash and hint are stored.
+- `rotate()` issues a new token and brings the expiration of every other usable token of the client down to the end of the overlap — never later than it already was. Both work during the overlap, only the new one after. It can be called from a request authenticated by the very token being rotated.
+- `revoke()` and `revokeAll()` take effect on the next request.
+
+From the console, `<client>` being the client's id:
+
+```bash
+php bin/console api:machine-token:issue <client> [--expires="+1 year"] [--label=commissioning]
+php bin/console api:machine-token:list <client>
+php bin/console api:machine-token:revoke <token id|hint>
+php bin/console api:machine-token:revoke <client> --all
+```
+
+Only `issue` prints a secret, once, with a warning. No command prints a hash. A hint is accepted with or without its trailing ellipsis; when two tokens share one, name the token by its id.
+
+**Switching a client off** without touching its tokens is the job of the firewall's `user_checker`: throw an `AccountStatusException` (`DisabledException`) from `checkPreAuth()` for a disabled client. The refusal is the same 401, journalled as `client_disabled`. The last use is written only after the checker passed.
+
+## Journal
+
+Every fact is dispatched as a `MachineSecurityEvent`, of the same shape as the `SecurityEvent` of `symfony-user`, so one recorder reads both:
+
+| Type | When |
+|---|---|
+| `machine_token.issued` | `issue()` |
+| `machine_token.rotated` | `rotate()` — `extra.previous_tokens`, `extra.previous_expire_at` |
+| `machine_token.revoked` | `revoke()`, or `revokeAll()` with `extra.scope: all` |
+| `machine_token.refused` | a request refused, `cause` among `missing`, `unknown`, `revoked`, `expired`, `role_not_allowed`, `client_disabled` |
+
+Each carries `user_id` (the client), `firewall`, `ip`, `user_agent`, `request_id` (the `X-Request-Id` header, or one generated per request), a UTC timestamp and `extra.token_hint`. A presented string that does not start with the configured prefix is not hinted: it may be someone else's secret.
+
+By default the events are written to the Monolog channel `machine_security`, at `warning` for refusals and `info` otherwise. The response never changes with the cause.
+
 ## Behaviour
 
-- **Storage.** A token is `{prefix}` followed by 43 random base62 characters (256 bits). The database holds its SHA-256, which is enough for a random secret and allows a direct lookup, and a hint — the prefix and six characters — to name it in a log or a ticket.
-- **Refusal.** An unknown, revoked or expired token gets one response: `401`, `WWW-Authenticate: Bearer error="invalid_token"`, `{"type":"error","code":401,"message":"Invalid credentials.","data":{}}`. A request with no token gets the same envelope, `Authentication required.` and `WWW-Authenticate: Bearer`.
-- **Roles.** A client carrying a role outside `machine_token.roles` is refused like a bad token, and the reason is logged at `error`. The check fails closed: a machine client given `ROLE_ADMIN` by mistake opens nothing.
+- **Storage.** A token is `{prefix}` followed by 43 random base62 characters (256 bits). The database holds its SHA-256, which is enough for a random secret and allows a direct lookup, and a hint — the prefix and six characters, then `…` — to name it in a log or a ticket.
+- **Refusal.** An unknown, revoked or expired token, a client with a forbidden role or switched off: one response, `401`, `WWW-Authenticate: Bearer error="invalid_token"`, `{"type":"error","code":401,"message":"Invalid credentials.","data":{}}`. A request with no token gets the same envelope, `Authentication required.` and `WWW-Authenticate: Bearer`.
+- **Roles.** A client carrying a role outside `machine_token.roles` is refused, and the reason is logged at `error`. The check fails closed: a machine client given `ROLE_ADMIN` by mistake opens nothing.
 - **Separation.** On a `stateless` firewall, a page session cookie authenticates nothing and no response sets a cookie. A bearer token sent to a page authenticates nothing, as long as the page firewall carries no `access_token` authenticator.
-- **Last use.** `dateLastUsed` is written at most once per `last_used_interval`, not on every request.
+- **Logs.** With Monolog installed, any token in any record of any channel — message, context, exception messages and their previous ones — is replaced by its hint, and a foreign bearer value or `access_token` query parameter is masked whole. The router logs every request URI, and a 404 quotes the referer.
+- **Last use.** `dateLastUsed` is written at most once per `last_used_interval`, after every check passed.
 - **Replaceable.** Controllers read the client through `#[CurrentUser] MachineClientInterface`. A JWT or OIDC handler can take the place of `MachineTokenHandler` without touching them.
 
 ## Not covered
 
-Provisioning and revoking tokens from a screen, journalising refusals, rate limiting per token and API versioning are separate capabilities. HTTPS is enforced by the proxy, not by the package: an API listening on plain HTTP has already leaked the token once it reaches the application.
+Rate limiting per token and API versioning are separate capabilities. HTTPS is enforced by the proxy, not by the package: an API listening on plain HTTP has already leaked the token once it reaches the application.

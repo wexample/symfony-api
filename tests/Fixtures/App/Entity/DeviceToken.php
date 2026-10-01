@@ -4,6 +4,7 @@ namespace Wexample\SymfonyApi\Tests\Fixtures\App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Wexample\SymfonyApi\Entity\AbstractMachineToken;
+use Wexample\SymfonyApi\Interface\MachineClientInterface;
 
 #[ORM\Entity]
 class DeviceToken extends AbstractMachineToken
@@ -17,9 +18,9 @@ class DeviceToken extends AbstractMachineToken
         return $this->device;
     }
 
-    public function setDevice(Device $device): self
+    public function setClient(MachineClientInterface $client): static
     {
-        $this->device = $device;
+        $this->device = $client;
 
         return $this;
     }

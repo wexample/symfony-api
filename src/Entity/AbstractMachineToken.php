@@ -31,6 +31,12 @@ abstract class AbstractMachineToken extends AbstractEntity
     protected string $hint;
 
     /**
+     * Free text telling the tokens of one client apart: "commissioning", "rotation".
+     */
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    protected ?string $label = null;
+
+    /**
      * Null for a token that does not expire.
      */
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
@@ -54,6 +60,8 @@ abstract class AbstractMachineToken extends AbstractEntity
 
     abstract public function getClient(): MachineClientInterface;
 
+    abstract public function setClient(MachineClientInterface $client): static;
+
     public function getTokenHash(): string
     {
         return $this->tokenHash;
@@ -74,6 +82,18 @@ abstract class AbstractMachineToken extends AbstractEntity
     public function setHint(string $hint): self
     {
         $this->hint = $hint;
+
+        return $this;
+    }
+
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(?string $label): self
+    {
+        $this->label = $label;
 
         return $this;
     }
@@ -114,12 +134,18 @@ abstract class AbstractMachineToken extends AbstractEntity
         return $this;
     }
 
+    public function isRevoked(DateTimeInterface $now = new DateTimeImmutable()): bool
+    {
+        return null !== $this->dateRevoked && $this->dateRevoked <= $now;
+    }
+
+    public function isExpired(DateTimeInterface $now = new DateTimeImmutable()): bool
+    {
+        return null !== $this->dateExpiration && $this->dateExpiration <= $now;
+    }
+
     public function isUsable(DateTimeInterface $now = new DateTimeImmutable()): bool
     {
-        if (null !== $this->dateRevoked && $this->dateRevoked <= $now) {
-            return false;
-        }
-
-        return null === $this->dateExpiration || $this->dateExpiration > $now;
+        return ! $this->isRevoked($now) && ! $this->isExpired($now);
     }
 }

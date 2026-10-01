@@ -37,7 +37,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "*",
-    "symfony/browser-kit": "^7.4"
+    "symfony/browser-kit": "^7.4",
+    "symfony/monolog-bundle": "^3.10"
   },
   "repositories": [
     {
@@ -60,5 +61,8 @@
     "install": {
       "bundle_env": "all"
     }
+  },
+  "suggest": {
+    "symfony/monolog-bundle": "Writes the machine token journal to its own channel, machine_security, and masks tokens in every log"
   }
 }
