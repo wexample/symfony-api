@@ -23,6 +23,8 @@ wexample_symfony_api:
       ip_failures: { limit: 8, interval: '1 hour' }
   batch:
     record_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\IdempotencyRecord
+  openapi:
+    bearer_paths: ['^/api/device/']
   versions:
     v1:
       deprecation: '2026-09-01'
@@ -80,3 +82,21 @@ monolog:
     test:
       type: test
       level: debug
+
+nelmio_api_doc:
+  documentation:
+    openapi: 3.1.0
+    info:
+      title: Fixture device API
+      version: 1.0.0
+  areas:
+    default:
+      path_patterns: ['^/api/device/(?!v\d+/)']
+    v1:
+      path_patterns: ['^/api/device/v1/']
+      documentation:
+        info: { title: Fixture device API, version: v1 }
+    v2:
+      path_patterns: ['^/api/device/v2/']
+      documentation:
+        info: { title: Fixture device API, version: v2 }

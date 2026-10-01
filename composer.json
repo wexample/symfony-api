@@ -39,7 +39,9 @@
   "require-dev": {
     "phpunit/phpunit": "*",
     "symfony/browser-kit": "^7.4",
-    "symfony/monolog-bundle": "^3.10"
+    "symfony/monolog-bundle": "^3.10",
+    "nelmio/api-doc-bundle": "^5.12",
+    "opis/json-schema": "^2.6"
   },
   "repositories": [
     {
@@ -64,6 +66,7 @@
     }
   },
   "suggest": {
-    "symfony/monolog-bundle": "Writes the machine token journal to its own channel, machine_security, and masks tokens in every log"
+    "symfony/monolog-bundle": "Writes the machine token journal to its own channel, machine_security, and masks tokens in every log",
+    "nelmio/api-doc-bundle": "Generates the OpenAPI documents of the API, one per version, through this package's route describer"
   }
 }

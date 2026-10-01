@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\Tests\Fixtures\App;
 
+use Nelmio\ApiDocBundle\NelmioApiDocBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
@@ -22,6 +23,7 @@ class AppKernel extends AbstractFixtureKernel
         return [
             new SecurityBundle(),
             new MonologBundle(),
+            new NelmioApiDocBundle(),
             new WexampleSymfonyLoaderBundle(),
             new WexampleSymfonyTranslationsBundle(),
             new WexampleSymfonyApiBundle(),

@@ -81,7 +81,7 @@ class MachineTokenAuthenticationTest extends WebTestCase
         $this->client->request('GET', self::WHOAMI_PATH . '?access_token=' . $plain);
         $this->assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('POST', self::WHOAMI_PATH, ['access_token' => $plain]);
+        $this->client->request('POST', '/api/device/rotate', ['access_token' => $plain]);
         $this->assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
     }
 

@@ -127,6 +127,21 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->end();
 
+        $treeBuilder->getRootNode()
+            ->children()
+            ->arrayNode('openapi')
+            ->addDefaultsIfNotSet()
+            ->children()
+            // Path patterns whose operations NelmioApiDocBundle documents as
+            // bearer-secured, with their 401 and 429 responses.
+            ->arrayNode('bearer_paths')
+            ->scalarPrototype()->end()
+            ->defaultValue([])
+            ->end()
+            ->end()
+            ->end()
+            ->end();
+
         return $treeBuilder;
     }
 }

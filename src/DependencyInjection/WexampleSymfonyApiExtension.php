@@ -2,7 +2,9 @@
 
 namespace Wexample\SymfonyApi\DependencyInjection;
 
+use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Wexample\SymfonyApi\OpenApi\ApiRouteDescriber;
 use Wexample\SymfonyHelpers\DependencyInjection\AbstractWexampleSymfonyExtension;
 
 class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
@@ -82,5 +84,13 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
         $container->setParameter('api_batch_retention', $batch['retention']);
 
         $container->setParameter('api_versions', $config['versions']);
+        $container->setParameter('api_openapi_bearer_paths', $config['openapi']['bearer_paths']);
+
+        // The documentation bridge, only where NelmioApiDocBundle is installed.
+        if (interface_exists(RouteDescriberInterface::class)) {
+            $container->register(ApiRouteDescriber::class, ApiRouteDescriber::class)
+                ->setAutowired(true)
+                ->addTag('nelmio_api_doc.route_describer', ['priority' => -300]);
+        }
     }
 }

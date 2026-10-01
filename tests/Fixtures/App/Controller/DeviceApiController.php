@@ -8,6 +8,7 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Wexample\SymfonyApi\Api\Attribute\ApiBatch;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Exception\BatchItemRejectedException;
@@ -21,7 +22,7 @@ use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Reading;
 #[Route(path: '/api/device/', name: 'api_device_')]
 class DeviceApiController extends AbstractApiController
 {
-    #[Route(path: 'whoami', name: 'whoami')]
+    #[Route(path: 'whoami', name: 'whoami', methods: ['GET'])]
     public function whoami(#[CurrentUser] MachineClientInterface $client): ApiResponse
     {
         return self::apiResponseSuccess(data: [
@@ -31,6 +32,7 @@ class DeviceApiController extends AbstractApiController
     }
 
     #[Route(path: 'readings', name: 'readings', methods: ['POST'])]
+    #[ApiBatch(itemDto: ReadingDto::class, maxItems: 15)]
     public function readings(
         Request $request,
         BatchReceiverService $batchReceiverService,
