@@ -42,7 +42,7 @@ Reuse `MachineSecurityEvent` or a sibling: one fact per batch (client, counts pe
 
 ## Reply
 
-**Verdict: real gap, implemented, no demo** — both lines. Commit: see the `feat(api)` commit carrying this file. 10 new integration tests (31 in the suite) over the HTTP kernel of the SQLite fixture app; mutation-checked: without the entity manager reset, the failing-item test fails; without the unique constraint, the receiver refuses to run. Not checked in a real app: Sapiens does not install `symfony-api`.
+**Verdict: real gap, implemented, no demo** — both lines. Commit `2106365`. 10 new integration tests (31 in the suite) over the HTTP kernel of the SQLite fixture app; mutation-checked: without the entity manager reset, the failing-item test fails; without the unique constraint, the receiver refuses to run. Not checked in a real app: Sapiens does not install `symfony-api`.
 
 **The package now.** `BatchReceiverService::receive($request, ItemDto::class, $processor, ?maxItems)` and `AbstractApiController::apiResponseBatch($report)`. Body `{"items": [{"key", "data"}]}`. Per item: shape check, DTO validation with the existing validation vocabulary (`ApiValidationErrorData`), then one transaction that **inserts the key first** (DBAL insert, unique `(scope, idempotency_key)` — the insert is the check), runs the processor, flushes, commits. Outcomes `accepted | duplicate | rejected | conflict | error`. Options `wexample_symfony_api.batch.{record_class, max_items=100, retention=P30D}`; `api:batch:purge-keys`. One `ApiBatchEvent` per batch, channel `api_batch`. Doc: `usage/batch-receipt`.
 
