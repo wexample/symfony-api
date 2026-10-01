@@ -35,6 +35,7 @@ use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Helper\ApiVersionHelper;
 use Wexample\SymfonyApi\Helper\IdempotencyHelper;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
+use Wexample\SymfonySecurity\Helper\RequestIdHelper;
 
 /**
  * Receives a batch of items, `{"items": [{"key": "…", "data": {…}}, …]}`:
@@ -104,7 +105,7 @@ class BatchReceiverService
             rejectionCodes: $report->getRejectionCodes(),
             route: $request->attributes->get('_route'),
             apiVersion: ApiVersionHelper::fromPath($request->getPathInfo()),
-            requestId: $request->headers->get('X-Request-Id'),
+            requestId: RequestIdHelper::resolve($request),
         ));
 
         return $report;

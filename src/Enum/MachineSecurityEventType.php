@@ -2,11 +2,13 @@
 
 namespace Wexample\SymfonyApi\Enum;
 
+use Wexample\SymfonySecurity\Interface\SecurityEventTypeInterface;
+
 /**
  * Every fact of a machine token's life the package records. A refusal carries
  * its real cause, in MachineSecurityEvent::$cause.
  */
-enum MachineSecurityEventType: string
+enum MachineSecurityEventType: string implements SecurityEventTypeInterface
 {
     case ISSUED = 'machine_token.issued';
     case REVOKED = 'machine_token.revoked';

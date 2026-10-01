@@ -86,7 +86,7 @@ A batch needs an authenticated sender: without one the receiver throws `AccessDe
 
 ## Journal
 
-One `ApiBatchEvent` per batch — scope, item DTO class, the summary of outcomes, how many rejected items carry each code (`rejection_codes`, validation codes included), route, API version, `X-Request-Id` — written by default to the Monolog channel `api_batch` at `info`. The items themselves belong to the application.
+One `ApiBatchEvent` per batch — scope, item DTO class, the summary of outcomes, how many rejected items carry each code (`rejection_codes`, validation codes included), route, API version, `X-Request-Id` (or the id generated for the request, shared with the security journals) — written by default to the Monolog channel `api_batch` at `info`. The items themselves belong to the application.
 
 ## Not covered
 

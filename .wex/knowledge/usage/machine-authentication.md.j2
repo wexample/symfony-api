@@ -13,7 +13,7 @@ The package relies on the native `access_token` authenticator of Symfony and shi
 | `MachineTokenHandler` | The `token_handler`: hash lookup, revocation, expiration, roles check. |
 | `MachineTokenAuthenticationFailureHandler` | The `failure_handler` and `entry_point`: a 401 in the API envelope. |
 | `MachineTokenSecuritySubscriber` | Writes the last use once every check passed, journals each refusal with its cause. |
-| `MachineTokenRedactionProcessor` | Replaces any token by its hint in every log record, exceptions included. |
+| `MachineTokenRedactionProcessor` | Replaces any token by its hint in every log record, exceptions included; the walk is `symfony-security`'s `AbstractSecretRedactionProcessor`. |
 | `api:machine-token:*` | Console commands to issue, list and revoke. |
 
 ## Entities
@@ -116,7 +116,7 @@ Only `issue` prints a secret, once, with a warning. No command prints a hash. A 
 
 ## Journal
 
-Every fact is dispatched as a `MachineSecurityEvent`, of the same shape as the `SecurityEvent` of `symfony-user`, so one recorder reads both:
+Every fact is dispatched as a `MachineSecurityEvent`, an `AbstractSecurityEvent` of `symfony-security` like the `SecurityEvent` of `symfony-user`, so one recorder reads both:
 
 | Type | When |
 |---|---|
@@ -126,7 +126,7 @@ Every fact is dispatched as a `MachineSecurityEvent`, of the same shape as the `
 | `machine_token.refused` | a request refused, `cause` among `missing`, `unknown`, `revoked`, `expired`, `role_not_allowed`, `client_disabled` |
 | `machine_token.throttled` | a request over a limit, `cause` `client` or `ip`, `extra.retry_after` |
 
-Each carries `user_id` (the client), `firewall`, `ip`, `user_agent`, `request_id` (the `X-Request-Id` header, or one generated per request), a UTC timestamp, `extra.token_hint` and `extra.api_version` (see `usage/versioning`). A presented string that does not start with the configured prefix is not hinted: it may be someone else's secret.
+Each carries `user_id` (the client), `firewall`, `ip`, `user_agent`, `request_id` (the `X-Request-Id` header, or one generated per request and shared with every other journal of the request), a UTC timestamp, `extra.token_hint` and `extra.api_version` (see `usage/versioning`). A presented string that does not start with the configured prefix is not hinted: it may be someone else's secret.
 
 By default the events are written to the Monolog channel `machine_security`, at `warning` for refusals and `info` otherwise. The response never changes with the cause.
 

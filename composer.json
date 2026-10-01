@@ -23,6 +23,7 @@
     "wexample/php-date": ">=2.0.0",
     "wexample/symfony-testing": ">=4.0.0",
     "wexample/symfony-helpers": ">=12.0.0",
+    "wexample/symfony-security": ">=1.0.0",
     "wexample/symfony-loader": ">=15.0.0",
     "wexample/symfony-forms": ">=8.0.0",
     "wexample/symfony-content": ">=4.0.0",
