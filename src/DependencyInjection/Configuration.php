@@ -54,6 +54,41 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->end();
 
+        $treeBuilder->getRootNode()
+            ->children()
+            ->arrayNode('batch')
+            ->addDefaultsIfNotSet()
+            ->children()
+            // The application's subclass of AbstractIdempotencyRecord; null
+            // leaves batch receipt unconfigured.
+            ->scalarNode('record_class')
+            ->defaultNull()
+            ->end()
+            // Items per batch beyond which the whole request is refused.
+            ->integerNode('max_items')
+            ->defaultValue(100)
+            ->min(1)
+            ->end()
+            // How long a received key is remembered, as an ISO 8601 duration.
+            ->scalarNode('retention')
+            ->defaultValue('P30D')
+            ->validate()
+            ->ifTrue(function (string $value): bool {
+                try {
+                    new \DateInterval($value);
+
+                    return false;
+                } catch (\Exception) {
+                    return true;
+                }
+            })
+            ->thenInvalid('%s is not an ISO 8601 duration (P30D, PT12H…).')
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end();
+
         return $treeBuilder;
     }
 }

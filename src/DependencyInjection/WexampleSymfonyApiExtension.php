@@ -40,5 +40,10 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
         $container->setParameter('api_machine_token_prefix', $machineToken['prefix']);
         $container->setParameter('api_machine_token_roles', $machineToken['roles']);
         $container->setParameter('api_machine_token_last_used_interval', $machineToken['last_used_interval']);
+
+        $batch = $config['batch'];
+        $container->setParameter('api_batch_record_class', $batch['record_class']);
+        $container->setParameter('api_batch_max_items', $batch['max_items']);
+        $container->setParameter('api_batch_retention', $batch['retention']);
     }
 }

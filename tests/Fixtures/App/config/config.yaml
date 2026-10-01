@@ -18,6 +18,8 @@ wexample_symfony_api:
   machine_token:
     token_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\DeviceToken
     prefix: fx_dev_
+  batch:
+    record_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\IdempotencyRecord
 
 security:
   providers:

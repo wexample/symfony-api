@@ -14,6 +14,7 @@ use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
 use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Class\ApiErrorDataInterface;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
+use Wexample\SymfonyApi\Api\Class\BatchReport;
 use Wexample\SymfonyApi\Api\Dto\PaginationDto;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyHelpers\Controller\AbstractController;
@@ -149,6 +150,21 @@ abstract class AbstractApiController extends AbstractController
             data: [
                 'items' => $items,
             ] + $extraInfo
+        );
+    }
+
+    /**
+     * A received batch: always a success once the batch itself was readable —
+     * the outcome of each item is in it, and a whole-request error would make
+     * the sender send everything again.
+     */
+    public static function apiResponseBatch(BatchReport $report): ApiResponse
+    {
+        return self::apiResponseCollection(
+            items: $report->getItems(),
+            extraInfo: [
+                'summary' => $report->getSummary(),
+            ]
         );
     }
 
