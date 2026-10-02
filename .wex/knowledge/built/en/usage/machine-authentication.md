@@ -1,0 +1,146 @@
+## Machine clients
+
+A machine client is a program calling the API in its own name — a device, a server — with no password, no session and no cookie. It presents a token of its own on every request, in `Authorization: Bearer`, to a firewall of its own.
+
+The package relies on the native `access_token` authenticator of Symfony and ships what it lacks:
+
+| Piece | Role |
+|---|---|
+| `MachineClientInterface` | Implemented by the application's client entity. `UserInterface`, role `ROLE_MACHINE`. |
+| `MachineClientTrait` | `getRoles()` returning `ROLE_MACHINE` only, an empty `eraseCredentials()`. |
+| `AbstractMachineToken` | One token of a client: hash, hint, label, creation, expiration, revocation, last use. Several per client. |
+| `MachineTokenService` | `issue()`, `rotate()`, `revoke()`, `revokeAll()`, lookups. The plain secret is returned once, when it is made. |
+| `MachineTokenHandler` | The `token_handler`: hash lookup, revocation, expiration, roles check. |
+| `MachineTokenAuthenticationFailureHandler` | The `failure_handler` and `entry_point`: a 401 in the API envelope. |
+| `MachineTokenSecuritySubscriber` | Writes the last use once every check passed, journals each refusal with its cause. |
+| `MachineTokenLogMasker` | Replaces any token by its hint in every log record, exceptions included, through `symfony-security`'s redaction processor. |
+| `api:machine-token:*` | Console commands to issue, list and revoke. |
+
+## Entities
+
+```php
+#[ORM\Entity]
+class Device extends AbstractEntity implements MachineClientInterface
+{
+    use MachineClientTrait;
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->getId();
+    }
+}
+
+#[ORM\Entity]
+class DeviceToken extends AbstractMachineToken
+{
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private Device $device;
+
+    public function getClient(): Device
+    {
+        return $this->device;
+    }
+
+    public function setClient(MachineClientInterface $client): static
+    {
+        $this->device = $client;
+
+        return $this;
+    }
+}
+```
+
+`AbstractMachineToken` is not a mapped superclass: its columns land in the application table. Generate a migration after extending it. The package finds the client class through the one single-valued association of the token class whose target implements `MachineClientInterface`.
+
+## Configuration
+
+```yaml
+# config/packages/wexample_symfony_api.yaml
+wexample_symfony_api:
+  machine_token:
+    token_class: App\Entity\DeviceToken   # required, null by default
+    prefix: mt_                           # readable start of every token
+    roles: [ROLE_MACHINE]                 # the only roles a client may carry
+    last_used_interval: 60                # seconds between two writes of the last use
+    rate_limit:
+      enabled: true
+      client: { limit: 600, interval: '1 hour' }        # requests per authenticated client
+      ip_failures: { limit: 30, interval: '15 minutes' } # failed attempts per address
+
+# config/packages/security.yaml
+security:
+  firewalls:
+    # Before the page firewall, which would otherwise match first.
+    machine:
+      pattern: ^/api/device/
+      stateless: true
+      access_token:
+        token_handler: Wexample\SymfonyApi\Security\MachineTokenHandler
+        failure_handler: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
+      entry_point: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
+      user_checker: App\Security\DeviceChecker   # optional, to switch a client off
+    main:
+      # …
+  access_control:
+    - { path: ^/api/device/, roles: ROLE_MACHINE }
+```
+
+Leave `token_extractors` unset: the default reads the header alone. A token accepted from the query string ends in the access logs of every proxy on the way.
+
+## Issuing, rotating, revoking
+
+```php
+$secret = $machineTokenService->issue($device, new DateTimeImmutable('+1 year'), 'commissioning');
+$secret = $machineTokenService->rotate($device, new DateInterval('P1D'));   // old tokens expire in a day
+$machineTokenService->revoke($token);
+$machineTokenService->revokeAll($device);
+```
+
+- `issue()` returns the secret once; only its hash and hint are stored.
+- `rotate()` issues a new token and brings the expiration of every other usable token of the client down to the end of the overlap — never later than it already was. Both work during the overlap, only the new one after. It can be called from a request authenticated by the very token being rotated.
+- `revoke()` and `revokeAll()` take effect on the next request.
+
+From the console, `<client>` being the client's id:
+
+```bash
+php bin/console api:machine-token:issue <client> [--expires="+1 year"] [--label=commissioning]
+php bin/console api:machine-token:list <client>
+php bin/console api:machine-token:revoke <token id|hint>
+php bin/console api:machine-token:revoke <client> --all
+```
+
+Only `issue` prints a secret, once, with a warning. No command prints a hash. A hint is accepted with or without its trailing ellipsis; when two tokens share one, name the token by its id.
+
+**Switching a client off** without touching its tokens is the job of the firewall's `user_checker`: throw an `AccountStatusException` (`DisabledException`) from `checkPreAuth()` for a disabled client. The refusal is the same 401, journalled as `client_disabled`. The last use is written only after the checker passed.
+
+## Journal
+
+Every fact is dispatched as a `MachineSecurityEvent`, an `AbstractSecurityEvent` of `symfony-security` like the `SecurityEvent` of `symfony-user`, so one recorder reads both:
+
+| Type | When |
+|---|---|
+| `machine_token.issued` | `issue()` |
+| `machine_token.rotated` | `rotate()` — `extra.previous_tokens`, `extra.previous_expire_at` |
+| `machine_token.revoked` | `revoke()`, or `revokeAll()` with `extra.scope: all` |
+| `machine_token.refused` | a request refused, `cause` among `missing`, `unknown`, `revoked`, `expired`, `role_not_allowed`, `client_disabled` |
+| `machine_token.throttled` | a request over a limit, `cause` `client` or `ip`, `extra.retry_after` |
+
+Each carries `user_id` (the client), `firewall`, `ip`, `user_agent`, `request_id` (the `X-Request-Id` header, or one generated per request and shared with every other journal of the request), a UTC timestamp, `extra.token_hint` and `extra.api_version` (see `usage/versioning`). A presented string that does not start with the configured prefix is not hinted: it may be someone else's secret.
+
+By default the events are written to the Monolog channel `machine_security`, at `warning` for refusals and `info` otherwise. The response never changes with the cause.
+
+## Behaviour
+
+- **Storage.** A token is `{prefix}` followed by 43 random base62 characters (256 bits). The database holds its SHA-256, which is enough for a random secret and allows a direct lookup, and a hint — the prefix and six characters, then `…` — to name it in a log or a ticket.
+- **Refusal.** An unknown, revoked or expired token, a client with a forbidden role or switched off: one response, `401`, `WWW-Authenticate: Bearer error="invalid_token"`, `{"type":"error","code":401,"message":"Invalid credentials.","data":{}}`. A request with no token gets the same envelope, `Authentication required.` and `WWW-Authenticate: Bearer`.
+- **Roles.** A client carrying a role outside `machine_token.roles` is refused, and the reason is logged at `error`. The check fails closed: a machine client given `ROLE_ADMIN` by mistake opens nothing.
+- **Separation.** On a `stateless` firewall, a page session cookie authenticates nothing and no response sets a cookie. A bearer token sent to a page authenticates nothing, as long as the page firewall carries no `access_token` authenticator.
+- **Logs.** With Monolog installed, any token in any record of any channel — message, context, exception messages and their previous ones — is replaced by its hint, and a foreign bearer value or `access_token` query parameter is masked whole. The router logs every request URI, and a 404 quotes the referer.
+- **Rate limit.** A safety net, not a quota, on by default. Two sliding windows, declared by the bundle in `framework.rate_limiter` (`api_machine_client`, `api_machine_ip_failures`): requests per authenticated client — a batch is one request —, and failed attempts per address, checked **before** the token is looked up, so a flood of unknown tokens costs no query. Successes do not count against an address. Over either: `429`, `Retry-After`, `{"type":"error","code":429,"message":"Too many requests.","data":{}}` — the same for a valid token and an unknown one. Behind a proxy, set `framework.trusted_proxies`, or every device shares the proxy's address. Per-route quotas are the application's business: Symfony's `RateLimiterFactory` in the controller.
+- **Last use.** `dateLastUsed` is written at most once per `last_used_interval`, after every check passed.
+- **Replaceable.** Controllers read the client through `#[CurrentUser] MachineClientInterface`. A JWT or OIDC handler can take the place of `MachineTokenHandler` without touching them.
+
+## Not covered
+
+HTTPS is enforced by the proxy, not by the package: an API listening on plain HTTP has already leaked the token once it reaches the application.

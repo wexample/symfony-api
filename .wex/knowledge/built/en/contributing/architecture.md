@@ -10,7 +10,7 @@ The package is a Symfony bundle. Every HTTP call that touches a route owned by a
 
 ### Bundle registration
 
-src/DependencyInjection/WexampleSymfonyApiExtension.php loads the service definitions and reads the bundle configuration declared in src/DependencyInjection/Configuration.php. Two container parameters come out of that: `api_pretty_print` (boolean, default `false`) and `api_test_error_log_length` (integer, default `1000`). The routes shipped by the bundle are declared in src/Resources/config/routes.yaml, which auto-imports controllers from `src/Api/Controller/Test/` and `src/Controller/`.
+src/DependencyInjection/WexampleSymfonyApiExtension.php loads the service definitions and reads the bundle configuration declared in src/DependencyInjection/Configuration.php. Container parameters come out of that: `api_pretty_print` (boolean, default `false`), `api_test_error_log_length` (integer, default `1000`), the `api_machine_token_*` of the `machine_token` node, read by the machine authentication described in `usage/machine-authentication`, the three `api_batch_*` of the `batch` node, read by the batch receipt described in `usage/batch-receipt`, and `api_versions`, read by the deprecation headers described in `usage/versioning`. Its `prepend()` declares the two rate limiters of the machine firewall in `framework.rate_limiter`. When `nelmio/api-doc-bundle` is installed, it also registers `ApiRouteDescriber`, the bridge described in `usage/openapi`, tagged `nelmio_api_doc.route_describer`. When the host application has a `src/Api/Controller/` directory, the extension also loads src/Resources/config/services_app_api_controllers.yaml, which registers its classes as controllers; without the directory nothing is registered, since a glob on a missing path stops the container from compiling. The routes shipped by the bundle are declared in src/Resources/config/routes.yaml, which auto-imports controllers from `src/Api/Controller/Test/` and `src/Controller/`.
 
 ### Event subscriber
 
@@ -24,7 +24,7 @@ src/EventSubscriber/ApiEventSubscriber.php subscribes to three kernel events.
 
 **`kernel.view`** — When the controller returns an `ApiResponse`, the subscriber calls `toJsonResponse()` on it, applying the `api_pretty_print` parameter if the controller did not set a preference.
 
-**`kernel.exception`** — If the failing request was routed to a subclass of `AbstractApiController`, the subscriber calls `AbstractApiController::apiResponseError` with the exception message and replaces the response. In debug mode it also serialises the stack trace into `data.trace`.
+**`kernel.exception`** — If the failing request was routed to a subclass of `AbstractApiController`, the subscriber calls `AbstractApiController::apiResponseError` with the exception message and replaces the response. The status is the one of an `HttpExceptionInterface`, `400` for a body refused by `#[ValidateRequestContent]` (`ConstraintViolationException`, `DeserializationException`) — with the violations in `data` as an `ApiValidationErrorData` —, `500` otherwise. In debug mode it also serialises the stack trace into `data.trace`.
 
 ### Controller base class
 

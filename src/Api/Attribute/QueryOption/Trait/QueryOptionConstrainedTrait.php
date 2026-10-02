@@ -3,9 +3,9 @@
 namespace Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait;
 
 use Symfony\Component\HttpFoundation\Request;
-use Wexample\SymfonyApi\Helper\ApiHelper;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Type;
+use Wexample\SymfonyApi\Helper\ApiHelper;
 
 trait QueryOptionConstrainedTrait
 {
