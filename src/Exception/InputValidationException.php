@@ -22,7 +22,7 @@ class InputValidationException extends ConstraintViolationException
         int $code = 0,
         ?string $internalCodeSuffix = self::CODE_INPUT_CONSTRAINT_VIOLATION,
         array $context = [],
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
         parent::__construct(
             'At least one constraint has been violated.',

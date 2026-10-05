@@ -46,7 +46,7 @@ class ExtraPropertyException extends ConstraintViolationException
         int $code = 0,
         ?string $internalCodeSuffix = self::CODE_EXTRA_PROPERTY,
         array $context = [],
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
         $this->extraProperties = $extraProperties;
         $this->allowedProperties = $allowedProperties;

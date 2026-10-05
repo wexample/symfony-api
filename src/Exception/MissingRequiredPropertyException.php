@@ -36,7 +36,7 @@ class MissingRequiredPropertyException extends ConstraintViolationException
         int $code = 0,
         ?string $internalCodeSuffix = self::CODE_MISSING_REQUIRED_PROPERTY,
         array $context = [],
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
         $this->propertyName = $propertyName;
 

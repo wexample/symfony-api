@@ -51,7 +51,9 @@ class ApiVersionDeprecationSubscriber implements EventSubscriberInterface
         }
 
         if (null !== $config['sunset']) {
-            $headers->set('Sunset', $this->parseDate($config['sunset'])->format(DATE_RFC7231));
+            // The HTTP-date of RFC 9110, spelled out: DATE_RFC7231 is deprecated since
+            // PHP 8.5, and parseDate() already puts the date in UTC.
+            $headers->set('Sunset', $this->parseDate($config['sunset'])->format('D, d M Y H:i:s \G\M\T'));
         }
 
         if (null !== $config['link']) {

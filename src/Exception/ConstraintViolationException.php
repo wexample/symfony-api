@@ -26,7 +26,7 @@ class ConstraintViolationException extends AbstractApiException
         int $code = 0,
         ?string $internalCodeSuffix = null,
         array $context = [],
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
         parent::__construct(
             $this->formatErrorMessage($message, $violations),

@@ -24,7 +24,7 @@ class FieldValidationException extends ConstraintViolationException
         int $code = 0,
         ?string $internalCodeSuffix = self::CODE_FIELD_CONSTRAINT_VIOLATION,
         array $context = [],
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
         parent::__construct(
             sprintf(

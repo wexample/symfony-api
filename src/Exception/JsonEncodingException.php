@@ -30,7 +30,7 @@ class JsonEncodingException extends ConstraintViolationException
         int $code = 0,
         ?string $internalCodeSuffix = self::CODE_JSON_ENCODING_ERROR,
         array $context = [],
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
         parent::__construct(
             'Failed to encode data to JSON: ' . $errorMessage,
