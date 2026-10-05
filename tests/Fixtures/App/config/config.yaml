@@ -23,8 +23,6 @@ wexample_symfony_api:
       ip_failures: { limit: 8, interval: '1 hour' }
   batch:
     record_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\IdempotencyRecord
-  openapi:
-    bearer_paths: ['^/api/device/']
   versions:
     v1:
       deprecation: '2026-09-01'
@@ -53,6 +51,7 @@ security:
   access_control:
     - { path: ^/api/device/, roles: ROLE_MACHINE }
     - { path: ^/page, roles: ROLE_USER }
+    - { path: ^/api/app/, roles: ROLE_USER }
 
 services:
   _defaults:
@@ -92,6 +91,8 @@ nelmio_api_doc:
   areas:
     default:
       path_patterns: ['^/api/device/(?!v\d+/)']
+    app:
+      path_patterns: ['^/api/app/']
     v1:
       path_patterns: ['^/api/device/v1/']
       documentation:

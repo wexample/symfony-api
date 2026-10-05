@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\Tests\Integration;
 
 use Opis\JsonSchema\CompliantValidator;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Tests\Traits\MachineTokenTestTrait;
@@ -15,7 +16,7 @@ class ApiDocumentationTest extends WebTestCase
 {
     use MachineTokenTestTrait;
 
-    private const array AREAS = ['default', 'v1', 'v2'];
+    private const array AREAS = ['default', 'app', 'v1', 'v2'];
 
     private const string SCHEMA_ID = 'https://spec.openapis.org/oas/3.1/schema/2022-10-07';
 
@@ -124,6 +125,54 @@ class ApiDocumentationTest extends WebTestCase
         $this->assertArrayNotHasKey('deprecated', $v2['paths']['/api/device/v2/echo']['post']);
     }
 
+    public function testSecurityIsReadFromTheFirewallCoveringEachRoute(): void
+    {
+        $app = $this->document('app');
+        $account = $app['paths']['/api/app/account']['get'];
+
+        $this->assertSame([['sessionCookie' => []]], $account['security']);
+        $this->assertSame(['type' => 'apiKey', 'description' => 'The session of the signed-in user, as the pages use it.', 'name' => 'PHPSESSID', 'in' => 'cookie'], $app['components']['securitySchemes']['sessionCookie']);
+        $this->assertSame(['200', '400', '401', '403'], array_map('strval', array_keys($account['responses'])));
+        $this->assertArrayNotHasKey('machineToken', $app['components']['securitySchemes']);
+
+        // No `bearer_paths` in the fixture: the machine firewall is recognised by its access_token authenticator.
+        $this->assertSame([['machineToken' => []]], $this->document('default')['paths']['/api/device/whoami']['get']['security']);
+    }
+
+    public function testResponseDataIsDescribedWhereTheRouteDeclaresIt(): void
+    {
+        $default = $this->document('default');
+        $list = $default['paths']['/api/device/readings']['get']['responses']['200']['content']['application/json']['schema'];
+
+        $this->assertSame('#/components/schemas/ApiSuccessResponse', $list['allOf'][0]['$ref']);
+        $data = $list['allOf'][1]['properties']['data'];
+        $this->assertSame(['items', 'pagination'], $data['required']);
+        $this->assertSame('#/components/schemas/ReadingRowDto', $data['properties']['items']['items']['$ref']);
+        $this->assertSame('#/components/schemas/ApiPagination', $data['properties']['pagination']['$ref']);
+        $this->assertSame(['page', 'length', 'total', 'pagesCount', 'hasMore'], $default['components']['schemas']['ApiPagination']['required']);
+
+        $account = $this->document('app')['paths']['/api/app/account']['get']['responses']['200']['content']['application/json']['schema'];
+        $this->assertSame('#/components/schemas/AccountDto', $account['allOf'][1]['properties']['data']['$ref']);
+
+        // Without the declaration, data stays an open object.
+        $this->assertSame('#/components/schemas/ApiSuccessResponse', $default['paths']['/api/device/whoami']['get']['responses']['200']['content']['application/json']['schema']['$ref']);
+    }
+
+    public function testErrorsAndQueryFormatsAreDescribed(): void
+    {
+        $default = $this->document('default');
+
+        $this->assertSame(['errorCode', 'kind', 'issues', 'summary'], $default['components']['schemas']['ApiValidationErrorData']['required']);
+        $this->assertSame('#/components/schemas/ApiValidationErrorData', $default['components']['schemas']['ApiErrorResponse']['properties']['data']['anyOf'][1]['$ref']);
+        $this->assertSame('#/components/schemas/ApiValidationErrorData', $default['components']['schemas']['ApiBatchResponse']['properties']['data']['properties']['items']['items']['properties']['errors']['$ref']);
+
+        $parameters = array_column($this->document('app')['paths']['/api/app/account']['get']['parameters'], 'schema', 'name');
+        $this->assertSame('string', $parameters['date']['type']);
+        $this->assertMatchesRegularExpression('/' . $parameters['date']['pattern'] . '/', '2026-10-05 14:30');
+        $this->assertDoesNotMatchRegularExpression('/' . $parameters['date']['pattern'] . '/', '05/10/2026');
+        $this->assertContains('medium', $parameters['display-format']['enum']);
+    }
+
     /**
      * Requests built from nothing but the documents are accepted by the routes
      * they describe.
@@ -131,6 +180,8 @@ class ApiDocumentationTest extends WebTestCase
     public function testRequestsBuiltFromTheDocumentsAreAccepted(): void
     {
         $token = $this->getMachineTokenService()->issue($this->createDevice());
+        // The session routes, signed in the way the pages are.
+        $this->client->loginUser(new InMemoryUser('jane', 'secret', ['ROLE_USER']), 'main');
 
         foreach (self::AREAS as $area) {
             $document = $this->document($area);
@@ -142,7 +193,7 @@ class ApiDocumentationTest extends WebTestCase
                     $this->client->request(
                         strtoupper($method),
                         $path,
-                        server: ['HTTP_AUTHORIZATION' => 'Bearer ' . $token, 'CONTENT_TYPE' => 'application/json'],
+                        server: ['app' === $area ? 'HTTP_ACCEPT' : 'HTTP_AUTHORIZATION' => 'app' === $area ? 'application/json' : 'Bearer ' . $token, 'CONTENT_TYPE' => 'application/json'],
                         content: null === $schema ? null : json_encode($this->buildSample($schema, $document))
                     );
 

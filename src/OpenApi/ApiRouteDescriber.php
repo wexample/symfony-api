@@ -13,17 +13,27 @@ use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberTrait;
 use OpenApi\Annotations as OA;
 use OpenApi\Generator;
 use ReflectionMethod;
+use Symfony\Bundle\SecurityBundle\Security\FirewallMap;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\TypeInfo\Type;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type as TypeConstraint;
 use Wexample\SymfonyApi\Api\Attribute\ApiBatch;
+use Wexample\SymfonyApi\Api\Attribute\ApiResponseData;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\SortQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\Trait\QueryOptionConstrainedTrait;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
+use Wexample\SymfonyApi\Api\Class\ApiValidationErrorData;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Enum\BatchItemOutcome;
 use Wexample\SymfonyApi\Helper\ApiVersionHelper;
+use Wexample\SymfonyHelpers\Validator\DateQueryStringConstraint;
 
 /**
  * Teaches NelmioApiDocBundle what this package's attributes mean, for the
@@ -38,6 +48,8 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
 
     final public const string SECURITY_SCHEME = 'machineToken';
 
+    final public const string SECURITY_SCHEME_SESSION = 'sessionCookie';
+
     /**
      * @param list<string> $bearerPaths
      * @param array<string, array{deprecation: ?string, sunset: ?string, link: ?string}> $versions
@@ -47,6 +59,12 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
         private readonly array $bearerPaths,
         #[Autowire(param: 'api_versions')]
         private readonly array $versions,
+        #[Autowire(param: 'api_machine_token_rate_limit_enabled')]
+        private readonly bool $rateLimitEnabled,
+        #[Autowire(service: 'security.firewall.map')]
+        private readonly FirewallMap $firewallMap,
+        // Read when needed: an application without sessions has no such parameter.
+        private readonly ParameterBagInterface $parameterBag,
     ) {
     }
 
@@ -56,20 +74,18 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
             return;
         }
 
-        $bearer = $this->isBearerPath($route->getPath());
         $version = ApiVersionHelper::fromPath($route->getPath());
         $deprecation = null !== $version ? ($this->versions[$version] ?? null) : null;
 
-        if ($bearer) {
-            $this->declareSecurityScheme($api);
-        }
-
         foreach ($this->getOperations($api, $route) as $operation) {
-            $this->describeRequest($operation, $reflectionMethod);
-            $this->describeResponses($api, $operation, $reflectionMethod, $bearer);
+            $security = $this->getSecurity($route, $operation->method);
 
-            if ($bearer) {
-                Util::modifyAnnotationValue($operation, 'security', [[self::SECURITY_SCHEME => []]]);
+            $this->describeRequest($operation, $reflectionMethod);
+            $this->describeResponses($api, $operation, $reflectionMethod, $security);
+
+            if (null !== $security) {
+                $this->declareSecurityScheme($api, $security);
+                Util::modifyAnnotationValue($operation, 'security', [[$security => []]]);
             }
 
             if ($deprecation && null !== $deprecation['deprecation']) {
@@ -84,7 +100,7 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
             $parameter = Util::getOperationParameter($operation, $option->key, 'query');
             Util::modifyAnnotationValue($parameter, 'required', $option->required);
             $schema = Util::getChild($parameter, OA\Schema::class);
-            Util::modifyAnnotationValue($schema, 'type', $this->getQueryType($option->getConstraint()));
+            $this->describeQuerySchema($schema, $option->getConstraint());
 
             if (null !== $option->default) {
                 Util::modifyAnnotationValue($schema, 'default', $option->default);
@@ -129,17 +145,27 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
         OA\OpenApi $api,
         OA\Operation $operation,
         ReflectionMethod $method,
-        bool $bearer
+        ?string $security
     ): void {
         $batch = ! empty($this->getAttributes($method, ApiBatch::class));
         $this->declareEnvelopes($api, $batch);
+        $data = $this->getAttributes($method, ApiResponseData::class)[0] ?? null;
 
-        $this->setResponse(
-            $operation,
-            '200',
-            $batch ? 'The batch was read: the outcome of each item is in the report.' : 'Success.',
-            $batch ? '#/components/schemas/ApiBatchResponse' : '#/components/schemas/ApiSuccessResponse'
-        );
+        if ($data && ! $batch) {
+            $schema = $this->setResponseSchema($operation, '200', 'Success.');
+            // Created through Util so that swagger-php sees them nested, not
+            // as components missing their name.
+            Util::createCollectionItem($schema, 'allOf', OA\Schema::class, ['ref' => '#/components/schemas/ApiSuccessResponse']);
+            $own = $schema->allOf[Util::createCollectionItem($schema, 'allOf', OA\Schema::class, ['type' => 'object'])];
+            $this->describeData($api, Util::getProperty($own, 'data'), $data);
+        } else {
+            $this->setResponse(
+                $operation,
+                '200',
+                $batch ? 'The batch was read: the outcome of each item is in the report.' : 'Success.',
+                $batch ? '#/components/schemas/ApiBatchResponse' : '#/components/schemas/ApiSuccessResponse'
+            );
+        }
 
         if (! empty($this->getAttributes($method, ValidateRequestContent::class))
             || ! empty($this->getAttributes($method, QueryOptionConstrainedTrait::class))
@@ -152,13 +178,21 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
             $this->setResponse($operation, '422', 'Too many items: the batch is refused whole.', '#/components/schemas/ApiErrorResponse');
         }
 
-        if ($bearer) {
+        if (self::SECURITY_SCHEME === $security) {
             $this->setResponse($operation, '401', 'Missing, unknown, revoked or expired token — one response for all.', '#/components/schemas/ApiErrorResponse', [
                 'WWW-Authenticate' => 'Bearer, with error="invalid_token" when a token was presented.',
             ]);
-            $this->setResponse($operation, '429', 'Over the rate limit of the client or of the address.', '#/components/schemas/ApiErrorResponse', [
-                'Retry-After' => 'Seconds to wait before the next request.',
-            ]);
+
+            if ($this->rateLimitEnabled) {
+                $this->setResponse($operation, '429', 'Over the rate limit of the client or of the address.', '#/components/schemas/ApiErrorResponse', [
+                    'Retry-After' => 'Seconds to wait before the next request.',
+                ]);
+            }
+        }
+
+        if (self::SECURITY_SCHEME_SESSION === $security) {
+            $this->setResponse($operation, '401', 'No session. Send `Accept: application/json`, or the firewall may answer with a redirect to its login page instead.', '#/components/schemas/ApiErrorResponse');
+            $this->setResponse($operation, '403', 'Signed in, without the rights this route requires.', '#/components/schemas/ApiErrorResponse');
         }
     }
 
@@ -184,15 +218,48 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
         Util::modifyAnnotationValue($operation, 'description', $description);
     }
 
-    private function declareSecurityScheme(OA\OpenApi $api): void
+    private function declareSecurityScheme(OA\OpenApi $api, string $scheme): void
     {
         $components = Util::getChild($api, OA\Components::class);
-        Util::getCollectionItem($components, OA\SecurityScheme::class, [
-            'securityScheme' => self::SECURITY_SCHEME,
-            'type' => 'http',
-            'scheme' => 'bearer',
-            'description' => 'A machine token, in the Authorization header only — never in the URL.',
-        ]);
+
+        Util::getCollectionItem($components, OA\SecurityScheme::class, self::SECURITY_SCHEME === $scheme
+            ? [
+                'securityScheme' => self::SECURITY_SCHEME,
+                'type' => 'http',
+                'scheme' => 'bearer',
+                'description' => 'A machine token, in the Authorization header only — never in the URL.',
+            ]
+            : [
+                'securityScheme' => self::SECURITY_SCHEME_SESSION,
+                'type' => 'apiKey',
+                'in' => 'cookie',
+                'name' => ($this->parameterBag->has('session.storage.options') ? $this->parameterBag->get('session.storage.options')['name'] ?? null : null) ?? 'PHPSESSID',
+                'description' => 'The session of the signed-in user, as the pages use it.',
+            ]);
+    }
+
+    /**
+     * How the firewall covering the route authenticates its caller: a token
+     * per request, a session, or nothing.
+     */
+    private function getSecurity(Route $route, string $method): ?string
+    {
+        if ($this->isBearerPath($route->getPath())) {
+            return self::SECURITY_SCHEME;
+        }
+
+        $path = preg_replace('/\{[^}]+}/', 'x', $route->getPath());
+        $config = $this->firewallMap->getFirewallConfig(Request::create($path, strtoupper($method)));
+
+        if (null === $config || ! $config->isSecurityEnabled()) {
+            return null;
+        }
+
+        if (in_array('access_token', $config->getAuthenticators(), true)) {
+            return self::SECURITY_SCHEME;
+        }
+
+        return $config->isStateless() ? null : self::SECURITY_SCHEME_SESSION;
     }
 
     /**
@@ -200,6 +267,42 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
      */
     private function declareEnvelopes(OA\OpenApi $api, bool $withBatch): void
     {
+        $validation = Util::getSchema($api, 'ApiValidationErrorData');
+        if (Generator::isDefault($validation->properties)) {
+            Util::merge($validation, new OA\Schema([
+                'type' => 'object',
+                'required' => ['errorCode', 'kind', 'issues', 'summary'],
+                'properties' => [
+                    new OA\Property(['property' => 'errorCode', 'type' => 'string']),
+                    new OA\Property(['property' => 'kind', 'type' => 'string', 'enum' => [ApiValidationErrorData::KIND_VALIDATION_COLLECTION]]),
+                    new OA\Property([
+                        'property' => 'issues',
+                        'type' => 'array',
+                        'items' => new OA\Items([
+                            'type' => 'object',
+                            'required' => ['code', 'path'],
+                            'properties' => [
+                                new OA\Property(['property' => 'code', 'type' => 'string', 'description' => 'Stable, for a program to read.']),
+                                new OA\Property(['property' => 'path', 'type' => 'string', 'description' => 'The field at fault, empty for the whole body.']),
+                                new OA\Property(['property' => 'message', 'type' => 'string', 'description' => 'For a person.']),
+                                new OA\Property(['property' => 'meta', 'type' => 'object']),
+                            ],
+                        ]),
+                    ]),
+                    new OA\Property([
+                        'property' => 'summary',
+                        'type' => 'object',
+                        'required' => ['global', 'fields', 'count'],
+                        'properties' => [
+                            new OA\Property(['property' => 'global', 'type' => 'array', 'items' => new OA\Items(['type' => 'string'])]),
+                            new OA\Property(['property' => 'fields', 'type' => 'object', 'additionalProperties' => new OA\AdditionalProperties(['type' => 'array', 'items' => new OA\Items(['type' => 'string'])])]),
+                            new OA\Property(['property' => 'count', 'type' => 'integer']),
+                        ],
+                    ]),
+                ],
+            ]));
+        }
+
         $success = Util::getSchema($api, 'ApiSuccessResponse');
         if (Generator::isDefault($success->properties)) {
             Util::merge($success, new OA\Schema([
@@ -223,13 +326,13 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
                     new OA\Property(['property' => 'type', 'type' => 'string', 'enum' => ['error']]),
                     new OA\Property(['property' => 'code', 'type' => 'integer']),
                     new OA\Property(['property' => 'message', 'type' => 'string']),
-                    new OA\Property([
-                        'property' => 'data',
-                        'description' => 'Empty, or the validation issues: errorCode, kind, issues (code, path, message), summary.',
-                        'type' => 'object',
-                    ]),
                 ],
             ]));
+
+            $data = Util::getProperty($error, 'data');
+            Util::modifyAnnotationValue($data, 'description', 'Empty, or the validation issues of a refused body or query.');
+            Util::createCollectionItem($data, 'anyOf', OA\Schema::class, ['type' => 'object', 'maxProperties' => 0]);
+            Util::createCollectionItem($data, 'anyOf', OA\Schema::class, ['ref' => '#/components/schemas/ApiValidationErrorData']);
         }
 
         if (! $withBatch) {
@@ -267,7 +370,7 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
                                             'description' => 'accepted, duplicate: drop it. rejected, conflict: drop it, it will never pass. error: keep it and send it again.',
                                         ]),
                                         new OA\Property(['property' => 'result', 'description' => 'What the endpoint returned for the item, given back on a replay.']),
-                                        new OA\Property(['property' => 'errors', 'type' => 'object', 'description' => 'For rejected and conflict: errorCode, kind, issues (code, path, message), summary.']),
+                                        new OA\Property(['property' => 'errors', 'ref' => '#/components/schemas/ApiValidationErrorData', 'description' => 'For rejected and conflict.']),
                                     ],
                                 ]),
                             ]),
@@ -284,6 +387,104 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
                 ],
             ]));
         }
+    }
+
+    private function describeData(OA\OpenApi $api, OA\Property $property, ApiResponseData $data): void
+    {
+        $ref = $this->registerModel($data->class);
+
+        if (! $data->collection && ! $data->paginated) {
+            Util::modifyAnnotationValue($property, 'ref', $ref);
+
+            return;
+        }
+
+        Util::modifyAnnotationValue($property, 'type', 'object');
+        $items = Util::getProperty($property, 'items');
+        Util::modifyAnnotationValue($items, 'type', 'array');
+        Util::getChild($items, OA\Items::class, ['ref' => $ref]);
+        $required = ['items'];
+
+        if ($data->paginated) {
+            $this->declarePagination($api);
+            Util::modifyAnnotationValue(Util::getProperty($property, 'pagination'), 'ref', '#/components/schemas/ApiPagination');
+            $required[] = 'pagination';
+        }
+
+        Util::modifyAnnotationValue($property, 'required', $required);
+    }
+
+    private function declarePagination(OA\OpenApi $api): void
+    {
+        $pagination = Util::getSchema($api, 'ApiPagination');
+        if (! Generator::isDefault($pagination->properties)) {
+            return;
+        }
+
+        Util::merge($pagination, new OA\Schema([
+            'type' => 'object',
+            'required' => ['page', 'length', 'total', 'pagesCount', 'hasMore'],
+            'properties' => [
+                new OA\Property(['property' => 'page', 'type' => 'integer', 'minimum' => 0, 'description' => 'Zero-based.']),
+                new OA\Property(['property' => 'length', 'type' => ['integer', 'null'], 'description' => 'Null: no limit.']),
+                new OA\Property(['property' => 'total', 'type' => ['integer', 'null'], 'description' => 'Null: not counted.']),
+                new OA\Property(['property' => 'pagesCount', 'type' => ['integer', 'null']]),
+                new OA\Property(['property' => 'hasMore', 'type' => ['boolean', 'null']]),
+            ],
+        ]));
+    }
+
+    private function setResponseSchema(
+        OA\Operation $operation,
+        string $code,
+        string $description
+    ): OA\Schema {
+        $response = Util::getIndexedCollectionItem($operation, OA\Response::class, $code);
+
+        if (Generator::isDefault($response->description)) {
+            Util::modifyAnnotationValue($response, 'description', $description);
+        }
+
+        $mediaType = Util::getIndexedCollectionItem($response, OA\MediaType::class, 'application/json');
+
+        return Util::getChild($mediaType, OA\Schema::class);
+    }
+
+    /**
+     * Type, format and allowed values of a query option, read from its constraint.
+     */
+    private function describeQuerySchema(OA\Schema $schema, Constraint $constraint): void
+    {
+        if ($constraint instanceof Sequentially) {
+            foreach ($constraint->constraints as $inner) {
+                $this->describeQuerySchema($schema, $inner);
+            }
+
+            return;
+        }
+
+        if ($constraint instanceof Choice && is_array($constraint->choices)) {
+            Util::modifyAnnotationValue($schema, 'type', 'string');
+            Util::modifyAnnotationValue($schema, 'enum', array_values($constraint->choices));
+
+            return;
+        }
+
+        if ($constraint instanceof DateQueryStringConstraint) {
+            Util::modifyAnnotationValue($schema, 'type', 'string');
+            Util::modifyAnnotationValue($schema, 'pattern', '^\\d{4}(-\\d{2}(-\\d{2}( \\d{2}(:\\d{2}(:\\d{2})?)?)?)?)?$');
+            Util::modifyAnnotationValue($schema, 'description', 'Y, Y-m, Y-m-d, Y-m-d H, Y-m-d H:i or Y-m-d H:i:s.');
+
+            return;
+        }
+
+        if ($constraint instanceof Regex && null !== $constraint->pattern) {
+            Util::modifyAnnotationValue($schema, 'type', 'string');
+
+            return;
+        }
+
+        Util::modifyAnnotationValue($schema, 'type', $this->getQueryType($constraint));
     }
 
     private function setJsonBody(OA\Operation $operation, array $schema): void

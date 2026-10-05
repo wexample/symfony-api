@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Wexample\SymfonyApi\Api\Attribute\ApiBatch;
+use Wexample\SymfonyApi\Api\Attribute\ApiResponseData;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\PageQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\SortQueryOption;
@@ -20,6 +21,7 @@ use Wexample\SymfonyApi\Interface\MachineClientInterface;
 use Wexample\SymfonyApi\Service\BatchReceiverService;
 use Wexample\SymfonyApi\Service\MachineTokenService;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Dto\ReadingDto;
+use Wexample\SymfonyApi\Tests\Fixtures\App\Dto\ReadingRowDto;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Device;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Reading;
 
@@ -42,6 +44,7 @@ class DeviceApiController extends AbstractApiController
     #[PageQueryOption]
     #[LengthQueryOption]
     #[SortQueryOption(allowed: ['value', 'code', 'device' => 'device.id'], default: '-value')]
+    #[ApiResponseData(ReadingRowDto::class, paginated: true)]
     public function listReadings(
         Request $request,
         #[CurrentUser] Device $device,
