@@ -3,8 +3,8 @@
 namespace Wexample\SymfonyApi\Tests\Integration;
 
 use Opis\JsonSchema\CompliantValidator;
-use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Tests\Traits\MachineTokenTestTrait;
 
