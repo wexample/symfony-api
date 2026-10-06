@@ -65,7 +65,7 @@ démos du design system et l'arbre de doc-explorer peuvent suivre.
 
 ## Reply
 
-**Verdict: the need is real, the road is refused — every list stays a list of entities; a computed list is an entity with no table.** Commit FEATURE_COMMIT. 4 new tests (60 in the suite). The norm is written in `usage/non-persisted-entities`.
+**Verdict: the need is real, the road is refused — every list stays a list of entities; a computed list is an entity with no table.** Commit `dc008c1`. 4 new tests (60 in the suite). The norm is written in `usage/non-persisted-entities`.
 
 **Why not a "DTO list" road.** The stack's strength is the chain entity → normalizer → DTO → pseudocode → generated TypeScript entity and repository → `fetchListPaginated` → front entity collections. A non-entity road would need its own JSON, its own TS types, its own Vue collection — exactly the duplication this todo describes in `import-files.vue` and the demos. An entity that is not stored keeps every link, and the stack already allows it: `symfony-pseudocode` scans `Entity/` without Doctrine and expects packages "whose entities are not persisted"; `AbstractEntityNormalizer` never touches Doctrine; Doctrine treats a class without `#[ORM\Entity]` as transient (tested).
 
