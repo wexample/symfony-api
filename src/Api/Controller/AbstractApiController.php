@@ -242,6 +242,34 @@ abstract class AbstractApiController extends AbstractController
         return $option->apply($queryBuilder, is_string($value) ? $value : null, $rootAlias);
     }
 
+    /**
+     * Sorts and pages a list held in memory — computed, not stored — as
+     * applyQueryOptionSort() and getQueryOptionPagination() do for a query:
+     * the same `sort`, `page` and `length`, the total known.
+     *
+     * @template T
+     * @param list<T> $items Every item, not a page.
+     * @return array{0: PaginationDto, 1: list<T>} The pagination, and the items of the asked page.
+     */
+    protected static function applyQueryOptionsToList(
+        Request $request,
+        array $items
+    ): array {
+        $option = self::findMethodAttribute($request, SortQueryOption::KEY);
+
+        if ($option instanceof SortQueryOption) {
+            $value = $request->attributes->get(SortQueryOption::KEY);
+            $items = $option->sortList(array_values($items), is_string($value) ? $value : null);
+        }
+
+        $pagination = self::getQueryOptionPagination($request, count($items));
+
+        return [
+            $pagination,
+            array_slice(array_values($items), $pagination->getOffset(), $pagination->length),
+        ];
+    }
+
     protected static function findMethodAttribute(
         Request $request,
         string $name

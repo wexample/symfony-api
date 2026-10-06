@@ -5,6 +5,7 @@ namespace Wexample\SymfonyApi\Api\Attribute\QueryOption;
 use Attribute;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Sequentially;
@@ -139,6 +140,63 @@ class SortQueryOption extends AbstractQueryOption
         }
 
         return $queryBuilder;
+    }
+
+    /**
+     * Orders a list held in memory: each asked name is read on the items as a
+     * property path — getter, public property or array key, `a.b` reaching
+     * nested values — and the DQL expressions are not used. Nulls come first
+     * in ascending order, last in descending.
+     *
+     * @template T
+     * @param list<T> $items
+     * @return list<T>
+     */
+    public function sortList(array $items, ?string $value): array
+    {
+        $accessor = PropertyAccess::createPropertyAccessorBuilder()
+            ->disableExceptionOnInvalidPropertyPath()
+            ->getPropertyAccessor();
+
+        $paths = [];
+        foreach ($this->parseTerms($value) as $term) {
+            $paths[] = [$term['name'], $term['descending'] ? -1 : 1];
+        }
+
+        if (null !== $this->tieBreaker && ! in_array($this->tieBreaker, array_column($paths, 0), true)) {
+            $paths[] = [$this->tieBreaker, 1];
+        }
+
+        // An array is read by key: `a.b` becomes `[a][b]`.
+        $read = fn (mixed $item, string $name): mixed => $this->toComparable($accessor->getValue(
+            $item,
+            is_array($item) ? '[' . str_replace('.', '][', $name) . ']' : $name
+        ));
+
+        // usort is stable: items equal on every term keep the order they came in.
+        usort($items, function (mixed $left, mixed $right) use ($paths, $read): int {
+            foreach ($paths as [$path, $direction]) {
+                $comparison = $read($left, $path) <=> $read($right, $path);
+
+                if (0 !== $comparison) {
+                    return $comparison * $direction;
+                }
+            }
+
+            return 0;
+        });
+
+        return $items;
+    }
+
+    private function toComparable(mixed $value): mixed
+    {
+        return match (true) {
+            $value instanceof \BackedEnum => $value->value,
+            $value instanceof \UnitEnum => $value->name,
+            $value instanceof \Stringable && ! $value instanceof \DateTimeInterface => (string) $value,
+            default => $value,
+        };
     }
 
     private function getPattern(): string

@@ -62,6 +62,9 @@ services:
   Wexample\SymfonyApi\Tests\Fixtures\App\Security\:
     resource: '../Security/'
 
+  Wexample\SymfonyApi\Tests\Fixtures\App\Normalizer\:
+    resource: '../Normalizer/'
+
   Wexample\SymfonyApi\Tests\Fixtures\App\Controller\:
     resource: '../Controller/'
     tags: ['controller.service_arguments']

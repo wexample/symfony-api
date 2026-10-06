@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\Tests\Fixtures\App\Controller;
 
 use DateInterval;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -23,7 +24,9 @@ use Wexample\SymfonyApi\Service\MachineTokenService;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Dto\ReadingDto;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Dto\ReadingRowDto;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Device;
+use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\DeviceFile;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Reading;
+use Wexample\SymfonyApi\Tests\Fixtures\App\Normalizer\DeviceFileNormalizer;
 
 #[Route(path: '/api/device/', name: 'api_device_')]
 class DeviceApiController extends AbstractApiController
@@ -62,6 +65,28 @@ class DeviceApiController extends AbstractApiController
             fn (Reading $reading) => ['value' => $reading->value, 'code' => $reading->code],
             $readings
         ));
+    }
+
+    /**
+     * The files of the calling device: computed, never stored.
+     */
+    #[Route(path: 'files', name: 'files', methods: ['GET'])]
+    #[PageQueryOption]
+    #[LengthQueryOption]
+    #[SortQueryOption(allowed: ['name', 'size', 'dateModified'], default: 'name')]
+    public function files(Request $request, DeviceFileNormalizer $normalizer): ApiResponse
+    {
+        $files = [
+            new DeviceFile('readings.csv', 4096, new DateTimeImmutable('2026-10-01 08:00')),
+            new DeviceFile('boot.log', 512, new DateTimeImmutable('2026-10-03 09:00')),
+            new DeviceFile('config.yml', 128),
+            new DeviceFile('firmware.bin', 65536, new DateTimeImmutable('2026-09-01 12:00')),
+            new DeviceFile('alarms.json', 512, new DateTimeImmutable('2026-10-02 10:00')),
+        ];
+
+        [$pagination, $page] = self::applyQueryOptionsToList($request, $files);
+
+        return self::apiResponsePaginated($pagination, $normalizer->normalizeCollection($page));
     }
 
     #[Route(path: 'readings', name: 'readings', methods: ['POST'])]

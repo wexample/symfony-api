@@ -40,3 +40,7 @@ The OpenAPI bridge documents the parameter with its default and its allowed name
 ## Searching
 
 `#[SearchQueryOption]` validates and passes the string; matching it — which columns, accents and case — is the repository's business. The count goes through the same query as the page, filters and scoping included: a total counted otherwise tells the caller how many rows exist outside what it may see.
+
+## A list computed in memory
+
+A list that is not read from the database — files on a disk, a projection — is still a list of entities, with no table. `applyQueryOptionsToList()` sorts and pages it with the same query options: see `usage/non-persisted-entities`.

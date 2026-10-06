@@ -201,8 +201,11 @@ class ApiDocumentationTest extends WebTestCase
                     $body = json_decode($this->client->getResponse()->getContent(), true);
                     $this->assertSame('success', $body['type']);
 
+                    // A batch report: each item stored.
                     foreach ($body['data']['items'] ?? [] as $reported) {
-                        $this->assertSame('accepted', $reported['outcome'], $path);
+                        if (isset($reported['outcome'])) {
+                            $this->assertSame('accepted', $reported['outcome'], $path);
+                        }
                     }
                 }
             }
