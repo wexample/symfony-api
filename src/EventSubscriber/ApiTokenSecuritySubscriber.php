@@ -4,39 +4,29 @@ namespace Wexample\SymfonyApi\EventSubscriber;
 
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
-use Wexample\SymfonyApi\DependencyInjection\WexampleSymfonyApiExtension;
-use Wexample\SymfonyApi\Entity\AbstractMachineToken;
-use Wexample\SymfonyApi\Enum\MachineSecurityEventType;
+use Wexample\SymfonyApi\Entity\AbstractApiToken;
 use Wexample\SymfonyApi\Enum\MachineTokenRefusalCause;
 use Wexample\SymfonyApi\Exception\MachineTokenRefusedException;
 use Wexample\SymfonyApi\Exception\MachineTokenThrottledException;
-use Wexample\SymfonyApi\Interface\MachineClientInterface;
-use Wexample\SymfonyApi\Security\MachineTokenHandler;
+use Wexample\SymfonyApi\Security\AbstractApiTokenHandler;
 use Wexample\SymfonyApi\Service\MachineSecurityJournalService;
 
 /**
- * What follows a machine authentication attempt: the last use of a token once
- * every check passed — the firewall's user checker included —, the journal
- * entry of a refusal or a throttling otherwise, and the failure counted
- * against the address.
+ * What follows a token authentication attempt, after the settings of the
+ * handler that read the token: the last use of a token once every check
+ * passed — the firewall's user checker included —, the journal entry of a
+ * refusal or a throttling otherwise, and the failure counted against the
+ * address.
  */
-class MachineTokenSecuritySubscriber implements EventSubscriberInterface
+class ApiTokenSecuritySubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly MachineSecurityJournalService $journal,
-        #[Autowire(param: 'api_machine_token_last_used_interval')]
-        private readonly int $lastUsedInterval,
-        #[Autowire(param: 'api_machine_token_rate_limit_enabled')]
-        private readonly bool $rateLimitEnabled,
-        #[Autowire(service: 'limiter.' . WexampleSymfonyApiExtension::LIMITER_MACHINE_IP_FAILURES)]
-        private readonly RateLimiterFactoryInterface $ipFailuresLimiter,
     ) {
     }
 
@@ -50,9 +40,11 @@ class MachineTokenSecuritySubscriber implements EventSubscriberInterface
 
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
-        $token = $event->getRequest()->attributes->get(MachineTokenHandler::REQUEST_ATTRIBUTE_TOKEN);
+        $attributes = $event->getRequest()->attributes;
+        $token = $attributes->get(AbstractApiTokenHandler::REQUEST_ATTRIBUTE_TOKEN);
+        $handler = $attributes->get(AbstractApiTokenHandler::REQUEST_ATTRIBUTE_HANDLER);
 
-        if (! $token instanceof AbstractMachineToken) {
+        if (! $token instanceof AbstractApiToken || ! $handler instanceof AbstractApiTokenHandler) {
             return;
         }
 
@@ -60,7 +52,7 @@ class MachineTokenSecuritySubscriber implements EventSubscriberInterface
         $now = new DateTimeImmutable();
         $lastUsed = $token->getDateLastUsed();
 
-        if (null !== $lastUsed && $now->getTimestamp() - $lastUsed->getTimestamp() < $this->lastUsedInterval) {
+        if (null !== $lastUsed && $now->getTimestamp() - $lastUsed->getTimestamp() < $handler->getLastUsedInterval()) {
             return;
         }
 
@@ -71,18 +63,20 @@ class MachineTokenSecuritySubscriber implements EventSubscriberInterface
     public function onLoginFailure(LoginFailureEvent $event): void
     {
         $attributes = $event->getRequest()->attributes;
+        $handler = $attributes->get(AbstractApiTokenHandler::REQUEST_ATTRIBUTE_HANDLER);
 
-        if (! $attributes->has(MachineTokenHandler::REQUEST_ATTRIBUTE_HINT)) {
+        if (! $handler instanceof AbstractApiTokenHandler) {
             return;
         }
 
         $request = $event->getRequest();
-        $hint = $attributes->get(MachineTokenHandler::REQUEST_ATTRIBUTE_HINT);
+        $hint = $attributes->get(AbstractApiTokenHandler::REQUEST_ATTRIBUTE_HINT);
+        $eventTypes = $handler->getEventTypeClass();
         $throttled = $this->findException($event->getException(), MachineTokenThrottledException::class);
 
         if ($throttled) {
             $this->journal->record(
-                MachineSecurityEventType::THROTTLED,
+                $eventTypes::THROTTLED,
                 $throttled->client,
                 $hint,
                 $throttled->limit,
@@ -92,8 +86,8 @@ class MachineTokenSecuritySubscriber implements EventSubscriberInterface
             return;
         }
 
-        if ($this->rateLimitEnabled) {
-            $this->ipFailuresLimiter->create($request->getClientIp())->consume();
+        if ($handler->isRateLimitEnabled()) {
+            $handler->getIpFailuresLimiter()->create($request->getClientIp())->consume();
         }
 
         $cause = MachineTokenRefusalCause::UNKNOWN;
@@ -107,18 +101,17 @@ class MachineTokenSecuritySubscriber implements EventSubscriberInterface
                 break;
             }
 
-            // Thrown by the firewall's user checker: the client is switched off.
+            // Thrown by the firewall's user checker: the holder is switched off.
             if ($exception instanceof AccountStatusException) {
                 $cause = MachineTokenRefusalCause::CLIENT_DISABLED;
-                $user = $exception->getUser();
-                $client = $user instanceof MachineClientInterface ? $user : null;
+                $client = $exception->getUser();
 
                 break;
             }
         }
 
         $this->journal->record(
-            MachineSecurityEventType::REFUSED,
+            $eventTypes::REFUSED,
             $client,
             $hint,
             $cause->value

@@ -6,17 +6,20 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Wexample\SymfonyApi\Enum\MachineSecurityEventType;
+use Wexample\SymfonyApi\Enum\UserTokenSecurityEventType;
 use Wexample\SymfonyApi\Event\MachineSecurityEvent;
+use Wexample\SymfonyApi\Event\UserTokenSecurityEvent;
 use Wexample\SymfonyApi\Helper\ApiVersionHelper;
-use Wexample\SymfonyApi\Interface\MachineClientInterface;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 use Wexample\SymfonySecurity\Helper\RequestIdHelper;
 
 /**
- * Turns a machine token fact into a MachineSecurityEvent, with what the
- * request tells of it, and dispatches it.
+ * Turns a token fact into its event — a MachineSecurityEvent or a
+ * UserTokenSecurityEvent, after the type — with what the request tells of it,
+ * and dispatches it.
  */
 class MachineSecurityJournalService
 {
@@ -35,15 +38,19 @@ class MachineSecurityJournalService
      * @param array<string, scalar|null> $extra
      */
     public function record(
-        MachineSecurityEventType $type,
-        ?MachineClientInterface $client = null,
+        MachineSecurityEventType|UserTokenSecurityEventType $type,
+        ?UserInterface $client = null,
         ?string $tokenHint = null,
         ?string $cause = null,
         array $extra = [],
     ): void {
         $request = $this->requestStack->getMainRequest();
 
-        $this->eventDispatcher->dispatch(new MachineSecurityEvent(
+        $eventClass = $type instanceof UserTokenSecurityEventType
+            ? UserTokenSecurityEvent::class
+            : MachineSecurityEvent::class;
+
+        $this->eventDispatcher->dispatch(new $eventClass(
             type: $type,
             occurredAt: new DateTimeImmutable('now', new DateTimeZone('UTC')),
             userId: $this->getClientId($client),
@@ -60,7 +67,7 @@ class MachineSecurityJournalService
         ));
     }
 
-    private function getClientId(?MachineClientInterface $client): ?string
+    private function getClientId(?UserInterface $client): ?string
     {
         if ($client instanceof AbstractEntity) {
             return (string) $client->getId();

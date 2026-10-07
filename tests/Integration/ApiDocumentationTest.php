@@ -6,6 +6,8 @@ use Opis\JsonSchema\CompliantValidator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Security\Core\User\InMemoryUser;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
+use Wexample\SymfonyApi\Service\UserTokenService;
+use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Person;
 use Wexample\SymfonyApi\Tests\Traits\MachineTokenTestTrait;
 
 /**
@@ -16,7 +18,13 @@ class ApiDocumentationTest extends WebTestCase
 {
     use MachineTokenTestTrait;
 
-    private const array AREAS = ['default', 'app', 'ops', 'v1', 'v2'];
+    private const array AREAS = ['default', 'app', 'ops', 'script', 'tokens', 'v1', 'v2'];
+
+    /**
+     * The areas whose every operation a sample request can pass: the token
+     * management routes take ids and are exercised by UserTokenManagementTest.
+     */
+    private const array SAMPLED_AREAS = ['default', 'app', 'ops', 'script', 'v1', 'v2'];
 
     private const string SCHEMA_ID = 'https://spec.openapis.org/oas/3.1/schema/2022-10-07';
 
@@ -180,10 +188,14 @@ class ApiDocumentationTest extends WebTestCase
     public function testRequestsBuiltFromTheDocumentsAreAccepted(): void
     {
         $token = $this->getMachineTokenService()->issue($this->createDevice());
+        $person = new Person('ada@example.com', ['ROLE_USER', 'ROLE_IMPORTER']);
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+        $userToken = self::getContainer()->get(UserTokenService::class)->issue($person);
         // The session routes, signed in the way the pages are.
         $this->client->loginUser(new InMemoryUser('jane', 'secret', ['ROLE_USER']), 'main');
 
-        foreach (self::AREAS as $area) {
+        foreach (self::SAMPLED_AREAS as $area) {
             $document = $this->document($area);
 
             foreach ($document['paths'] as $path => $operations) {
@@ -193,7 +205,7 @@ class ApiDocumentationTest extends WebTestCase
                     $this->client->request(
                         strtoupper($method),
                         $path,
-                        server: ['app' === $area ? 'HTTP_ACCEPT' : 'HTTP_AUTHORIZATION' => 'app' === $area ? 'application/json' : 'Bearer ' . $token, 'CONTENT_TYPE' => 'application/json'],
+                        server: ['app' === $area ? 'HTTP_ACCEPT' : 'HTTP_AUTHORIZATION' => 'app' === $area ? 'application/json' : 'Bearer ' . ('script' === $area ? $userToken : $token), 'CONTENT_TYPE' => 'application/json'],
                         content: null === $schema ? null : json_encode($this->buildSample($schema, $document))
                     );
 

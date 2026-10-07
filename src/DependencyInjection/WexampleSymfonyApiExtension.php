@@ -14,8 +14,12 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
 
     final public const string LIMITER_MACHINE_IP_FAILURES = 'api_machine_ip_failures';
 
+    final public const string LIMITER_USER_CLIENT = 'api_user_client';
+
+    final public const string LIMITER_USER_IP_FAILURES = 'api_user_ip_failures';
+
     /**
-     * The two limiters of the machine firewall, declared in the framework
+     * The two limiters of each token firewall, declared in the framework
      * configuration from this bundle's own.
      */
     public function prepend(ContainerBuilder $container): void
@@ -26,21 +30,28 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             new Configuration(),
             $container->getExtensionConfig('wexample_symfony_api')
         );
-        $rateLimit = $config['machine_token']['rate_limit'];
+        $limiters = [];
+
+        foreach ([
+            'machine_token' => [self::LIMITER_MACHINE_CLIENT, self::LIMITER_MACHINE_IP_FAILURES],
+            'user_token' => [self::LIMITER_USER_CLIENT, self::LIMITER_USER_IP_FAILURES],
+        ] as $kind => [$clientLimiter, $ipLimiter]) {
+            $rateLimit = $config[$kind]['rate_limit'];
+
+            $limiters[$clientLimiter] = [
+                'policy' => 'sliding_window',
+                'limit' => $rateLimit['client']['limit'],
+                'interval' => $rateLimit['client']['interval'],
+            ];
+            $limiters[$ipLimiter] = [
+                'policy' => 'sliding_window',
+                'limit' => $rateLimit['ip_failures']['limit'],
+                'interval' => $rateLimit['ip_failures']['interval'],
+            ];
+        }
 
         $container->prependExtensionConfig('framework', [
-            'rate_limiter' => [
-                self::LIMITER_MACHINE_CLIENT => [
-                    'policy' => 'sliding_window',
-                    'limit' => $rateLimit['client']['limit'],
-                    'interval' => $rateLimit['client']['interval'],
-                ],
-                self::LIMITER_MACHINE_IP_FAILURES => [
-                    'policy' => 'sliding_window',
-                    'limit' => $rateLimit['ip_failures']['limit'],
-                    'interval' => $rateLimit['ip_failures']['interval'],
-                ],
-            ],
+            'rate_limiter' => $limiters,
         ]);
     }
 
@@ -75,12 +86,14 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             $config['test_error_log_length']
         );
 
-        $machineToken = $config['machine_token'];
-        $container->setParameter('api_machine_token_class', $machineToken['token_class']);
-        $container->setParameter('api_machine_token_prefix', $machineToken['prefix']);
-        $container->setParameter('api_machine_token_roles', $machineToken['roles']);
-        $container->setParameter('api_machine_token_last_used_interval', $machineToken['last_used_interval']);
-        $container->setParameter('api_machine_token_rate_limit_enabled', $machineToken['rate_limit']['enabled']);
+        foreach (['machine_token', 'user_token'] as $kind) {
+            $token = $config[$kind];
+            $container->setParameter('api_' . $kind . '_class', $token['token_class']);
+            $container->setParameter('api_' . $kind . '_prefix', $token['prefix']);
+            $container->setParameter('api_' . $kind . '_last_used_interval', $token['last_used_interval']);
+            $container->setParameter('api_' . $kind . '_rate_limit_enabled', $token['rate_limit']['enabled']);
+        }
+        $container->setParameter('api_machine_token_roles', $config['machine_token']['roles']);
 
         $batch = $config['batch'];
         $container->setParameter('api_batch_record_class', $batch['record_class']);

@@ -43,5 +43,6 @@ class AppKernel extends AbstractFixtureKernel
     {
         $routes->import(__DIR__ . '/Controller/', 'attribute');
         $routes->import(__DIR__ . '/../../../src/Resources/config/routes_health.yaml');
+        $routes->import(__DIR__ . '/../../../src/Resources/config/routes_user_tokens.yaml');
     }
 }

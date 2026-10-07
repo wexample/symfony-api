@@ -2,86 +2,15 @@
 
 namespace Wexample\SymfonyApi\Security;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
-use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
-use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Enum\MachineSecurityEventType;
-use Wexample\SymfonyApi\Enum\MachineTokenRefusalCause;
-use Wexample\SymfonyApi\Exception\MachineTokenThrottledException;
-use Wexample\SymfonyApi\Service\MachineSecurityJournalService;
 
 /**
- * The refusal of a machine firewall: a 401 in the API envelope, the same for
- * every bad token. Also its entry point, for a request carrying none.
+ * The `failure_handler` and `entry_point` of a machine firewall.
  */
-class MachineTokenAuthenticationFailureHandler implements
-    AuthenticationFailureHandlerInterface,
-    AuthenticationEntryPointInterface
+class MachineTokenAuthenticationFailureHandler extends AbstractApiTokenAuthenticationFailureHandler
 {
-    final public const string MESSAGE_INVALID = 'Invalid credentials.';
-
-    final public const string MESSAGE_REQUIRED = 'Authentication required.';
-
-    final public const string MESSAGE_THROTTLED = 'Too many requests.';
-
-    public function __construct(
-        private readonly MachineSecurityJournalService $journal,
-    ) {
-    }
-
-    public function onAuthenticationFailure(
-        Request $request,
-        AuthenticationException $exception
-    ): Response {
-        for ($previous = $exception; null !== $previous; $previous = $previous->getPrevious()) {
-            if ($previous instanceof MachineTokenThrottledException) {
-                // The same for every caller: it tells nothing of the token.
-                $response = AbstractApiController::apiResponseError(
-                    message: self::MESSAGE_THROTTLED,
-                    code: Response::HTTP_TOO_MANY_REQUESTS
-                )->toJsonResponse();
-                $response->headers->set('Retry-After', (string) max(1, $previous->retryAfter->getTimestamp() - time()));
-
-                return $response;
-            }
-        }
-
-        return $this->createResponse(
-            self::MESSAGE_INVALID,
-            'Bearer error="invalid_token"'
-        );
-    }
-
-    public function start(
-        Request $request,
-        ?AuthenticationException $authException = null
-    ): Response {
-        // A presented token that failed is journalled by the failure event.
-        $this->journal->record(
-            MachineSecurityEventType::REFUSED,
-            cause: MachineTokenRefusalCause::MISSING->value
-        );
-
-        return $this->createResponse(
-            self::MESSAGE_REQUIRED,
-            'Bearer'
-        );
-    }
-
-    private function createResponse(
-        string $message,
-        string $challenge
-    ): Response {
-        $response = AbstractApiController::apiResponseError(
-            message: $message,
-            code: Response::HTTP_UNAUTHORIZED
-        )->toJsonResponse();
-
-        $response->headers->set('WWW-Authenticate', $challenge);
-
-        return $response;
+    protected function getEventTypeClass(): string
+    {
+        return MachineSecurityEventType::class;
     }
 }

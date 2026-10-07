@@ -1,6 +1,6 @@
 ## Machine clients
 
-A machine client is a program calling the API in its own name — a device, a server — with no password, no session and no cookie. It presents a token of its own on every request, in `Authorization: Bearer`, to a firewall of its own.
+A machine client is a program calling the API in its own name — a device, a server — with no password, no session and no cookie. It presents a token of its own on every request, in `Authorization: Bearer`, to a firewall of its own. A script a person runs in their own name takes a user token instead: see `usage/user-tokens`.
 
 The package relies on the native `access_token` authenticator of Symfony and ships what it lacks:
 
@@ -8,12 +8,12 @@ The package relies on the native `access_token` authenticator of Symfony and shi
 |---|---|
 | `MachineClientInterface` | Implemented by the application's client entity. `UserInterface`, role `ROLE_MACHINE`. |
 | `MachineClientTrait` | `getRoles()` returning `ROLE_MACHINE` only, an empty `eraseCredentials()`. |
-| `AbstractMachineToken` | One token of a client: hash, hint, label, creation, expiration, revocation, last use. Several per client. |
+| `AbstractMachineToken` | One token of a client: hash, hint, label, creation, expiration, revocation, last use — the columns of `AbstractApiToken`, shared with user tokens. Several per client. |
 | `MachineTokenService` | `issue()`, `rotate()`, `revoke()`, `revokeAll()`, lookups. The plain secret is returned once, when it is made. |
 | `MachineTokenHandler` | The `token_handler`: hash lookup, revocation, expiration, roles check. |
 | `MachineTokenAuthenticationFailureHandler` | The `failure_handler` and `entry_point`: a 401 in the API envelope. |
-| `MachineTokenSecuritySubscriber` | Writes the last use once every check passed, journals each refusal with its cause. |
-| `MachineTokenLogMasker` | Replaces any token by its hint in every log record, exceptions included, through `symfony-security`'s redaction processor. |
+| `ApiTokenSecuritySubscriber` | Writes the last use once every check passed, journals each refusal with its cause — for every kind of token. |
+| `ApiTokenLogMasker` | Replaces any token, machine or user, by its hint in every log record, exceptions included, through `symfony-security`'s redaction processor. |
 | `api:machine-token:*` | Console commands to issue, list and revoke. |
 
 ## Entities
@@ -75,6 +75,7 @@ security:
     machine:
       pattern: ^/api/device/
       stateless: true
+      provider: app_user_provider   # required by Symfony when several exist; unused
       access_token:
         token_handler: Wexample\SymfonyApi\Security\MachineTokenHandler
         failure_handler: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler

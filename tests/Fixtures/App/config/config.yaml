@@ -21,6 +21,12 @@ wexample_symfony_api:
     rate_limit:
       client: { limit: 20, interval: '1 hour' }
       ip_failures: { limit: 8, interval: '1 hour' }
+  user_token:
+    token_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\PersonToken
+    prefix: fx_usr_
+    rate_limit:
+      client: { limit: 20, interval: '1 hour' }
+      ip_failures: { limit: 8, interval: '1 hour' }
   batch:
     record_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\IdempotencyRecord
   versions:
@@ -35,21 +41,43 @@ security:
       memory:
         users:
           jane: { password: secret, roles: [ROLE_USER] }
+    persons:
+      entity:
+        class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Person
+        property: email
+    everyone:
+      chain:
+        providers: [people, persons]
   firewalls:
     # Before the page firewall, which would otherwise match it first.
     machine:
       pattern: ^/api/device/
       stateless: true
+      # Several providers exist: Symfony asks for one, which the token
+      # handler's own loader makes unused.
+      provider: people
       access_token:
         token_handler: Wexample\SymfonyApi\Security\MachineTokenHandler
         failure_handler: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
       entry_point: Wexample\SymfonyApi\Security\MachineTokenAuthenticationFailureHandler
       user_checker: Wexample\SymfonyApi\Tests\Fixtures\App\Security\DeviceChecker
+    scripts:
+      pattern: ^/api/script/
+      stateless: true
+      provider: persons
+      access_token:
+        token_handler: Wexample\SymfonyApi\Security\UserTokenHandler
+        failure_handler: Wexample\SymfonyApi\Security\UserTokenAuthenticationFailureHandler
+      entry_point: Wexample\SymfonyApi\Security\UserTokenAuthenticationFailureHandler
+      user_checker: Wexample\SymfonyApi\Tests\Fixtures\App\Security\DeviceChecker
     main:
       lazy: true
-      provider: people
+      provider: everyone
   access_control:
     - { path: ^/api/device/, roles: ROLE_MACHINE }
+    - { path: ^/api/script/import, roles: ROLE_IMPORTER }
+    - { path: ^/api/script/, roles: ROLE_USER }
+    - { path: ^/api/user-tokens, roles: ROLE_USER }
     - { path: ^/page, roles: ROLE_USER }
     - { path: ^/api/app/, roles: ROLE_USER }
 
@@ -101,6 +129,10 @@ nelmio_api_doc:
       path_patterns: ['^/api/app/']
     ops:
       path_patterns: ['^/api/health$']
+    tokens:
+      path_patterns: ['^/api/user-tokens']
+    script:
+      path_patterns: ['^/api/script/']
     v1:
       path_patterns: ['^/api/device/v1/']
       documentation:

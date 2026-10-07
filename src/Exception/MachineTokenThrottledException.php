@@ -4,11 +4,11 @@ namespace Wexample\SymfonyApi\Exception;
 
 use DateTimeImmutable;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Wexample\SymfonyApi\Interface\MachineClientInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * A machine request over one of the firewall's limits: `client` for an
- * authenticated client sending too much, `ip` for an address failing too often.
+ * A token request over one of the firewall's limits: `client` for an
+ * authenticated holder sending too much, `ip` for an address failing too often.
  */
 class MachineTokenThrottledException extends AuthenticationException
 {
@@ -19,7 +19,7 @@ class MachineTokenThrottledException extends AuthenticationException
     public function __construct(
         public readonly string $limit,
         public readonly DateTimeImmutable $retryAfter,
-        public readonly ?MachineClientInterface $client = null,
+        public readonly ?UserInterface $client = null,
     ) {
         parent::__construct('Too many requests.');
     }

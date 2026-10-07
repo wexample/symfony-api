@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Wexample\SymfonyApi\Interface\MachineClientInterface;
@@ -26,55 +27,20 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->end();
 
-        $treeBuilder->getRootNode()
+        $root = $treeBuilder->getRootNode();
+
+        $machineToken = $this->addTokenNode($root, 'machine_token', 'mt_', 600);
+        $machineToken
             ->children()
-            ->arrayNode('machine_token')
-            ->addDefaultsIfNotSet()
-            ->children()
-            // The application's subclass of AbstractMachineToken; null leaves
-            // machine authentication unconfigured.
-            ->scalarNode('token_class')
-            ->defaultNull()
-            ->end()
-            // Readable start of every token, naming its kind in a log.
-            ->scalarNode('prefix')
-            ->defaultValue('mt_')
-            ->end()
             // The only roles a machine client may carry; any other refuses it.
             ->arrayNode('roles')
             ->scalarPrototype()->end()
             ->defaultValue([MachineClientInterface::ROLE])
             ->end()
-            // Seconds between two writes of a token's last use.
-            ->integerNode('last_used_interval')
-            ->defaultValue(60)
-            ->min(0)
-            ->end()
-            // A safety net, not a quota: requests per authenticated client, and
-            // failed attempts per IP — counted before any database lookup.
-            ->arrayNode('rate_limit')
-            ->addDefaultsIfNotSet()
-            ->children()
-            ->booleanNode('enabled')->defaultTrue()->end()
-            ->arrayNode('client')
-            ->addDefaultsIfNotSet()
-            ->children()
-            ->integerNode('limit')->defaultValue(600)->min(1)->end()
-            ->scalarNode('interval')->defaultValue('1 hour')->end()
-            ->end()
-            ->end()
-            ->arrayNode('ip_failures')
-            ->addDefaultsIfNotSet()
-            ->children()
-            ->integerNode('limit')->defaultValue(30)->min(1)->end()
-            ->scalarNode('interval')->defaultValue('15 minutes')->end()
-            ->end()
-            ->end()
-            ->end()
-            ->end()
-            ->end()
-            ->end()
             ->end();
+
+        // A person's own tokens, for the scripts they run in their name.
+        $this->addTokenNode($root, 'user_token', 'ut_', 3600);
 
         $treeBuilder->getRootNode()
             ->children()
@@ -143,5 +109,60 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         return $treeBuilder;
+    }
+
+    /**
+     * The settings every kind of token shares.
+     */
+    private function addTokenNode(
+        ArrayNodeDefinition $root,
+        string $name,
+        string $prefix,
+        int $clientLimit
+    ): ArrayNodeDefinition {
+        $node = $root->children()->arrayNode($name);
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+            // The application's subclass of the kind's abstract token; null
+            // leaves this kind unconfigured.
+            ->scalarNode('token_class')
+            ->defaultNull()
+            ->end()
+            // Readable start of every token, naming its kind in a log.
+            ->scalarNode('prefix')
+            ->defaultValue($prefix)
+            ->end()
+            // Seconds between two writes of a token's last use.
+            ->integerNode('last_used_interval')
+            ->defaultValue(60)
+            ->min(0)
+            ->end()
+            // A safety net, not a quota: requests per authenticated holder, and
+            // failed attempts per IP — counted before any database lookup.
+            ->arrayNode('rate_limit')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('enabled')->defaultTrue()->end()
+            ->arrayNode('client')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->integerNode('limit')->defaultValue($clientLimit)->min(1)->end()
+            ->scalarNode('interval')->defaultValue('1 hour')->end()
+            ->end()
+            ->end()
+            ->arrayNode('ip_failures')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->integerNode('limit')->defaultValue(30)->min(1)->end()
+            ->scalarNode('interval')->defaultValue('15 minutes')->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end();
+
+        return $node;
     }
 }
