@@ -65,6 +65,9 @@ services:
   Wexample\SymfonyApi\Tests\Fixtures\App\Normalizer\:
     resource: '../Normalizer/'
 
+  Wexample\SymfonyApi\Tests\Fixtures\App\HealthCheck\:
+    resource: '../HealthCheck/'
+
   Wexample\SymfonyApi\Tests\Fixtures\App\Controller\:
     resource: '../Controller/'
     tags: ['controller.service_arguments']
@@ -96,6 +99,8 @@ nelmio_api_doc:
       path_patterns: ['^/api/device/(?!v\d+/)']
     app:
       path_patterns: ['^/api/app/']
+    ops:
+      path_patterns: ['^/api/health$']
     v1:
       path_patterns: ['^/api/device/v1/']
       documentation:

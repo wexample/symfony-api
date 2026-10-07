@@ -4,6 +4,7 @@ namespace Wexample\SymfonyApi\DependencyInjection;
 
 use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Wexample\SymfonyApi\Interface\HealthCheckInterface;
 use Wexample\SymfonyApi\OpenApi\ApiRouteDescriber;
 use Wexample\SymfonyHelpers\DependencyInjection\AbstractWexampleSymfonyExtension;
 
@@ -57,6 +58,9 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
         if (is_dir($container->getParameter('kernel.project_dir') . '/src/Api/Controller')) {
             $loader->load('services_app_api_controllers.yaml');
         }
+
+        $container->registerForAutoconfiguration(HealthCheckInterface::class)
+            ->addTag(HealthCheckInterface::TAG);
 
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);

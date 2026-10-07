@@ -5,7 +5,7 @@ services:
         public: false
     # Used to validate api urls requests arguments.
     Wexample\SymfonyApi\:
-        resource: '../../{Command,Log,Security,Service,Twig}'
+        resource: '../../{Command,HealthCheck,Log,Security,Service,Twig}'
         tags: ['controller.service_arguments']
 
     Wexample\SymfonyApi\EventSubscriber\:

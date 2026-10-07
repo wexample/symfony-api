@@ -16,7 +16,7 @@ class ApiDocumentationTest extends WebTestCase
 {
     use MachineTokenTestTrait;
 
-    private const array AREAS = ['default', 'app', 'v1', 'v2'];
+    private const array AREAS = ['default', 'app', 'ops', 'v1', 'v2'];
 
     private const string SCHEMA_ID = 'https://spec.openapis.org/oas/3.1/schema/2022-10-07';
 

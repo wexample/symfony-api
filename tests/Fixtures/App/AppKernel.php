@@ -42,5 +42,6 @@ class AppKernel extends AbstractFixtureKernel
     protected function configureRoutes(RoutingConfigurator $routes): void
     {
         $routes->import(__DIR__ . '/Controller/', 'attribute');
+        $routes->import(__DIR__ . '/../../../src/Resources/config/routes_health.yaml');
     }
 }
