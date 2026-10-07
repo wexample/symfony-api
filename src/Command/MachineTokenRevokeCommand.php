@@ -3,38 +3,18 @@
 namespace Wexample\SymfonyApi\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Wexample\SymfonyApi\Service\MachineTokenService;
 
 #[AsCommand(name: 'api:machine-token:revoke', description: 'Revokes a machine token, or every token of a client with --all.')]
-class MachineTokenRevokeCommand extends AbstractMachineTokenCommand
+class MachineTokenRevokeCommand extends AbstractApiTokenRevokeCommand
 {
-    protected function configure(): void
+    public function __construct(MachineTokenService $machineTokenService)
     {
-        $this
-            ->addArgument('reference', InputArgument::REQUIRED, 'Token id or hint; with --all, the client id')
-            ->addOption('all', null, InputOption::VALUE_NONE, 'Revoke every token of the client');
+        parent::__construct($machineTokenService);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function getHolderName(): string
     {
-        $io = new SymfonyStyle($input, $output);
-        $reference = $input->getArgument('reference');
-
-        if ($input->getOption('all')) {
-            $count = $this->machineTokenService->revokeAll($this->getClient($reference));
-            $io->success($count . ' token(s) revoked.');
-
-            return self::SUCCESS;
-        }
-
-        $token = $this->getToken($reference);
-        $this->machineTokenService->revoke($token);
-        $io->success('Token ' . $token->getHint() . ' revoked.');
-
-        return self::SUCCESS;
+        return 'machine client';
     }
 }

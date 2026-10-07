@@ -134,6 +134,27 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('prefix')
             ->defaultValue($prefix)
             ->end()
+            // The longest a token may live, as an ISO 8601 duration; a token
+            // issued without an expiration gets it. Null for no limit.
+            ->scalarNode('max_lifetime')
+            ->defaultNull()
+            ->validate()
+            ->ifTrue(function (?string $value): bool {
+                if (null === $value) {
+                    return false;
+                }
+
+                try {
+                    new \DateInterval($value);
+
+                    return false;
+                } catch (\Exception) {
+                    return true;
+                }
+            })
+            ->thenInvalid('%s is not an ISO 8601 duration (P90D, P1Y…).')
+            ->end()
+            ->end()
             // Seconds between two writes of a token's last use.
             ->integerNode('last_used_interval')
             ->defaultValue(60)

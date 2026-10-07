@@ -4,6 +4,7 @@ namespace Wexample\SymfonyApi\Controller;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -17,6 +18,7 @@ use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Api\Dto\UserTokenIssueDto;
 use Wexample\SymfonyApi\Entity\AbstractApiToken;
+use Wexample\SymfonyApi\Entity\AbstractUserToken;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyApi\Security\AbstractApiTokenHandler;
 use Wexample\SymfonyApi\Service\UserTokenService;
@@ -68,7 +70,12 @@ final class UserTokenApiController extends AbstractApiController
             }
         }
 
-        $secret = $this->userTokenService->issue($user, $expiresAt, $content?->label);
+        try {
+            $secret = $this->userTokenService->issue($user, $expiresAt, $content?->label, $content?->scopes);
+        } catch (InvalidArgumentException $exception) {
+            // A scope the person lacks, an expiration beyond the maximum.
+            throw new BadRequestHttpException($exception->getMessage(), $exception);
+        }
         $token = $this->userTokenService->findTokenBySecret($secret);
 
         return self::apiResponse(
@@ -131,6 +138,7 @@ final class UserTokenApiController extends AbstractApiController
             'dateLastUsed' => $format($token->getDateLastUsed()),
             'dateRevoked' => $format($token->getDateRevoked()),
             'usable' => $token->isUsable(),
+            'scopes' => $token instanceof AbstractUserToken ? $token->getScopes() : null,
         ];
     }
 }

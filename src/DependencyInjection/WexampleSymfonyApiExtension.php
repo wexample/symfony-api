@@ -91,6 +91,7 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             $container->setParameter('api_' . $kind . '_class', $token['token_class']);
             $container->setParameter('api_' . $kind . '_prefix', $token['prefix']);
             $container->setParameter('api_' . $kind . '_last_used_interval', $token['last_used_interval']);
+            $container->setParameter('api_' . $kind . '_max_lifetime', $token['max_lifetime']);
             $container->setParameter('api_' . $kind . '_rate_limit_enabled', $token['rate_limit']['enabled']);
         }
         $container->setParameter('api_machine_token_roles', $config['machine_token']['roles']);

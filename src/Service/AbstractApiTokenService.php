@@ -24,6 +24,7 @@ abstract class AbstractApiTokenService
         protected readonly MachineSecurityJournalService $journal,
         protected readonly ?string $tokenClass,
         protected readonly string $prefix,
+        protected readonly ?string $maxLifetime = null,
     ) {
     }
 
@@ -62,14 +63,7 @@ abstract class AbstractApiTokenService
         ?DateTimeImmutable $dateExpiration = null,
         ?string $label = null
     ): string {
-        [$plain, $token] = $this->createToken($client, $dateExpiration, $label);
-        $this->entityManager->flush();
-
-        $this->journal->record($this->getEventTypeClass()::ISSUED, $client, $token->getHint(), extra: [
-            'label' => $label,
-        ]);
-
-        return $plain;
+        return $this->issueToken($client, $dateExpiration, $label);
     }
 
     /**
@@ -82,6 +76,42 @@ abstract class AbstractApiTokenService
         DateInterval $overlap,
         ?DateTimeImmutable $dateExpiration = null,
         ?string $label = null
+    ): string {
+        return $this->rotateToken($client, $overlap, $dateExpiration, $label);
+    }
+
+    /**
+     * @param (callable(AbstractApiToken): void)|null $configure what a kind sets on its new token
+     * @param array<string, scalar|null> $extra what the journal says of it
+     */
+    protected function issueToken(
+        UserInterface $client,
+        ?DateTimeImmutable $dateExpiration,
+        ?string $label,
+        ?callable $configure = null,
+        array $extra = []
+    ): string {
+        [$plain, $token] = $this->createToken($client, $dateExpiration, $label, $configure);
+        $this->entityManager->flush();
+
+        $this->journal->record($this->getEventTypeClass()::ISSUED, $client, $token->getHint(), extra: [
+            'label' => $label,
+        ] + $extra);
+
+        return $plain;
+    }
+
+    /**
+     * @param (callable(AbstractApiToken): void)|null $configure what a kind sets on its new token
+     * @param array<string, scalar|null> $extra what the journal says of it
+     */
+    protected function rotateToken(
+        UserInterface $client,
+        DateInterval $overlap,
+        ?DateTimeImmutable $dateExpiration,
+        ?string $label,
+        ?callable $configure = null,
+        array $extra = []
     ): string {
         $now = new DateTimeImmutable();
         $overlapEnd = $now->add($overlap);
@@ -99,14 +129,14 @@ abstract class AbstractApiTokenService
             $previous++;
         }
 
-        [$plain, $token] = $this->createToken($client, $dateExpiration, $label);
+        [$plain, $token] = $this->createToken($client, $dateExpiration, $label, $configure);
         $this->entityManager->flush();
 
         $this->journal->record($this->getEventTypeClass()::ROTATED, $client, $token->getHint(), extra: [
             'label' => $label,
             'previous_tokens' => $previous,
             'previous_expire_at' => $overlapEnd->format(DATE_ATOM),
-        ]);
+        ] + $extra);
 
         return $plain;
     }
@@ -220,11 +250,14 @@ abstract class AbstractApiTokenService
     private function createToken(
         UserInterface $client,
         ?DateTimeImmutable $dateExpiration,
-        ?string $label
+        ?string $label,
+        ?callable $configure
     ): array {
         if (! $this->canHold($client)) {
             throw new InvalidArgumentException($client::class . ' cannot hold ' . $this->getConfigurationKey() . ' tokens.');
         }
+
+        $dateExpiration = $this->capExpiration($dateExpiration);
 
         $class = $this->getTokenClass();
 
@@ -234,10 +267,37 @@ abstract class AbstractApiTokenService
             ->setDateExpiration($dateExpiration)
             ->setLabel($label);
 
+        if ($configure) {
+            $configure($token);
+        }
+
         $plain = $this->generateSecret($token);
         $this->entityManager->persist($token);
 
         return [$plain, $token];
+    }
+
+    /**
+     * Within `max_lifetime`, when the kind has one: a token asked without an
+     * expiration gets the latest one allowed, a later one is refused.
+     */
+    private function capExpiration(?DateTimeImmutable $dateExpiration): ?DateTimeImmutable
+    {
+        if (null === $this->maxLifetime) {
+            return $dateExpiration;
+        }
+
+        $latest = (new DateTimeImmutable())->add(new DateInterval($this->maxLifetime));
+
+        if (null === $dateExpiration) {
+            return $latest;
+        }
+
+        if ($dateExpiration > $latest) {
+            throw new InvalidArgumentException('These tokens live ' . $this->maxLifetime . ' at most (' . $this->getConfigurationKey() . '.max_lifetime): expire it by ' . $latest->format(DATE_ATOM) . '.');
+        }
+
+        return $dateExpiration;
     }
 
     private function getClientPropertyName(): string

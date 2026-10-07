@@ -19,8 +19,10 @@ class MachineTokenService extends AbstractApiTokenService
         ?string $tokenClass,
         #[Autowire(param: 'api_machine_token_prefix')]
         string $prefix,
+        #[Autowire(param: 'api_machine_token_max_lifetime')]
+        ?string $maxLifetime,
     ) {
-        parent::__construct($entityManager, $journal, $tokenClass, $prefix);
+        parent::__construct($entityManager, $journal, $tokenClass, $prefix, $maxLifetime);
     }
 
     protected function getClientInterface(): string

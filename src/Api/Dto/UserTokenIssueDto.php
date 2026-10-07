@@ -21,4 +21,12 @@ class UserTokenIssueDto extends AbstractDto
      */
     #[Assert\Date]
     public ?string $expiresAt = null;
+
+    /**
+     * The roles of the person the token is limited to; none given for all.
+     *
+     * @var list<string>|null
+     */
+    #[Assert\All([new Assert\Type('string')])]
+    public ?array $scopes = null;
 }

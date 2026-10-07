@@ -61,6 +61,7 @@ wexample_symfony_api:
   machine_token:
     token_class: App\Entity\DeviceToken   # required, null by default
     prefix: mt_                           # readable start of every token
+    max_lifetime: null                    # ISO 8601 duration capping every token (P1Y…)
     roles: [ROLE_MACHINE]                 # the only roles a client may carry
     last_used_interval: 60                # seconds between two writes of the last use
     rate_limit:

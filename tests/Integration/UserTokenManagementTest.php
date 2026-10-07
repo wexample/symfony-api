@@ -22,12 +22,14 @@ class UserTokenManagementTest extends WebTestCase
     {
         $this->client->loginUser($this->createPerson(), 'main');
 
-        $issued = $this->requestTokens('POST', body: ['label' => 'import script', 'expiresAt' => '2099-01-01']);
+        $expiresAt = (new \DateTimeImmutable('+30 days'))->format('Y-m-d');
+        $issued = $this->requestTokens('POST', body: ['label' => 'import script', 'expiresAt' => $expiresAt]);
         $this->assertSame(201, $this->getStatusCode());
         $secret = $issued['data']['secret'];
         $this->assertStringStartsWith('fx_usr_', $secret);
         $this->assertSame('import script', $issued['data']['token']['label']);
-        $this->assertStringStartsWith('2099-01-01', $issued['data']['token']['dateExpiration']);
+        $this->assertStringStartsWith($expiresAt, $issued['data']['token']['dateExpiration']);
+        $this->assertNull($issued['data']['token']['scopes']);
         $this->assertTrue($issued['data']['token']['usable']);
 
         // The secret works, and is never shown again.
