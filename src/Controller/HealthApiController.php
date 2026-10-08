@@ -22,7 +22,8 @@ final class HealthApiController extends AbstractApiController
     {
         $report = $healthCheckService->run();
 
-        $response = (HealthCheckService::STATUS_OK === $report['status']
+        $response = (
+            HealthCheckService::STATUS_OK === $report['status']
             ? self::apiResponseSuccess(data: $report)
             : self::apiResponseError('Unhealthy.', $report, code: Response::HTTP_SERVICE_UNAVAILABLE)
         )->toJsonResponse();

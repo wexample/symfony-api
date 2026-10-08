@@ -9,4 +9,4 @@ A simple syntax to expose API in Symfony
 
 
 
-It requires `WexampleSymfonySecurityBundle` (`wexample/symfony-security`) in `config/bundles.php`, which masks its machine tokens in the logs: without it, the container refuses to build.
+It requires `WexampleSymfonySecurityBundle` (`wexample/symfony-security`) in `config/bundles.php`, which masks its API tokens in the logs: without it, the container refuses to build.

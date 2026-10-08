@@ -1,6 +1,6 @@
 # symfony_api
 
-Version: 11.0.1
+Version: 12.0.0
 
 `wexample/symfony-api` is a Symfony bundle that gives backend developers a declarative, attribute-driven way to expose REST endpoints: controller methods return `ApiResponse`, request bodies are validated against a DTO via `#[ValidateRequestContent]`, and query parameters are typed and constrained through a family of `#[QueryOption]` attributes. It targets Symfony applications (PHP ≥ 8.2) inside the Wexample suite that need structured JSON APIs without hand-rolling serialization or validation boilerplate.
 
@@ -26,7 +26,7 @@ The package is a Symfony bundle. Every HTTP call that touches a route owned by a
 
 ### Bundle registration
 
-src/DependencyInjection/WexampleSymfonyApiExtension.php loads the service definitions and reads the bundle configuration declared in src/DependencyInjection/Configuration.php. Container parameters come out of that: `api_pretty_print` (boolean, default `false`), `api_test_error_log_length` (integer, default `1000`), the `api_machine_token_*` of the `machine_token` node, read by the machine authentication described in `usage/machine-authentication`, the three `api_batch_*` of the `batch` node, read by the batch receipt described in `usage/batch-receipt`, and `api_versions`, read by the deprecation headers described in `usage/versioning`. Its `prepend()` declares the two rate limiters of the machine firewall in `framework.rate_limiter`. When `nelmio/api-doc-bundle` is installed, it also registers `ApiRouteDescriber`, the bridge described in `usage/openapi`, tagged `nelmio_api_doc.route_describer`. When the host application has a `src/Api/Controller/` directory, the extension also loads src/Resources/config/services_app_api_controllers.yaml, which registers its classes as controllers; without the directory nothing is registered, since a glob on a missing path stops the container from compiling. The routes shipped by the bundle are declared in src/Resources/config/routes.yaml, which auto-imports controllers from `src/Api/Controller/Test/` and `src/Controller/`.
+src/DependencyInjection/WexampleSymfonyApiExtension.php loads the service definitions and reads the bundle configuration declared in src/DependencyInjection/Configuration.php. Container parameters come out of that: `api_pretty_print` (boolean, default `false`), `api_test_error_log_length` (integer, default `1000`), the `api_machine_token_*` of the `machine_token` node and the `api_user_token_*` of the `user_token` node, read by the token authentication described in `usage/machine-authentication` and `usage/user-tokens`, the three `api_batch_*` of the `batch` node, read by the batch receipt described in `usage/batch-receipt`, and `api_versions`, read by the deprecation headers described in `usage/versioning`. Its `prepend()` declares the two rate limiters of each token firewall in `framework.rate_limiter`. It tags every autoconfigured `HealthCheckInterface` for the health endpoint described in `usage/health-check`. When `nelmio/api-doc-bundle` is installed, it also registers `ApiRouteDescriber`, the bridge described in `usage/openapi`, tagged `nelmio_api_doc.route_describer`. When the host application has a `src/Api/Controller/` directory, the extension also loads src/Resources/config/services_app_api_controllers.yaml, which registers its classes as controllers; without the directory nothing is registered, since a glob on a missing path stops the container from compiling. The routes shipped by the bundle are declared in src/Resources/config/routes.yaml, which auto-imports controllers from `src/Api/Controller/Test/` and `src/Controller/`. An application imports the endpoints it wants one file at a time: src/Resources/config/routes_health.yaml, src/Resources/config/routes_user_tokens.yaml.
 
 ### Event subscriber
 
@@ -156,12 +156,12 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 ## Dependencies
 
 - php: >=8.5
-- wexample/php-date: >=2.0.0
-- wexample/symfony-testing: >=5.0.0
+- wexample/php-date: >=2.1.0
+- wexample/symfony-testing: >=6.0.0
 - wexample/symfony-helpers: >=15.0.0
-- wexample/symfony-security: >=2.0.0
-- wexample/symfony-loader: >=21.0.0
-- wexample/symfony-forms: >=10.0.0
+- wexample/symfony-security: >=2.1.0
+- wexample/symfony-loader: >=22.0.0
+- wexample/symfony-forms: >=11.0.0
 - wexample/symfony-content: >=4.0.0
 - doctrine/orm: ^3.0
 - symfony/security-bundle: ^7.4
