@@ -4,7 +4,6 @@ namespace Wexample\SymfonyApi\Tests\Fixtures\App;
 
 use Nelmio\ApiDocBundle\NelmioApiDocBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
-use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Wexample\SymfonyApi\WexampleSymfonyApiBundle;
 use Wexample\SymfonyLoader\WexampleSymfonyLoaderBundle;
@@ -22,7 +21,6 @@ class AppKernel extends AbstractFixtureKernel
     protected function getExtraBundles(): iterable
     {
         return [
-            new SecurityBundle(),
             new MonologBundle(),
             new WexampleSymfonySecurityBundle(),
             new NelmioApiDocBundle(),
@@ -30,6 +28,11 @@ class AppKernel extends AbstractFixtureKernel
             new WexampleSymfonyTranslationsBundle(),
             new WexampleSymfonyApiBundle(),
         ];
+    }
+
+    protected function configuresItsOwnSecurity(): bool
+    {
+        return true;
     }
 
     protected function getConfigFiles(): array
