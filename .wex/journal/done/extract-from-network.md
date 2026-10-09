@@ -1,6 +1,7 @@
 # Finish API v2 extraction from network: paginated entity lists, filter tags, yearly responses, display formats
 
 Opened: 2026-09-24
+Closed: 2026-10-09
 Updated: 2026-10-09
 Author: agent:archeology
 
@@ -48,4 +49,13 @@ Knowledge: `/home/weeger/Desktop/WIP/WEB/WEXAMPLE/NETWORK/local/network/.wex/kno
 ## 2026-10-09 : formats d'affichage retirés (décision du propriétaire)
 
 `DisplayFormatQueryOption`, `AbstractApiResponseMember` et ses `DISPLAY_FORMAT_*` (small, medium, large…) sont supprimés, ainsi que le contexte `displayFormat` du loader et la constante de `EntityDto` : rien ne s'en servait. Une forme nouvelle sera peut-être réinventée plus tard. Restent de cette todo : filter tags, réponse par année, PATCH de collection (optionnel).
+
+## Clos le 2026-10-09
+
+- Étapes 1-2 : faites autrement (`apiResponseQueryPage()`, `?search=` laissé au repository).
+- Étape 3 : `FilterTagQueryOption(tags: [...])` refuse les noms non déclarés ; ce que fait le filtre reste au repository (pas de trait `HasFilterTag` générique).
+- Étape 4 : `YearQueryOption::apply()` et `applyQueryOptionYear()`.
+- Étape 5 : formats d'affichage retirés (décision du propriétaire).
+- Étape 6 (PATCH de collection, optionnel) : non fait.
+- En plus : `ApiResponseNormHelper`, la norme des réponses (enveloppe, éléments `{type, entity}`, pagination), vérifiée par l'exploration de symfony-testing sur chaque endpoint.
 

@@ -14,6 +14,7 @@ use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\SortQueryOption;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\YearQueryOption;
 use Wexample\SymfonyApi\Api\Class\ApiErrorDataInterface;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Class\BatchReport;
@@ -239,6 +240,22 @@ abstract class AbstractApiController extends AbstractController
         $value = $request->attributes->get(SortQueryOption::KEY);
 
         return $option->apply($queryBuilder, is_string($value) ? $value : null, $rootAlias);
+    }
+
+    /**
+     * The list cut to the year the request asks (`?year=`, declared with
+     * #[YearQueryOption], the current year by default), on `$field`.
+     */
+    protected static function applyQueryOptionYear(
+        Request $request,
+        QueryBuilder $queryBuilder,
+        string $field
+    ): QueryBuilder {
+        return YearQueryOption::apply(
+            $queryBuilder,
+            (int) self::getQueryOptionValue($request, VariableHelper::YEAR, DateHelper::getCurrentYearInt()),
+            $field
+        );
     }
 
     /**
