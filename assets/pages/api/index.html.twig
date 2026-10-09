@@ -11,9 +11,8 @@
                         someone wrote one: said when there is one, left out when
                         there is not — a key printed as text tells nothing. -#}
                     {% set description_key = 'WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description' %}
-                    {% set description = description_key | trans %}
-                    {% if description != description_key %}
-                        <p>{{ description }}</p>
+                    {% if trans_exists(description_key) %}
+                        <p>{{ description_key | trans }}</p>
                     {% endif %}
 
                     {% if apiRoute.requirements is not empty %}
@@ -41,12 +40,10 @@
                                     {% set query_name = queryParameter | u.snake %}
                                     {% set route_key = 'api.' ~ apiRoute.name ~ '::query.' ~ query_name %}
                                     {% set generic_key = 'WexampleSymfonyApiBundle.api.query::' ~ query_name %}
-                                    {% set query_description = route_key | trans %}
-                                    {% if query_description == route_key %}
-                                        {% set query_description = generic_key | trans %}
-                                    {% endif %}
-                                    {% if query_description != generic_key %}
-                                        <p>{{ query_description }}</p>
+                                    {% if trans_exists(route_key) %}
+                                        <p>{{ route_key | trans }}</p>
+                                    {% elseif trans_exists(generic_key) %}
+                                        <p>{{ generic_key | trans }}</p>
                                     {% endif %}
                                 </li>
                             {% endfor %}
