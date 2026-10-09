@@ -27,7 +27,8 @@ use Wexample\SymfonyApi\Service\UserTokenService;
  * A person's own tokens — listed, issued, revoked — for a screen of the
  * application to build on. Signed in with a session only: a token cannot
  * mint, list or revoke tokens, so a stolen one cannot outlive its revocation.
- * Routed only when the application imports `routes_user_tokens.yaml`.
+ * Routed only when the application imports `routes_user_tokens.yaml`, and
+ * answering as missing until it sets `user_token.token_class`.
  */
 #[Route(path: '/api/user-tokens', name: 'api_user_tokens_')]
 final class UserTokenApiController extends AbstractApiController
@@ -110,6 +111,10 @@ final class UserTokenApiController extends AbstractApiController
 
     private function denyTokenCaller(Request $request, UserInterface $user): void
     {
+        if (! $this->userTokenService->isConfigured()) {
+            throw new NotFoundHttpException('No user tokens in this application.');
+        }
+
         if ($request->attributes->has(AbstractApiTokenHandler::REQUEST_ATTRIBUTE_TOKEN)) {
             throw new AccessDeniedHttpException('Tokens are managed from a signed-in session.');
         }

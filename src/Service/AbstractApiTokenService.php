@@ -326,6 +326,15 @@ abstract class AbstractApiTokenService
         throw new LogicException($this->getTokenClass() . ' maps no relation to a ' . $this->getClientInterface() . '.');
     }
 
+    /**
+     * Whether the application set a token class for these tokens: without
+     * one, there are none to list, issue or revoke.
+     */
+    public function isConfigured(): bool
+    {
+        return null !== $this->tokenClass;
+    }
+
     private function getTokenClass(): string
     {
         return $this->tokenClass
