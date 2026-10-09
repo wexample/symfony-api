@@ -1,7 +1,7 @@
 # Finish API v2 extraction from network: paginated entity lists, filter tags, yearly responses, display formats
 
 Opened: 2026-09-24
-Updated: 2026-09-24
+Updated: 2026-10-09
 Author: agent:archeology
 
 ## Read this first — status of this todo
@@ -44,3 +44,8 @@ Knowledge: `/home/weeger/Desktop/WIP/WEB/WEXAMPLE/NETWORK/local/network/.wex/kno
 ## Acceptance
 
 - Kernel tests for pagination, search, filter tag, year; README section "list an entity collection".
+
+## 2026-10-09 : formats d'affichage retirés (décision du propriétaire)
+
+`DisplayFormatQueryOption`, `AbstractApiResponseMember` et ses `DISPLAY_FORMAT_*` (small, medium, large…) sont supprimés, ainsi que le contexte `displayFormat` du loader et la constante de `EntityDto` : rien ne s'en servait. Une forme nouvelle sera peut-être réinventée plus tard. Restent de cette todo : filter tags, réponse par année, PATCH de collection (optionnel).
+

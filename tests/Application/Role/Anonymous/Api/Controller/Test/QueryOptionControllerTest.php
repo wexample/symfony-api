@@ -4,7 +4,6 @@ namespace Wexample\SymfonyApi\Tests\Application\Role\Anonymous\Api\Controller\Te
 
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\PhpDate\Helper\DateHelper;
-use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Controller\Test\QueryOptionController;
 use Wexample\SymfonyApi\Helper\ApiHelper;
 use Wexample\SymfonyApi\Tests\Traits\TestCase\Application\ApiTestCaseTrait;
@@ -71,39 +70,6 @@ class QueryOptionControllerTest extends AbstractRoleControllerTestCase
         );
 
         $this->assertStatusCodeOk();
-    }
-
-    public function testDisplayFormat()
-    {
-        $this->createGlobalClient();
-
-        $this->goToSimpleRouteAndAssertErrorWhenMissing(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_DISPLAY_FORMAT,
-            ApiHelper::FILTER_TAG
-        );
-
-        $this->goToSimpleRouteAndAssertSuccess(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_DISPLAY_FORMAT,
-            ApiHelper::_KEBAB_DISPLAY_FORMAT,
-            AbstractApiResponseMember::DISPLAY_FORMAT_FULL,
-            AbstractApiResponseMember::DISPLAY_FORMAT_FULL,
-        );
-
-        $this->goToSimpleRouteAndAssertFailedTypeRestriction(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_DISPLAY_FORMAT,
-            ApiHelper::_KEBAB_DISPLAY_FORMAT,
-            'wrong-display-format'
-        );
-
-        $this->goToSimpleRouteAndAssertFailedTypeRestriction(
-            QueryOptionController::class,
-            QueryOptionController::ROUTE_DISPLAY_FORMAT,
-            ApiHelper::_KEBAB_DISPLAY_FORMAT,
-            $this->fuzzerString()
-        );
     }
 
     public function testFilterTag()

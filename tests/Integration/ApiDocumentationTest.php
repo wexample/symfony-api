@@ -178,7 +178,6 @@ class ApiDocumentationTest extends WebTestCase
         $this->assertSame('string', $parameters['date']['type']);
         $this->assertMatchesRegularExpression('/' . $parameters['date']['pattern'] . '/', '2026-10-05 14:30');
         $this->assertDoesNotMatchRegularExpression('/' . $parameters['date']['pattern'] . '/', '05/10/2026');
-        $this->assertContains('medium', $parameters['display-format']['enum']);
     }
 
     /**

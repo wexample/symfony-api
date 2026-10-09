@@ -14,7 +14,6 @@ use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\AbstractQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\SortQueryOption;
-use Wexample\SymfonyApi\Api\Class\AbstractApiResponseMember;
 use Wexample\SymfonyApi\Api\Class\ApiErrorDataInterface;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Class\BatchReport;
@@ -174,7 +173,7 @@ abstract class AbstractApiController extends AbstractController
     public static function getQueryOptionValue(
         Request $request,
         string $name,
-        array|float|int|null|string $default = AbstractApiResponseMember::DISPLAY_FORMAT_DEFAULT,
+        array|float|int|null|string $default = null,
     ): mixed {
         /** @var AbstractQueryOption $attribute */
         if ($attribute = self::findMethodAttribute($request, $name)) {

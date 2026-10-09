@@ -7,7 +7,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Wexample\SymfonyApi\Api\Attribute\ApiResponseData;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\DateQueryOption;
-use Wexample\SymfonyApi\Api\Attribute\QueryOption\DisplayFormatQueryOption;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Dto\AccountDto;
@@ -20,7 +19,6 @@ class AccountApiController extends AbstractApiController
 {
     #[Route(path: 'account', name: 'account', methods: ['GET'])]
     #[DateQueryOption]
-    #[DisplayFormatQueryOption]
     #[ApiResponseData(AccountDto::class)]
     public function account(#[CurrentUser] UserInterface $user): ApiResponse
     {

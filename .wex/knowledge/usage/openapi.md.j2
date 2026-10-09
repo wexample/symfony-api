@@ -13,7 +13,7 @@ For every route of an `AbstractApiController` subclass:
 | From | To the operation |
 |---|---|
 | `#[ValidateRequestContent(dto: X::class)]` | the JSON request body, `$ref` to the schema of `X` — types and Symfony constraints read by nelmio |
-| `#[QueryOption…]` | one query parameter each, typed from its constraint: `integer`, `number`, `boolean`, an `enum` for a `Choice` (`display-format`), a `pattern` for dates (`Y` to `Y-m-d H:i:s`), the allowed names for `sort` |
+| `#[QueryOption…]` | one query parameter each, typed from its constraint: `integer`, `number`, `boolean`, an `enum` for a `Choice`, a `pattern` for dates (`Y` to `Y-m-d H:i:s`), the allowed names for `sort` |
 | `#[ApiBatch(itemDto: X::class, maxItems: 15)]` | the batch body `{items: [{key, data: X}]}`, the `ApiBatchResponse` report, the `422` |
 | every operation | `200` in the success envelope, `400` in the error envelope when it takes a body or query options |
 | errors | `ApiErrorResponse.data` and each rejected batch item carry the `ApiValidationErrorData` schema: `errorCode`, `kind`, `issues` (`code`, `path`, `message`), `summary` |

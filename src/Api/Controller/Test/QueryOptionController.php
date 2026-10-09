@@ -7,7 +7,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\Type;
 use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\CustomQueryOption;
-use Wexample\SymfonyApi\Api\Attribute\QueryOption\DisplayFormatQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\FilterTagQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\IdQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
@@ -26,7 +25,6 @@ final class QueryOptionController extends AbstractApiController
     use SymfonyApiBundleClassTrait;
 
     final public const ROUTE_CUSTOM = VariableHelper::CUSTOM;
-    final public const ROUTE_DISPLAY_FORMAT = ApiHelper::DISPLAY_FORMAT;
     final public const ROUTE_FILTER_TAG = ApiHelper::FILTER_TAG;
     final public const ROUTE_ID = VariableHelper::ID;
     final public const ROUTE_LENGTH = VariableHelper::LENGTH;
@@ -55,18 +53,6 @@ final class QueryOptionController extends AbstractApiController
         }
 
         return self::apiResponseSuccess($data);
-    }
-
-    #[Route(path: ApiHelper::_KEBAB_DISPLAY_FORMAT, name: self::ROUTE_DISPLAY_FORMAT)]
-    #[DisplayFormatQueryOption(required: true)]
-    public function displayFormat(Request $request): ApiResponse
-    {
-        return self::apiResponseSuccess([
-            ApiHelper::DISPLAY_FORMAT => ApiHelper::getRequestParameter(
-                $request,
-                ApiHelper::_KEBAB_DISPLAY_FORMAT
-            ),
-        ]);
     }
 
     #[Route(path: ApiHelper::_KEBAB_FILTER_TAG, name: self::ROUTE_FILTER_TAG)]
