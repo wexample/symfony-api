@@ -4,8 +4,8 @@ namespace Wexample\SymfonyApi\Api\Attribute\QueryOption;
 
 use Attribute;
 use DateTimeImmutable;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Validator\Constraint;
 use Wexample\PhpDate\Helper\DateHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;

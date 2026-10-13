@@ -1,6 +1,6 @@
 # symfony_api
 
-Version: 12.0.0
+Version: 13.0.0
 
 `wexample/symfony-api` is a Symfony bundle that gives backend developers a declarative, attribute-driven way to expose REST endpoints: controller methods return `ApiResponse`, request bodies are validated against a DTO via `#[ValidateRequestContent]`, and query parameters are typed and constrained through a family of `#[QueryOption]` attributes. It targets Symfony applications (PHP ≥ 8.2) inside the Wexample suite that need structured JSON APIs without hand-rolling serialization or validation boilerplate.
 
@@ -155,11 +155,10 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 
 - php: >=8.5
 - wexample/php-date: >=2.1.0
-- wexample/symfony-testing: >=6.0.0
-- wexample/symfony-helpers: >=15.0.0
+- wexample/symfony-helpers: >=16.0.0
 - wexample/symfony-security: >=2.1.0
-- wexample/symfony-loader: >=22.0.0
-- wexample/symfony-forms: >=11.0.0
+- wexample/symfony-loader: >=23.0.0
+- wexample/symfony-forms: >=12.0.0
 - wexample/symfony-content: >=4.0.0
 - doctrine/orm: ^3.0
 - symfony/security-bundle: ^7.4

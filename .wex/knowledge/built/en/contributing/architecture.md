@@ -46,8 +46,6 @@ Each factory builds an array with the keys `type`, `code`, `message` (optional),
 
 src/Api/Class/ApiResponse.php holds the data array and HTTP status code. `toJsonResponse()` serialises it to JSON, optionally pretty-printed.
 
-src/Api/Class/AbstractApiResponseMember.php defines the canonical set of `DISPLAY_FORMAT_*` constants (`default`, `large`, `line`, `medium`, `pad`, `small`, `full`).
-
 src/Api/Class/ApiSuccessCollectionData.php is a builder for collection payloads: `items` plus arbitrary extra keys. Pass its `toArray()` output as the `data` argument of `apiResponseSuccess`.
 
 src/Api/Class/ApiValidationErrorData.php implements `ApiErrorDataInterface` and structures per-field and global validation issues for `apiResponseValidationError`. Its `toArray()` includes `errorCode`, `kind`, `issues`, and a `summary` with `global`, `fields`, and `count`.
@@ -59,7 +57,7 @@ src/Api/Attribute/QueryOption/AbstractQueryOption.php is the root of all typed q
 - `QueryOptionTrait` — carries `$key` (the query string parameter name) and `$required`.
 - `QueryOptionConstrainedTrait` — adds `$default`, `getConstraint(): Constraint`, and `getRequestValue(Request)`.
 
-src/Api/Attribute/QueryOption/AbstractSimpleTypeQueryOption.php narrows the hierarchy: subclasses implement only `getSimpleTypeConstraint(): string`, which returns a Symfony validator `Type` string. The concrete leaf classes are `BooleanQueryOption`, `FloatQueryOption`, `IntegerQueryOption`, `StringQueryOption`, `LengthQueryOption`, `PageQueryOption`, `YearQueryOption`, `DateQueryOption`, `IdQueryOption`, `DisplayFormatQueryOption`, `FilterTagQueryOption`, `SearchQueryOption`, and `MultipleTypesQueryOption`.
+src/Api/Attribute/QueryOption/AbstractSimpleTypeQueryOption.php narrows the hierarchy: subclasses implement only `getSimpleTypeConstraint(): string`, which returns a Symfony validator `Type` string. The concrete leaf classes are `BooleanQueryOption`, `FloatQueryOption`, `IntegerQueryOption`, `StringQueryOption`, `LengthQueryOption`, `PageQueryOption`, `YearQueryOption`, `DateQueryOption`, `IdQueryOption`, `FilterTagQueryOption`, `SearchQueryOption`, and `MultipleTypesQueryOption`.
 
 src/Api/Attribute/QueryOption/CustomQueryOption.php is the escape hatch: the caller supplies the key and any `Constraint` instance directly. It is repeatable (`IS_REPEATABLE`).
 

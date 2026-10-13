@@ -49,6 +49,7 @@ final class ApiResponseNormHelper
                 foreach ($data['items'] as $index => $item) {
                     if ($problem = self::itemProblem($item)) {
                         $problems[] = '`data.items[' . $index . ']` ' . $problem;
+
                         break;
                     }
                 }

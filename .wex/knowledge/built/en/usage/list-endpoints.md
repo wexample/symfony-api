@@ -44,3 +44,26 @@ The OpenAPI bridge documents the parameter with its default and its allowed name
 ## A list computed in memory
 
 A list that is not read from the database — files on a disk, a projection — is still a list of entities, with no table. `applyQueryOptionsToList()` sorts and pages it with the same query options: see `usage/non-persisted-entities`.
+
+## Named filters and years
+
+```php
+#[FilterTagQueryOption(tags: ['late', 'paid'])]   // ?filter-tag=late — any other name is a 400
+#[YearQueryOption]                                 // ?year=2025 — the current year by default
+public function invoices(Request $request, InvoiceRepository $invoices): ApiResponse
+{
+    $query = $invoices->createListQueryBuilder(self::getQueryOptionValue($request, ApiHelper::_KEBAB_FILTER_TAG));
+
+    return self::apiResponseQueryPage(
+        $request,
+        self::applyQueryOptionYear($request, $query, 'invoice.dateIssued'),
+        fn (array $page) => array_map(InvoiceDto::fromEntity(...), $page)
+    );
+}
+```
+
+What a filter tag does to the query is the repository's; the option only says which names exist. `applyQueryOptionYear()` keeps the rows whose field falls in the year asked.
+
+## The norm every answer holds
+
+`ApiResponseNormHelper::problems($decodedJson)` names what departs from the shape the front reads: the envelope (`type` success or error, an integer `code`, `data`), each item of `data.items` as `{type, entity, metadata?, relationships?}` with the entity's `id`, and `data.pagination`'s five keys. symfony-testing's exploration calls it on every `/api/` endpoint it reaches, when this package is installed.
