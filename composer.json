@@ -21,7 +21,6 @@
   "require": {
     "php": ">=8.5",
     "wexample/php-date": ">=2.1.0",
-    "wexample/symfony-testing": ">=6.0.0",
     "wexample/symfony-helpers": ">=15.0.0",
     "wexample/symfony-security": ">=2.1.0",
     "wexample/symfony-loader": ">=22.0.0",
@@ -38,6 +37,7 @@
     }
   },
   "require-dev": {
+    "wexample/symfony-testing": ">=6.0.0",
     "phpunit/phpunit": "^13",
     "symfony/browser-kit": "^7.4",
     "symfony/monolog-bundle": "^3.10",
