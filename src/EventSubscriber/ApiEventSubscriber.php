@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\EventSubscriber;
 
+use Doctrine\DBAL\Types\ConversionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -163,6 +164,13 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         // A body refused by #[ValidateRequestContent] is the caller's mistake.
         if ($exception instanceof ConstraintViolationException || $exception instanceof DeserializationException) {
             $code = Response::HTTP_BAD_REQUEST;
+        }
+
+        // An identifier the database cannot even read — not a uuid where one is
+        // stored — names nothing that exists: not found, as any other unknown
+        // identifier, rather than the server failing on it.
+        if ($exception instanceof ConversionException) {
+            $code = Response::HTTP_NOT_FOUND;
         }
 
         if ($exception instanceof ConstraintViolationException) {
