@@ -10,6 +10,16 @@ abstract class AbstractApiEntityFormProcessor extends AbstractFormProcessor
 {
     private ?array $lastResponse = null;
 
+
+    /**
+     * The response of the submission handled, not of the next one.
+     */
+    public function reset(): void
+    {
+        parent::reset();
+        $this->lastResponse = null;
+    }
+
     abstract public static function getEntityClass(): string;
 
     abstract protected function getApiClient(): object;
