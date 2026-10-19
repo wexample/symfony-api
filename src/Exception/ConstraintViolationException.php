@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\Exception;
 
+use Symfony\Component\HttpKernel\Attribute\WithHttpStatus;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Wexample\SymfonyHelpers\Helper\ViolationHelper;
 
@@ -9,7 +10,9 @@ use Wexample\SymfonyHelpers\Helper\ViolationHelper;
  * Exception for constraint violations in DTOs.
  *
  * This exception takes a ConstraintViolationList and formats it for API responses.
+ * The caller's mistake: answered, and logged, as a bad request.
  */
+#[WithHttpStatus(400)]
 class ConstraintViolationException extends AbstractApiException
 {
     /**

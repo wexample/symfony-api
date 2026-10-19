@@ -83,7 +83,8 @@ class DtoValidationService
             $content = json_decode($contentString, true);
         }
 
-        if ($content === null) {
+        // A DTO is read from an array: a scalar, or nothing, is no payload at all.
+        if (! is_array($content)) {
             return null;
         }
 

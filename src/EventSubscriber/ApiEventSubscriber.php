@@ -3,12 +3,15 @@
 namespace Wexample\SymfonyApi\EventSubscriber;
 
 use Doctrine\DBAL\Types\ConversionException;
+use ReflectionMethod;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -21,6 +24,7 @@ use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Class\ApiValidationErrorData;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
+use Wexample\SymfonyApi\Exception\AbstractApiException;
 use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Service\DtoValidationService;
@@ -40,7 +44,12 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         // return the subscribed events, their methods and priorities
         return [
             KernelEvents::CONTROLLER => 'onKernelController',
-            KernelEvents::EXCEPTION => 'onKernelException',
+            KernelEvents::EXCEPTION => [
+                // Before the kernel logs it (0): what the caller got wrong is
+                // logged as such, not as the server failing.
+                ['onKernelExceptionClassify', 1],
+                ['onKernelException', 0],
+            ],
             KernelEvents::VIEW => 'onKernelView',
         ];
     }
@@ -120,8 +129,31 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
 
             if ($dto !== null) {
                 $request->attributes->set($instance->attributeName, $dto);
+
+                continue;
+            }
+
+            // No JSON object to read the DTO from: the client's mistake, said
+            // as such, rather than the controller failing without its argument.
+            if ($this->requiresArgument($controller, $instance->attributeName)) {
+                throw new BadRequestHttpException('The request body must be a JSON object.');
             }
         }
+    }
+
+    /**
+     * Whether the action cannot run without the argument: neither nullable nor
+     * given a default.
+     */
+    private function requiresArgument(array $controller, string $name): bool
+    {
+        foreach ((new ReflectionMethod($controller[0], $controller[1]))->getParameters() as $parameter) {
+            if ($parameter->getName() === $name) {
+                return ! $parameter->allowsNull() && ! $parameter->isDefaultValueAvailable();
+            }
+        }
+
+        return false;
     }
 
     public function onKernelView($event): void
@@ -141,6 +173,22 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         );
     }
 
+    /**
+     * An identifier the database cannot even read — not a uuid where one is
+     * stored — names nothing that exists: not found, as any other unknown
+     * identifier, rather than the server failing on it.
+     */
+    public function onKernelExceptionClassify(ExceptionEvent $event): void
+    {
+        $exception = $event->getThrowable();
+
+        if ($exception instanceof ConversionException
+            && RequestHelper::requestIsOnSubClassOf($event->getRequest(), AbstractApiController::class)
+        ) {
+            $event->setThrowable(new NotFoundHttpException($exception->getMessage(), $exception));
+        }
+    }
+
     public function onKernelException(ExceptionEvent $event): void
     {
         $request = $event->getRequest();
@@ -156,6 +204,12 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         $code = Response::HTTP_INTERNAL_SERVER_ERROR;
         if ($exception instanceof HttpExceptionInterface) {
             $code = $exception->getStatusCode();
+
+            // An exception carrying #[WithHttpStatus] reaches here wrapped by
+            // the kernel: the details are the original's.
+            if ($exception->getPrevious() instanceof AbstractApiException) {
+                $exception = $exception->getPrevious();
+            }
         }
 
         $data = null;
@@ -164,13 +218,6 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         // A body refused by #[ValidateRequestContent] is the caller's mistake.
         if ($exception instanceof ConstraintViolationException || $exception instanceof DeserializationException) {
             $code = Response::HTTP_BAD_REQUEST;
-        }
-
-        // An identifier the database cannot even read — not a uuid where one is
-        // stored — names nothing that exists: not found, as any other unknown
-        // identifier, rather than the server failing on it.
-        if ($exception instanceof ConversionException) {
-            $code = Response::HTTP_NOT_FOUND;
         }
 
         if ($exception instanceof ConstraintViolationException) {

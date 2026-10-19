@@ -2,12 +2,16 @@
 
 namespace Wexample\SymfonyApi\Exception;
 
+use Symfony\Component\HttpKernel\Attribute\WithHttpStatus;
+
 /**
  * Exception for deserialization errors in DTOs.
  *
  * This exception handles errors that occur during the deserialization process
  * of data into DTOs, providing detailed information about the failure.
+ * The caller's mistake: answered, and logged, as a bad request.
  */
+#[WithHttpStatus(400)]
 class DeserializationException extends AbstractApiException
 {
     public const string CODE_TYPE_MISMATCH = 'TYPE_MISMATCH';
