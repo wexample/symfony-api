@@ -1,6 +1,6 @@
 # symfony_api
 
-Version: 13.0.1
+Version: 14.0.0
 
 `wexample/symfony-api` is a Symfony bundle that gives backend developers a declarative, attribute-driven way to expose REST endpoints: controller methods return `ApiResponse`, request bodies are validated against a DTO via `#[ValidateRequestContent]`, and query parameters are typed and constrained through a family of `#[QueryOption]` attributes. It targets Symfony applications (PHP ≥ 8.2) inside the Wexample suite that need structured JSON APIs without hand-rolling serialization or validation boilerplate.
 
@@ -149,16 +149,14 @@ This package is part of the Wexample Suite — a collection of high-quality, mod
 
 The suite includes packages for configuration management, file handling, prompts, and more. Each package can be used independently or as part of the integrated suite.
 
-Visit the [Wexample Suite documentation](https://docs.wexample.com) for the complete package ecosystem.
-
 ## Dependencies
 
 - php: >=8.5
 - wexample/php-date: >=2.1.0
-- wexample/symfony-helpers: >=16.0.0
-- wexample/symfony-security: >=2.1.0
-- wexample/symfony-loader: >=23.0.0
-- wexample/symfony-forms: >=12.0.0
+- wexample/symfony-helpers: >=17.0.0
+- wexample/symfony-security: >=3.0.0
+- wexample/symfony-loader: >=23.1.0
+- wexample/symfony-forms: >=13.0.0
 - wexample/symfony-content: >=4.0.0
 - doctrine/orm: ^3.0
 - symfony/security-bundle: ^7.4
@@ -188,6 +186,8 @@ Free to use in both personal and commercial projects.
 This packages suite embodies this spirit. Trusted by professionals and enthusiasts alike, it delivers a consistent, high-quality foundation for modern development — open, elegant, and battle-tested. Its reputation is built on years of collaboration, refinement, and rigorous attention to detail, making it a natural choice for those who demand both robustness and beauty in their tools.
 
 Wexample cultivates a culture of mastery. Each package, each contribution carries the mark of a community that values precision, ethics, and innovation — a community proud to shape the future of digital craftsmanship.
+
+Built and maintained by [Romain Weeger](https://weeger.io).
 
 ## Migration Notes
 

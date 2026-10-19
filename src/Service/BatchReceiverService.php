@@ -34,9 +34,9 @@ use Wexample\SymfonyApi\Exception\ConstraintViolationException;
 use Wexample\SymfonyApi\Exception\DeserializationException;
 use Wexample\SymfonyApi\Helper\ApiVersionHelper;
 use Wexample\SymfonyApi\Helper\IdempotencyHelper;
+use Wexample\SymfonyHelpers\Attribute\WorkerSafe;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 use Wexample\SymfonySecurity\Helper\RequestIdHelper;
-use Wexample\SymfonyHelpers\Attribute\WorkerSafe;
 
 /**
  * Receives a batch of items, `{"items": [{"key": "…", "data": {…}}, …]}`:

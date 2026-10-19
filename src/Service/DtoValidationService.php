@@ -23,8 +23,8 @@ use Wexample\SymfonyApi\Exception\InputValidationException;
 use Wexample\SymfonyApi\Exception\MissingRequiredPropertyException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
 use Wexample\SymfonyApi\Validator\Constraint\MissingRequiredProperty;
-use Wexample\SymfonyHelpers\Helper\DataHelper;
 use Wexample\SymfonyHelpers\Attribute\WorkerSafe;
+use Wexample\SymfonyHelpers\Helper\DataHelper;
 
 class DtoValidationService
 {
