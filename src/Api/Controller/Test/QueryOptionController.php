@@ -19,7 +19,8 @@ use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyHelpers\Helper\TypesHelper;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Route(path: '_test/api/query-option/', name: 'test_query_option_')]
+// Fixtures of the API's own tests: never routed in production.
+#[Route(path: '_test/api/query-option/', name: 'test_query_option_', env: ['dev', 'test'])]
 final class QueryOptionController extends AbstractApiController
 {
     use SymfonyApiBundleClassTrait;

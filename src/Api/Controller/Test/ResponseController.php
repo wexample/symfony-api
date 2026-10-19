@@ -8,7 +8,8 @@ use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
 
-#[Route(path: '_test/api/response/', name: 'test_api_')]
+// Fixtures of the API's own tests: never routed in production.
+#[Route(path: '_test/api/response/', name: 'test_api_', env: ['dev', 'test'])]
 final class ResponseController extends AbstractApiController
 {
     use SymfonyApiBundleClassTrait;
