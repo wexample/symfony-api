@@ -36,6 +36,7 @@ use Wexample\SymfonyApi\Helper\ApiVersionHelper;
 use Wexample\SymfonyApi\Helper\IdempotencyHelper;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 use Wexample\SymfonySecurity\Helper\RequestIdHelper;
+use Wexample\SymfonyHelpers\Attribute\WorkerSafe;
 
 /**
  * Receives a batch of items, `{"items": [{"key": "…", "data": {…}}, …]}`:
@@ -54,6 +55,7 @@ class BatchReceiverService
 
     final public const string KEY_ITEM_DATA = 'data';
 
+    #[WorkerSafe('Whether the record table exists: the schema does not change under a running worker.')]
     private bool $recordTableChecked = false;
 
     public function __construct(

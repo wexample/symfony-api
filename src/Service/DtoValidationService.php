@@ -24,6 +24,7 @@ use Wexample\SymfonyApi\Exception\MissingRequiredPropertyException;
 use Wexample\SymfonyApi\Validator\Constraint\ExtraProperty;
 use Wexample\SymfonyApi\Validator\Constraint\MissingRequiredProperty;
 use Wexample\SymfonyHelpers\Helper\DataHelper;
+use Wexample\SymfonyHelpers\Attribute\WorkerSafe;
 
 class DtoValidationService
 {
@@ -31,6 +32,7 @@ class DtoValidationService
      * Cache for reflection classes to avoid repeated instantiation
      * @var array<string, ReflectionClass>
      */
+    #[WorkerSafe('Reflection of the DTO classes, the same for every request.')]
     private array $reflectionCache = [];
 
     public function __construct(

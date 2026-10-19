@@ -12,11 +12,11 @@ use Wexample\SymfonyTranslations\Translation\Translator;
 class ApiService
 {
     public function __construct(
-        private RequestStack $requestStack,
-        private UrlGeneratorInterface $router,
+        private readonly RequestStack $requestStack,
+        private readonly UrlGeneratorInterface $router,
         // We should avoid this dependency.
-        private Translator $translator,
-        private RouterInterface $symfonyRouter
+        private readonly Translator $translator,
+        private readonly RouterInterface $symfonyRouter
     ) {
     }
 
