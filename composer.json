@@ -21,7 +21,7 @@
   "require": {
     "php": ">=8.5",
     "wexample/php-date": ">=2.1.0",
-    "wexample/symfony-helpers": ">=17.0.0",
+    "wexample/symfony-helpers": ">=18.0.0",
     "wexample/symfony-security": ">=4.0.0",
     "wexample/symfony-loader": ">=23.3.0",
     "wexample/symfony-forms": ">=14.0.0",
@@ -29,7 +29,8 @@
     "doctrine/orm": "^3.0",
     "symfony/security-bundle": "^7.4",
     "symfony/validator": "^7.4",
-    "symfony/rate-limiter": "^7.4"
+    "symfony/rate-limiter": "^7.4",
+    "twig/string-extra": "^3.6"
   },
   "autoload-dev": {
     "psr-4": {
