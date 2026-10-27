@@ -16,6 +16,19 @@ class ApiHelper
     final public const KEY_RESPONSE_TYPE = VariableHelper::TYPE;
     final public const RESPONSE_TYPE_FAILURE = VariableHelper::ERROR;
     final public const RESPONSE_TYPE_SUCCESS = VariableHelper::SUCCESS;
+    /**
+     * The application's own api: called by programs with their own
+     * credentials — tokens, or none —, versioned and documented.
+     */
+    final public const string PATH_PREFIX_API = '/api/';
+
+    /**
+     * What the application's pages read on the session: the lists of its
+     * tables, a screen's actions. Reached by a program — the front —, never
+     * read by a person, hence the underscore; off the api's documentation.
+     */
+    final public const string PATH_PREFIX_FRONT = '/_api/';
+
     final public const HEADER_BEARER_AUTHORIZATION_KEY = "Authorization";
     final public const HEADER_BEARER_AUTHORIZATION_PREFIX = "Bearer ";
 

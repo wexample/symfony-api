@@ -42,7 +42,7 @@ trait UserTokenTestTrait
     {
         $this->client->request(
             $method,
-            '/api/user-tokens' . $path,
+            '/_api/user-tokens' . $path,
             server: $server + ['CONTENT_TYPE' => 'application/json'],
             content: null === $body ? null : json_encode($body)
         );

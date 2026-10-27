@@ -1,5 +1,7 @@
 ## A paginated, searchable, sortable list
 
+A list a table of the application reads lives under `/_api/`, on the session; under `/api/` only when programs call it with their own credentials (`usage/route-prefixes`).
+
 ```php
 #[Route(path: 'patients', name: 'patients', methods: ['GET'])]
 #[PageQueryOption]                 // ?page=0 — zero-based; negative counts from the end

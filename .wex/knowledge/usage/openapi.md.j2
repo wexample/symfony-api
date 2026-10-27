@@ -43,6 +43,8 @@ The `data` of a success response: the controller returns an `ApiResponse`, whose
 
 ## One document per version
 
+The areas list `^/api/` patterns: what the pages read, under `/_api/`, stays off the api's documentation (`usage/route-prefixes`). An area on `^/_api/` documents it where wanted, in development — the bridge describes those routes as any other, with the session scheme.
+
 ```yaml
 # config/packages/nelmio_api_doc.yaml
 nelmio_api_doc:
@@ -52,8 +54,6 @@ nelmio_api_doc:
   areas:
     default:
       path_patterns: ['^/api/device/(?!v\d+/)']
-    app:
-      path_patterns: ['^/api/app/']
     v1:
       path_patterns: ['^/api/device/v1/']
       documentation: { info: { title: Device API, version: v1 } }

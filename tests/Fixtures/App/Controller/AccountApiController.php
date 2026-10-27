@@ -14,7 +14,7 @@ use Wexample\SymfonyApi\Tests\Fixtures\App\Dto\AccountDto;
 /**
  * An API route of the pages' session firewall.
  */
-#[Route(path: '/api/app/', name: 'api_app_')]
+#[Route(path: '/_api/app/', name: 'api_app_')]
 class AccountApiController extends AbstractApiController
 {
     #[Route(path: 'account', name: 'account', methods: ['GET'])]

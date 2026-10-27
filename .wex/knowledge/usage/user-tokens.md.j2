@@ -96,7 +96,7 @@ $secret = $userTokenService->issue($user, label: 'nightly import', scopes: ['ROL
 
 ## Managing them from a session
 
-`routes_user_tokens.yaml` gives a signed-in person three endpoints over their own tokens, for a screen of the application to call:
+`routes_user_tokens.yaml` gives a signed-in person three endpoints over their own tokens, for a screen of the application to call — under `/_api/`, as everything the pages read (`usage/route-prefixes`):
 
 ```yaml
 # config/routes/wexample_symfony_api.yaml
@@ -106,14 +106,14 @@ wexample_symfony_api_user_tokens:
 # config/packages/security.yaml — on the page firewall
 security:
   access_control:
-    - { path: ^/api/user-tokens, roles: ROLE_USER }
+    - { path: ^/_api/user-tokens, roles: ROLE_USER }
 ```
 
 | Route | Does |
 |---|---|
-| `GET /api/user-tokens` | the caller's tokens: `id`, `hint`, `label`, `scopes`, `dateCreated`, `dateExpiration`, `dateLastUsed`, `dateRevoked`, `usable` |
-| `POST /api/user-tokens` `{"label": "import script", "expiresAt": "2027-01-01", "scopes": ["ROLE_USER"]}` | `201`, `{"secret": "ut_…", "token": {…}}` — the secret once; every field optional; a past date, a date beyond `max_lifetime` or a role the person lacks is a `400` |
-| `DELETE /api/user-tokens/{id}` | revokes it; someone else's token answers `404`, as a missing one |
+| `GET /_api/user-tokens` | the caller's tokens: `id`, `hint`, `label`, `scopes`, `dateCreated`, `dateExpiration`, `dateLastUsed`, `dateRevoked`, `usable` |
+| `POST /_api/user-tokens` `{"label": "import script", "expiresAt": "2027-01-01", "scopes": ["ROLE_USER"]}` | `201`, `{"secret": "ut_…", "token": {…}}` — the secret once; every field optional; a past date, a date beyond `max_lifetime` or a role the person lacks is a `400` |
+| `DELETE /_api/user-tokens/{id}` | revokes it; someone else's token answers `404`, as a missing one |
 
 They answer `403` to a request authenticated by a token, should the routes fall under a token firewall — a stolen token cannot mint another one or survive its revocation —, and to an account the token class cannot relate to (a machine client, a user of another provider).
 

@@ -136,7 +136,7 @@ class ApiDocumentationTest extends WebTestCase
     public function testSecurityIsReadFromTheFirewallCoveringEachRoute(): void
     {
         $app = $this->document('app');
-        $account = $app['paths']['/api/app/account']['get'];
+        $account = $app['paths']['/_api/app/account']['get'];
 
         $this->assertSame([['sessionCookie' => []]], $account['security']);
         $this->assertSame(['type' => 'apiKey', 'description' => 'The session of the signed-in user, as the pages use it.', 'name' => 'PHPSESSID', 'in' => 'cookie'], $app['components']['securitySchemes']['sessionCookie']);
@@ -159,7 +159,7 @@ class ApiDocumentationTest extends WebTestCase
         $this->assertSame('#/components/schemas/ApiPagination', $data['properties']['pagination']['$ref']);
         $this->assertSame(['page', 'length', 'total', 'pagesCount', 'hasMore'], $default['components']['schemas']['ApiPagination']['required']);
 
-        $account = $this->document('app')['paths']['/api/app/account']['get']['responses']['200']['content']['application/json']['schema'];
+        $account = $this->document('app')['paths']['/_api/app/account']['get']['responses']['200']['content']['application/json']['schema'];
         $this->assertSame('#/components/schemas/AccountDto', $account['allOf'][1]['properties']['data']['$ref']);
 
         // Without the declaration, data stays an open object.
@@ -174,7 +174,7 @@ class ApiDocumentationTest extends WebTestCase
         $this->assertSame('#/components/schemas/ApiValidationErrorData', $default['components']['schemas']['ApiErrorResponse']['properties']['data']['anyOf'][1]['$ref']);
         $this->assertSame('#/components/schemas/ApiValidationErrorData', $default['components']['schemas']['ApiBatchResponse']['properties']['data']['properties']['items']['items']['properties']['errors']['$ref']);
 
-        $parameters = array_column($this->document('app')['paths']['/api/app/account']['get']['parameters'], 'schema', 'name');
+        $parameters = array_column($this->document('app')['paths']['/_api/app/account']['get']['parameters'], 'schema', 'name');
         $this->assertSame('string', $parameters['date']['type']);
         $this->assertMatchesRegularExpression('/' . $parameters['date']['pattern'] . '/', '2026-10-05 14:30');
         $this->assertDoesNotMatchRegularExpression('/' . $parameters['date']['pattern'] . '/', '05/10/2026');

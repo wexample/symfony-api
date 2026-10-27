@@ -30,7 +30,7 @@ use Wexample\SymfonyApi\Service\UserTokenService;
  * Routed only when the application imports `routes_user_tokens.yaml`, and
  * answering as missing until it sets `user_token.token_class`.
  */
-#[Route(path: '/api/user-tokens', name: 'api_user_tokens_')]
+#[Route(path: '/_api/user-tokens', name: 'api_user_tokens_')]
 final class UserTokenApiController extends AbstractApiController
 {
     public function __construct(

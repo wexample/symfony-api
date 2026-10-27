@@ -31,3 +31,23 @@ Once the rule is written (`usage/list-endpoints`, and the design rules it answer
 
 - `GET /api/user/list` (`src/Api/Controller/UserController.php`), the accounts table's source; `symfony-user-ds` `components/account-table` reads it through the generated `UserRepository`.
 - Syrtis' manager (`config/routes/symfony_user.yaml`, `front/layouts/private/class/AppManager.ts`): the `/_manager` prefix and base, to be removed with the pass.
+
+## Reply
+
+**Verdict: taken, with one change of criterion — `/_api/` for what the application's pages read on the session, `/api/` for what programs call with credentials of their own.** Commit FEATURE_COMMIT. 2 new tests (90 in the suite). The norm: `usage/route-prefixes`.
+
+**The change of criterion.** The proposal splits bundles' lists from the application's api. The line that holds is who calls and how it signs in: a list the application itself serves to its own tables (Sapiens' `/api/app/patient/list`) is the same kind as a bundle's, and goes under `/_api/` too; a bundle endpoint called by programs with a token stays under `/api/`. In this package: `/api/user-tokens` (session only, for a screen) **moved to `/_api/user-tokens`**; `/api/health` (load balancers, monitors, no session) **stays**.
+
+**What the package holds now.**
+- `ApiHelper::PATH_PREFIX_API` (`/api/`) and `ApiHelper::PATH_PREFIX_FRONT` (`/_api/`).
+- **The constraint**: `ApiRoutePrefixTestCaseTrait::assertApiRoutesFollowPrefixNorm()`, for any bundle's or application's suite. It reads the router, the firewall map and the access map: a route of an `AbstractApiController` under `/_api/` must fall under a session firewall; under `/api/` it must not be signed in by the session (token firewall, or public — no access rule, `PUBLIC_ACCESS`, no `#[IsGranted]` on the controller); anywhere else it is reported. Checked to report a session list left under `/api/` by an access rule and by `#[IsGranted]` alone (removing the `#[IsGranted]` reading makes the test fail).
+- OpenAPI: the doc's areas list `^/api/` only; an area on `^/_api/` still documents front routes in development, with the session scheme.
+- Route names unchanged (`api_…`): the path says who, the name does not (design rules).
+
+**Set aside, as the request did.** Roles alone on `/api/` and a "front only" header: same reasons. Also not done: serving both prefixes during a transition — two paths for every list doubles what the firewalls and the access rules have to cover; the pass is a clean switch, one bundle major at a time.
+
+**The pass — for the owner to hand out, not done here (other agents' repositories).**
+1. **Design rules** (`PYTHON/wex/wex-addon-dev-php/…/design_rules/php_code.md`), replace the `/api` paragraph by: *"The one exception is `/api`, which holds the application's api — what programs call with credentials of their own, versioned and documented — and, at `/api/`, the page documenting it. What the application's pages read on the session — a table's list, a screen's action — is reached by a program and lives under `/_api/`, like any other program path. See symfony-api `usage/route-prefixes`."*
+2. **Every bundle with `src/Api/Controller`** (found: symfony-accounting, symfony-ai, symfony-analytics, symfony-bpmn, symfony-charts, symfony-data-sync-ds, symfony-design-system-demo, symfony-file, symfony-git, symfony-media, symfony-money, symfony-payment, symfony-platform, symfony-remote-ds, symfony-search, symfony-user): route by route, `/_api/` if the pages read it on the session, `/api/` if programs call it with a token; add `ApiRoutePrefixTestCaseTrait` to its suite; major version bump.
+3. **Applications**: the front api client's `baseUrl: '/_api/'`; route imports unchanged except prefixes; Sapiens' `/api/app/…` → `/_api/app/…` with its access rules; Syrtis' manager drops the `/_manager` prefix import and base.
+4. **symfony-testing**: its exploration can call the trait's `findApiRoutePrefixProblems()` rather than re-implement the check.

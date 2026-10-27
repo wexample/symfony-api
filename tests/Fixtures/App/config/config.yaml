@@ -78,9 +78,11 @@ security:
     - { path: ^/api/device/, roles: ROLE_MACHINE }
     - { path: ^/api/script/import, roles: ROLE_IMPORTER }
     - { path: ^/api/script/, roles: ROLE_USER }
-    - { path: ^/api/user-tokens, roles: ROLE_USER }
+    - { path: ^/_api/user-tokens, roles: ROLE_USER }
     - { path: ^/page, roles: ROLE_USER }
-    - { path: ^/api/app/, roles: ROLE_USER }
+    - { path: ^/_api/app/, roles: ROLE_USER }
+    # Routed by the prefix norm test only: a session list left under /api/.
+    - { path: ^/api/legacy/, roles: ROLE_USER }
 
 services:
   _defaults:
@@ -127,11 +129,11 @@ nelmio_api_doc:
     default:
       path_patterns: ['^/api/device/(?!v\d+/)']
     app:
-      path_patterns: ['^/api/app/']
+      path_patterns: ['^/_api/app/']
     ops:
       path_patterns: ['^/api/health$']
     tokens:
-      path_patterns: ['^/api/user-tokens']
+      path_patterns: ['^/_api/user-tokens']
     script:
       path_patterns: ['^/api/script/']
     v1:
