@@ -34,7 +34,7 @@ Once the rule is written (`usage/list-endpoints`, and the design rules it answer
 
 ## Reply
 
-**Verdict: taken, with one change of criterion — `/_api/` for what the application's pages read on the session, `/api/` for what programs call with credentials of their own.** Commit FEATURE_COMMIT. 2 new tests (90 in the suite). The norm: `usage/route-prefixes`.
+**Verdict: taken, with one change of criterion — `/_api/` for what the application's pages read on the session, `/api/` for what programs call with credentials of their own.** Commit `0d3b6e7`. 2 new tests (90 in the suite). The norm: `usage/route-prefixes`.
 
 **The change of criterion.** The proposal splits bundles' lists from the application's api. The line that holds is who calls and how it signs in: a list the application itself serves to its own tables (Sapiens' `/api/app/patient/list`) is the same kind as a bundle's, and goes under `/_api/` too; a bundle endpoint called by programs with a token stays under `/api/`. In this package: `/api/user-tokens` (session only, for a screen) **moved to `/_api/user-tokens`**; `/api/health` (load balancers, monitors, no session) **stays**.
 
