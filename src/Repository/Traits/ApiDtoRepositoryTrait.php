@@ -37,6 +37,7 @@ trait ApiDtoRepositoryTrait
         for ($class = new \ReflectionClass(ClassHelper::getRealClassPath($entity)); $class; $class = $class->getParentClass()) {
             if (method_exists($this, $methodPrefix.$class->getShortName())) {
                 $updateMethod = $methodPrefix.$class->getShortName();
+
                 break;
             }
         }
