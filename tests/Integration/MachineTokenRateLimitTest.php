@@ -43,7 +43,9 @@ class MachineTokenRateLimitTest extends WebTestCase
         $this->assertSame(['type' => 'error', 'code' => 429, 'message' => 'Too many requests.', 'data' => []], $payload);
         $retryAfter = (int) $this->client->getResponse()->headers->get('Retry-After');
         $this->assertGreaterThan(0, $retryAfter);
-        $this->assertLessThanOrEqual(3600, $retryAfter);
+        // The window is an hour; the header is whole seconds of a moment kept to
+        // the microsecond, so it may round to one past it.
+        $this->assertLessThanOrEqual(3601, $retryAfter);
 
         // The test log handler is reset at every request: read it now.
         $throttled = $this->getJournal('machine_token.throttled');
