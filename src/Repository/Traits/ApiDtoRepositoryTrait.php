@@ -29,12 +29,20 @@ trait ApiDtoRepositoryTrait
         string $methodPrefix = 'updateByDto',
         bool $flush = true
     ): AbstractEntity {
-        $entityShortName = ClassHelper::getShortName($entity);
+        // The method written for the class, or else for an ancestor: what
+        // updates a session updates every kind of session that has no update
+        // of its own.
+        $updateMethod = null;
 
-        $updateMethod = $methodPrefix.$entityShortName;
+        for ($class = new \ReflectionClass(ClassHelper::getRealClassPath($entity)); $class; $class = $class->getParentClass()) {
+            if (method_exists($this, $methodPrefix.$class->getShortName())) {
+                $updateMethod = $methodPrefix.$class->getShortName();
+                break;
+            }
+        }
 
-        if (! method_exists($this, $updateMethod)) {
-            throw new \Exception("Update method \"$updateMethod\" not found on repository \"".static::class."\".");
+        if (! $updateMethod) {
+            throw new \Exception("Update method \"".$methodPrefix.ClassHelper::getShortName($entity)."\" not found on repository \"".static::class."\".");
         }
 
         $updatedEntity = $this->$updateMethod($entity, $dto);

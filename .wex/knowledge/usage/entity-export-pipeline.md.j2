@@ -35,6 +35,25 @@ Options : `--data-dir` (défaut: `front/data/entity`), `--output-dir` (défaut: 
 
 Produit : `front/js/Entity/<Entity>.ts`, `front/js/Repository/<Entity>Repository.ts`, `front/js/Common/generatedEntitySchemas.ts`, `front/js/Common/generatedRepositories.ts`
 
+## Entités d'une hiérarchie
+
+Une entité qui étend une entité exportée le dit (`extends: Session`, le nom court de la
+classe parente), et, quand elle est mappée dans une hiérarchie Doctrine, l'export JSON ajoute
+sa place dans la hiérarchie — lue sur le mapping par `EntityHierarchyHelper` — et le
+discriminant parmi les propriétés, puisque l'api le sert avec chaque ligne :
+
+```json
+{ "name": "syrtis_session", "extends": "Session",
+  "discriminator": { "property": "engine", "value": "syrtis" },
+  "properties": [ …, { "name": "engine", "type": "string", "readOnly": true } ] }
+```
+
+Côté TypeScript, `generate-entities.mjs` fait étendre la classe parente quand elle est du
+même package ; quand le parent vient d'un autre package, la classe est à écrire à la main, en
+important le parent de là où il est livré. Le manifeste `Common/generatedEntities.ts` liste
+les classes du package : le client les déclare (`getEntityClasses()`) pour qu'une ligne soit
+hydratée dans la classe que nomme son discriminant.
+
 ## Entités définies dans un bundle
 
 Les trois commandes tournent depuis l'app — seule elle a un kernel à scanner — mais une entité définie dans un bundle appartient au bundle, et c'est là que ses artefacts doivent atterrir : le package les livre ensuite à toutes les apps qui l'installent.

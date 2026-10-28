@@ -26,7 +26,9 @@ use Wexample\SymfonyApi\Tests\Fixtures\App\Dto\ReadingRowDto;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Device;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\DeviceFile;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Reading;
+use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Vehicle;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Normalizer\DeviceFileNormalizer;
+use Wexample\SymfonyApi\Tests\Fixtures\App\Normalizer\VehicleNormalizer;
 
 #[Route(path: '/api/device/', name: 'api_device_')]
 class DeviceApiController extends AbstractApiController
@@ -65,6 +67,26 @@ class DeviceApiController extends AbstractApiController
             fn (Reading $reading) => ['value' => $reading->value, 'code' => $reading->code],
             $readings
         ));
+    }
+
+    /**
+     * Every kind of vehicle in one list: the root is what is queried, each row
+     * comes back as what it is, and the normalizer of the root says so.
+     */
+    #[Route(path: 'vehicles', name: 'vehicles', methods: ['GET'])]
+    #[PageQueryOption]
+    #[LengthQueryOption]
+    #[SortQueryOption(allowed: ['name'], default: 'name')]
+    public function vehicles(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        VehicleNormalizer $normalizer
+    ): ApiResponse {
+        $queryBuilder = $entityManager->createQueryBuilder()
+            ->select('vehicle')
+            ->from(Vehicle::class, 'vehicle');
+
+        return self::apiResponseQueryPage($request, $queryBuilder, $normalizer->normalizeCollection(...));
     }
 
     /**

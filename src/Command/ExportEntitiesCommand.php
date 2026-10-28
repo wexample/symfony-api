@@ -7,9 +7,17 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
+use Wexample\Helpers\Helper\ClassHelper;
+use Wexample\SymfonyHelpers\Helper\EntityHierarchyHelper;
 
+/**
+ * The pseudocode of the entities, as the front reads it: one json per entity,
+ * and, for an entity of a hierarchy, what the mapping alone knows — the
+ * discriminator the api serves with every row, as a property of the entity.
+ */
 #[AsCommand(name: 'api:export:entities')]
 class ExportEntitiesCommand extends Command
 {
@@ -17,6 +25,7 @@ class ExportEntitiesCommand extends Command
 
     public function __construct(
         private readonly KernelInterface $kernel,
+        private readonly ManagerRegistry $doctrine,
     ) {
         parent::__construct();
     }
@@ -72,6 +81,7 @@ class ExportEntitiesCommand extends Command
             }
 
             $data['name'] = basename($yamlFile, '.yml');
+            $data = $this->describeHierarchy($data);
 
             file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n");
             $exported++;
@@ -86,6 +96,56 @@ class ExportEntitiesCommand extends Command
         ));
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * What the entity is within its hierarchy, when it has one: the name of
+     * the discriminator and the value this class stores in it, and that
+     * discriminator among the properties, since the api serves it as one and
+     * the browser refuses a property its schema does not list.
+     *
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
+    private function describeHierarchy(array $data): array
+    {
+        $class = $this->findMappedClass($data['name']);
+
+        if (! $class || ! EntityHierarchyHelper::isInHierarchy($class)) {
+            return $data;
+        }
+
+        $property = EntityHierarchyHelper::getDiscriminatorName($class);
+
+        $data['discriminator'] = [
+            'property' => $property,
+            'value' => EntityHierarchyHelper::getDiscriminatorValue($class),
+        ];
+        $data['properties'][] = [
+            'name' => $property,
+            'type' => 'string',
+            'readOnly' => true,
+        ];
+
+        return $data;
+    }
+
+    /**
+     * The mapped entity the pseudocode file is named after, if any: an entity
+     * with no table is in the pseudocode and not in the mapping.
+     */
+    private function findMappedClass(string $name): ?string
+    {
+        foreach ($this->doctrine->getManagers() as $manager) {
+            foreach ($manager->getMetadataFactory()->getAllMetadata() as $metadata) {
+                if (ClassHelper::getTableizedName($metadata->getName()) === $name) {
+                    return $metadata->getName();
+                }
+            }
+        }
+
+        return null;
     }
 
     private function resolvePath(string $base, string $path): string
