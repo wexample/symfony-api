@@ -1,6 +1,6 @@
 ## Versions in the path
 
-An API version is a segment of the endpoint's path: `/api/device/v1/echo`, `/api/device/v2/echo`. It shows in proxy logs, in the journal and in the route itself, and two versions of one endpoint are two routes — each with its own controller and its own DTOs:
+An API version is a segment of the endpoint's path, numbered — `/api/device/v1/echo`, `/api/device/v2/echo` — or dated, a year and its release in it — `/api/2026-1/session/history`. It shows in proxy logs, in the journal and in the route itself, and two versions of one endpoint are two routes — each with its own controller and its own DTOs:
 
 ```php
 namespace App\Api\Controller\V1;
@@ -16,7 +16,7 @@ class EchoApiController extends AbstractApiController
 
 `App\Api\Controller\V2\EchoApiController` does the same on `/api/device/v2/` with `App\Api\Dto\V2\EchoDto`. `#[ApiEndpoint(version: 'v2')]` on an entity has filestate scaffold its controller in the matching versioned directory, which must exist beforehand.
 
-`ApiVersionHelper::fromPath()` reads the version back — the first `/v<number>/` segment — for whoever needs it.
+`ApiVersionHelper::fromPath()` reads the version back — the first `/v<number>/` or `/<year>-<release>/` segment — for whoever needs it; the keys of `versions` below are those segments (`v1`, `2026-1`).
 
 ## Deprecating a version
 
