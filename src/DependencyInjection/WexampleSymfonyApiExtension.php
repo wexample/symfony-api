@@ -4,8 +4,10 @@ namespace Wexample\SymfonyApi\DependencyInjection;
 
 use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Wexample\SymfonyApi\Interface\HealthCheckInterface;
 use Wexample\SymfonyApi\OpenApi\ApiRouteDescriber;
+use Wexample\SymfonyApi\Service\UserTokenPasswordLoginService;
 use Wexample\SymfonyHelpers\DependencyInjection\AbstractWexampleSymfonyExtension;
 
 class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
@@ -17,6 +19,8 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
     final public const string LIMITER_USER_CLIENT = 'api_user_client';
 
     final public const string LIMITER_USER_IP_FAILURES = 'api_user_ip_failures';
+
+    final public const string LIMITER_USER_PASSWORD_LOGIN = 'api_user_password_login';
 
     /**
      * The two limiters of each token firewall, declared in the framework
@@ -49,6 +53,13 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
                 'interval' => $rateLimit['ip_failures']['interval'],
             ];
         }
+
+        $passwordLogin = $config['user_token']['password_login'];
+        $limiters[self::LIMITER_USER_PASSWORD_LOGIN] = [
+            'policy' => 'sliding_window',
+            'limit' => $passwordLogin['rate_limit']['limit'],
+            'interval' => $passwordLogin['rate_limit']['interval'],
+        ];
 
         $container->prependExtensionConfig('framework', [
             'rate_limiter' => $limiters,
@@ -95,6 +106,19 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             $container->setParameter('api_' . $kind . '_rate_limit_enabled', $token['rate_limit']['enabled']);
         }
         $container->setParameter('api_machine_token_roles', $config['machine_token']['roles']);
+
+        // A password login, only where the application names the provider.
+        $passwordLogin = $config['user_token']['password_login'];
+        if (null !== $passwordLogin['provider']) {
+            $container->register(UserTokenPasswordLoginService::class, UserTokenPasswordLoginService::class)
+                ->setAutowired(true)
+                ->setPublic(true)
+                ->setArgument('$userProvider', new Reference('security.user.provider.concrete.' . $passwordLogin['provider']))
+                ->setArgument('$loginLimiter', new Reference('limiter.' . self::LIMITER_USER_PASSWORD_LOGIN))
+                ->setArgument('$userChecker', null === $passwordLogin['user_checker'] ? null : new Reference($passwordLogin['user_checker']))
+                ->setArgument('$lifetime', $passwordLogin['lifetime'])
+                ->setArgument('$label', $passwordLogin['label']);
+        }
 
         $batch = $config['batch'];
         $container->setParameter('api_batch_record_class', $batch['record_class']);

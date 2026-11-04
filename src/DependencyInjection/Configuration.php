@@ -40,7 +40,33 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         // A person's own tokens, for the scripts they run in their name.
-        $this->addTokenNode($root, 'user_token', 'ut_', 3600);
+        $userToken = $this->addTokenNode($root, 'user_token', 'ut_', 3600);
+        $userToken
+            ->children()
+            // A token issued for an identifier and a password
+            // (UserTokenPasswordLoginService): off until a provider is named.
+            ->arrayNode('password_login')
+            ->addDefaultsIfNotSet()
+            ->children()
+            // The name of the security user provider finding the account.
+            ->scalarNode('provider')->defaultNull()->end()
+            // The service id of the user checker admitting it, as the page
+            // firewall's: a disabled or locked account gets no token.
+            ->scalarNode('user_checker')->defaultNull()->end()
+            // How long the token lives, as an ISO 8601 duration; null for
+            // the kind's max_lifetime.
+            ->scalarNode('lifetime')->defaultNull()->end()
+            ->scalarNode('label')->defaultValue('password login')->end()
+            ->arrayNode('rate_limit')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->integerNode('limit')->defaultValue(5)->min(1)->end()
+            ->scalarNode('interval')->defaultValue('1 minute')->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end();
 
         $treeBuilder->getRootNode()
             ->children()

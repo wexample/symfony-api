@@ -4,6 +4,7 @@ namespace Wexample\SymfonyApi\Tests\Fixtures\App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 
@@ -12,7 +13,7 @@ use Wexample\SymfonyHelpers\Entity\AbstractEntity;
  * with tokens of their own.
  */
 #[ORM\Entity]
-class Person extends AbstractEntity implements UserInterface
+class Person extends AbstractEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column(type: Types::STRING, length: 180, unique: true)]
     private string $email;
@@ -25,6 +26,12 @@ class Person extends AbstractEntity implements UserInterface
 
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $enabled = true;
+
+    /**
+     * Plain in the fixture: its hasher is `plaintext`.
+     */
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $password = null;
 
     public function __construct(string $email, array $roles = ['ROLE_USER'])
     {
@@ -46,6 +53,18 @@ class Person extends AbstractEntity implements UserInterface
 
     public function eraseCredentials(): void
     {
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 
     public function isEnabled(): bool

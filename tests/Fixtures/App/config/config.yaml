@@ -28,6 +28,11 @@ wexample_symfony_api:
     rate_limit:
       client: { limit: 20, interval: '1 hour' }
       ip_failures: { limit: 8, interval: '1 hour' }
+    password_login:
+      provider: persons
+      user_checker: Wexample\SymfonyApi\Tests\Fixtures\App\Security\DeviceChecker
+      lifetime: P30D
+      rate_limit: { limit: 3, interval: '1 hour' }
   batch:
     record_class: Wexample\SymfonyApi\Tests\Fixtures\App\Entity\IdempotencyRecord
   versions:
@@ -37,6 +42,8 @@ wexample_symfony_api:
       link: 'https://example.com/api/v1-sunset'
 
 security:
+  password_hashers:
+    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: plaintext
   providers:
     people:
       memory:

@@ -126,6 +126,33 @@ php bin/console api:user-token:revoke <token id|hint>
 php bin/console api:user-token:revoke <user> --all      # an administrator cutting a person off
 ```
 
+## Signing in with a password
+
+For a client that signs in without a page — a mobile app, a desktop tool — `UserTokenPasswordLoginService` issues a user token for an identifier and a password. It exists once a provider is named:
+
+```yaml
+wexample_symfony_api:
+  user_token:
+    password_login:
+      provider: app_user_provider                     # the security provider finding the account
+      user_checker: Wexample\SymfonyUser\Security\UserChecker   # the page firewall's: a disabled or locked account gets no token
+      lifetime: P30D                                  # null: the kind's max_lifetime
+      label: password login
+      rate_limit: { limit: 5, interval: '1 minute' }  # failures per identifier and address
+```
+
+```php
+try {
+    [$secret, $user] = $passwordLoginService->login($dto->login, $dto->password, $request->getClientIp());
+} catch (UserTokenLoginException $exception) {
+    // $exception->reason: invalid (unknown account, wrong password, refused by the checker — one answer for all) or throttled ($exception->retryAfter)
+}
+```
+
+The application keeps its own route and response: the service is the check, not the contract. An unknown identifier costs the time a wrong password does; a success forgets the failures; failures and throttlings reach the journal (`user_token.refused`, `user_token.throttled`, cause `password_login`).
+
+**It does not ask a second factor.** A password alone gets a token: an application requiring a second factor of its accounts enables this knowing it, or keeps tokens to be issued from a signed-in session (`routes_user_tokens.yaml`).
+
 ## Not covered
 
 - **Scopes other than roles.** A scope is a role of the holder; rights finer than roles — one entity, one action — are a voter's business, reading the request's roles.
