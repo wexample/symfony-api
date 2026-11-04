@@ -9,10 +9,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Wexample\Helpers\Helper\ClassHelper;
@@ -32,6 +34,8 @@ use Wexample\SymfonyHelpers\Helper\RequestHelper;
 
 class ApiEventSubscriber extends AbstractControllerEventSubscriber
 {
+    final public const string MESSAGE_ACCESS_DENIED = 'Access Denied.';
+
     public function __construct(
         private readonly ValidatorInterface $validator,
         private readonly ParameterBagInterface $parameterBag,
@@ -215,6 +219,13 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
         $data = null;
         $message = $exception->getMessage();
 
+        // A refusal says no more than that: the reasons Symfony appends — the
+        // role missing, the grant not held and in which project — name what
+        // the caller may not even know exists. They stay in the logs.
+        if ($this->isAccessDenial($exception)) {
+            $message = self::MESSAGE_ACCESS_DENIED;
+        }
+
         // A body refused by #[ValidateRequestContent] is the caller's mistake.
         if ($exception instanceof ConstraintViolationException || $exception instanceof DeserializationException) {
             $code = Response::HTTP_BAD_REQUEST;
@@ -264,6 +275,17 @@ class ApiEventSubscriber extends AbstractControllerEventSubscriber
                 code: $code
             )->toJsonResponse(),
         );
+    }
+
+    private function isAccessDenial(\Throwable $exception): bool
+    {
+        for ($current = $exception; null !== $current; $current = $current->getPrevious()) {
+            if ($current instanceof AccessDeniedException || $current instanceof AccessDeniedHttpException) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function validateQueryOptions(ControllerEvent $event): void

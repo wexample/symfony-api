@@ -198,6 +198,11 @@ class ApiDocumentationTest extends WebTestCase
             $document = $this->document($area);
 
             foreach ($document['paths'] as $path => $operations) {
+                // Refused to every device by design (AccessDenialMessageTest).
+                if ('/api/device/denied' === $path) {
+                    continue;
+                }
+
                 foreach ($operations as $method => $operation) {
                     $schema = $operation['requestBody']['content']['application/json']['schema'] ?? null;
 

@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Wexample\SymfonyApi\Api\Attribute\ApiBatch;
 use Wexample\SymfonyApi\Api\Attribute\ApiResponseData;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\LengthQueryOption;
@@ -87,6 +88,17 @@ class DeviceApiController extends AbstractApiController
             ->from(Vehicle::class, 'vehicle');
 
         return self::apiResponseQueryPage($request, $queryBuilder, $normalizer->normalizeCollection(...));
+    }
+
+    /**
+     * Refused to a device by a role it never holds: the refusal's message is
+     * checked to name nothing.
+     */
+    #[Route(path: 'denied', name: 'denied', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function denied(): ApiResponse
+    {
+        return self::apiResponseSuccess();
     }
 
     /**
