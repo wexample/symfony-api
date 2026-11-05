@@ -48,7 +48,7 @@ class SourceController extends AbstractApiController
 
 - **Not viewable is not found.** An entity the caller may not view answers `404`, as one that does not exist — a `403` would tell an outsider it does. One it views but may not change or delete answers `403`, `Access Denied.` alone.
 - **The query scopes the list, the voter guards it.** `createApiEntityListQueryBuilder()` reads every row by default; a list whose rows are not all public restricts it. A page holding a row the caller may not view is refused whole (`403`, the reason in the logs) rather than thinned: a thinned page would keep a total and pages counting what it hides.
-- **Identifiers**: `findApiEntity()` reads by id; one the database cannot read (not a uuid) is a `404`. An application addressing entities otherwise — a former secure id, a slug — overrides it.
+- **Identifiers**: `findApiEntity()` reads by id; one the database cannot read (not a uuid) is a `404`. A repository addressing entities otherwise — a former secure id, a slug — implements `IdentifierRepositoryInterface`, read instead. Overriding `findApiEntity()` in a trait of the application's would collide with each action trait's copy.
 - **Update** goes through the repository's `updateByDto<Entity>()` (`ApiDtoRepositoryTrait`) and saves; `updateApiEntity()` is the place to do it otherwise. The body is validated by `#[ValidateRequestContent]` as on any route.
 - **Delete** asks `getApiEntityRemovalRefusal()` first — a reason answers `409` with it —, then removes; a row still referencing the entity is a `409` too, never a `500`.
 - **Normalization**: `normalizeApiEntity()` / `normalizeApiEntities()`, by the normalizer given; override the second to read a page's relations together.

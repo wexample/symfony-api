@@ -5,6 +5,7 @@ namespace Wexample\SymfonyApi\Api\Controller\Traits;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Wexample\SymfonyApi\Interface\IdentifierRepositoryInterface;
 use Wexample\SymfonyHelpers\Helper\DataHelper;
 use Wexample\SymfonyHelpers\Voter\AbstractEntityVoter;
 
@@ -21,12 +22,16 @@ trait EntityApiControllerTrait
     abstract protected function getApiEntityNormalizer(): NormalizerInterface;
 
     /**
-     * The entity a url names, by its id; an application addressing entities
-     * otherwise (a slug, a former identifier) reads them here.
+     * The entity a url names: by its id, or as the repository reads its
+     * identifiers (IdentifierRepositoryInterface).
      */
     protected function findApiEntity(string $identifier): ?object
     {
-        return $this->getApiEntityRepository()->find($identifier);
+        $repository = $this->getApiEntityRepository();
+
+        return $repository instanceof IdentifierRepositoryInterface
+            ? $repository->findOneByIdentifier($identifier)
+            : $repository->find($identifier);
     }
 
     /**
