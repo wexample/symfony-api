@@ -4,12 +4,13 @@ namespace Wexample\SymfonyApi\Tests\Fixtures\App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Wexample\SymfonyApi\Tests\Fixtures\App\Repository\ReadingRepository;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
 
 /**
  * What a device sends in batches.
  */
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ReadingRepository::class)]
 class Reading extends AbstractEntity
 {
     #[ORM\ManyToOne]

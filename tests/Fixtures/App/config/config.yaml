@@ -106,6 +106,12 @@ services:
   Wexample\SymfonyApi\Tests\Fixtures\App\HealthCheck\:
     resource: '../HealthCheck/'
 
+  Wexample\SymfonyApi\Tests\Fixtures\App\Repository\:
+    resource: '../Repository/'
+
+  Wexample\SymfonyApi\Tests\Fixtures\App\Voter\:
+    resource: '../Voter/'
+
   Wexample\SymfonyApi\Tests\Fixtures\App\Controller\:
     resource: '../Controller/'
     tags: ['controller.service_arguments']

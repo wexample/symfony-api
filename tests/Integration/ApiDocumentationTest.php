@@ -203,6 +203,11 @@ class ApiDocumentationTest extends WebTestCase
                     continue;
                 }
 
+                // Naming a record the documents cannot know: EntityActionsTest.
+                if (str_contains($path, '{')) {
+                    continue;
+                }
+
                 foreach ($operations as $method => $operation) {
                     $schema = $operation['requestBody']['content']['application/json']['schema'] ?? null;
 
