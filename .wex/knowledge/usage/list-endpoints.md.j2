@@ -26,6 +26,10 @@ public function patients(Request $request, PatientRepository $patients): ApiResp
 
 The response is the one `js-api-entity`'s `fetchListPaginated()` reads: `data.items`, and `data.pagination` = `{page, length, total, pagesCount, hasMore}`. A query parameter the route does not declare is refused with a `400`.
 
+## A page without a count
+
+`apiResponseQueryProbedPage()` takes the same arguments and cuts the same page, without counting: it reads one row past the page to tell whether another follows. For a list too large to count at each page, or a history read backwards. The pagination says `hasMore`; `total` and `pagesCount` are null, which `fetchListPaginated()` reads as a prev / next pager. A negative page, counted from the end, needs the total: it reads as the first.
+
 ## Sorting
 
 `?sort=` takes sortable names separated by commas, the first one first, `-` before a name for descending: `?sort=establishment,-birthDate`.

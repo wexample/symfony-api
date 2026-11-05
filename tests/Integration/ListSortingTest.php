@@ -122,6 +122,17 @@ class ListSortingTest extends WebTestCase
         $this->assertSame(['page' => 1, 'length' => 2, 'total' => 5, 'pagesCount' => 3, 'hasMore' => true], $pagination);
     }
 
+    public function testAProbedPageTellsWhetherMoreFollowsWithoutCounting(): void
+    {
+        $page = fn (int $page) => $this->request('/api/device/readings-probed', ['length' => 2, 'page' => $page])['data'];
+
+        $this->assertSame(['a', 'b'], array_column($page(0)['items'], 'code'));
+        $this->assertSame(['page' => 0, 'length' => 2, 'total' => null, 'pagesCount' => null, 'hasMore' => true], $page(0)['pagination']);
+        $this->assertTrue($page(1)['pagination']['hasMore']);
+        $this->assertSame(['e'], array_column($page(2)['items'], 'code'));
+        $this->assertFalse($page(2)['pagination']['hasMore']);
+    }
+
     public function testDeclarationMistakesFailAtOnce(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -139,7 +150,12 @@ class ListSortingTest extends WebTestCase
 
     private function list(array $query): ?array
     {
-        $this->client->request('GET', '/api/device/readings', $query, server: ['HTTP_AUTHORIZATION' => 'Bearer ' . $this->token]);
+        return $this->request('/api/device/readings', $query);
+    }
+
+    private function request(string $path, array $query): ?array
+    {
+        $this->client->request('GET', $path, $query, server: ['HTTP_AUTHORIZATION' => 'Bearer ' . $this->token]);
 
         return json_decode($this->client->getResponse()->getContent(), true);
     }

@@ -71,6 +71,30 @@ class DeviceApiController extends AbstractApiController
     }
 
     /**
+     * The same readings, paged without a count.
+     */
+    #[Route(path: 'readings-probed', name: 'readings_probed', methods: ['GET'])]
+    #[PageQueryOption]
+    #[LengthQueryOption]
+    #[SortQueryOption(allowed: ['code'], default: 'code')]
+    public function listReadingsProbed(
+        Request $request,
+        #[CurrentUser] Device $device,
+        EntityManagerInterface $entityManager
+    ): ApiResponse {
+        $queryBuilder = $entityManager->createQueryBuilder()
+            ->select('reading')
+            ->from(Reading::class, 'reading')
+            ->where('reading.device = :device')
+            ->setParameter('device', $device->getId(), UuidType::NAME);
+
+        return self::apiResponseQueryProbedPage($request, $queryBuilder, fn (array $readings) => array_map(
+            fn (Reading $reading) => ['value' => $reading->value, 'code' => $reading->code],
+            $readings
+        ));
+    }
+
+    /**
      * Every kind of vehicle in one list: the root is what is queried, each row
      * comes back as what it is, and the normalizer of the root says so.
      */

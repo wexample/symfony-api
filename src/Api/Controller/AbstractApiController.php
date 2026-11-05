@@ -226,6 +226,39 @@ abstract class AbstractApiController extends AbstractController
         return self::apiResponsePaginated($pagination, $normalize($entities));
     }
 
+    /**
+     * A page as apiResponseQueryPage() cuts it, without counting: one row
+     * past the page is read to tell whether another follows — a list too
+     * large to count at each page, a history read backwards. The pagination
+     * says `hasMore`, its `total` and `pagesCount` null; a negative page,
+     * counted from the end, is the first.
+     *
+     * @param callable(array): array $normalize
+     */
+    protected static function apiResponseQueryProbedPage(
+        Request $request,
+        QueryBuilder $queryBuilder,
+        callable $normalize
+    ): ApiResponse {
+        $pagination = self::getQueryOptionPagination($request);
+
+        if (self::findMethodAttribute($request, SortQueryOption::KEY)) {
+            self::applyQueryOptionSort($request, $queryBuilder);
+        }
+
+        $entities = $queryBuilder
+            ->setFirstResult($pagination->getOffset())
+            ->setMaxResults($pagination->length ? $pagination->length + 1 : null)
+            ->getQuery()
+            ->getResult();
+        $hasMore = $pagination->length && count($entities) > $pagination->length;
+
+        return self::apiResponsePaginated(
+            $pagination->withProbedHasMore($hasMore),
+            $normalize($hasMore ? array_slice($entities, 0, $pagination->length) : $entities)
+        );
+    }
+
     protected static function applyQueryOptionSort(
         Request $request,
         QueryBuilder $queryBuilder,

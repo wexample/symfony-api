@@ -16,6 +16,9 @@ class PaginationDto
         int $page = 0,
         public readonly ?int $length = LengthQueryOption::DEFAULT_PAGE_LENGTH,
         public readonly ?int $total = null,
+        // Whether a row follows the page, known without a total: read one
+        // row past it (AbstractApiController::apiResponseQueryProbedPage()).
+        private readonly ?bool $probedHasMore = null,
     ) {
         // A negative page counts back from the end, -1 being the last one. A caller
         // reading a collection newest first cannot know how many pages there are
@@ -29,6 +32,15 @@ class PaginationDto
             page: $this->page,
             length: $this->length,
             total: $total
+        );
+    }
+
+    public function withProbedHasMore(bool $hasMore): self
+    {
+        return new self(
+            page: $this->page,
+            length: $this->length,
+            probedHasMore: $hasMore
         );
     }
 
@@ -53,7 +65,7 @@ class PaginationDto
     public function hasMore(): ?bool
     {
         if ($this->total === null) {
-            return null;
+            return $this->probedHasMore;
         }
 
         if (! $this->length) {
