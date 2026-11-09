@@ -69,6 +69,7 @@
   },
   "suggest": {
     "symfony/monolog-bundle": "Writes the machine token journal to its own channel, machine_security, and masks tokens in every log",
-    "nelmio/api-doc-bundle": "Generates the OpenAPI documents of the API, one per version, through this package's route describer"
+    "nelmio/api-doc-bundle": "Generates the OpenAPI documents of the API, one per version, through this package's route describer",
+    "wexample/symfony-activity": "Keeps the token facts of each holder — refusals and throttlings among them, repeats merged — as its history"
   }
 }

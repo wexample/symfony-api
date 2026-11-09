@@ -8,6 +8,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Wexample\Helpers\Helper\ClassHelper;
 use Wexample\SymfonyApi\Enum\MachineSecurityEventType;
 use Wexample\SymfonyApi\Enum\UserTokenSecurityEventType;
 use Wexample\SymfonyApi\Event\MachineSecurityEvent;
@@ -62,6 +63,8 @@ class MachineSecurityJournalService
             requestId: RequestIdHelper::resolve($request),
             extra: [
                 'token_hint' => $tokenHint,
+                // The holder's class beside its id: what a history files it under.
+                'client_type' => $client ? ClassHelper::getRealClassPath($client) : null,
                 'api_version' => $request ? ApiVersionHelper::fromPath($request->getPathInfo()) : null,
             ] + $extra,
         ));

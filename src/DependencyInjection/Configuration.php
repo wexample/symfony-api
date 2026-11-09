@@ -199,6 +199,16 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('interval')->defaultValue('1 hour')->end()
             ->end()
             ->end()
+            // On top of `client`, a short window: a flood stopped within
+            // seconds rather than once the whole allowance is spent. Off
+            // unless set.
+            ->arrayNode('burst')
+            ->canBeEnabled()
+            ->children()
+            ->integerNode('limit')->defaultValue(100)->min(1)->end()
+            ->scalarNode('interval')->defaultValue('10 seconds')->end()
+            ->end()
+            ->end()
             ->arrayNode('ip_failures')
             ->addDefaultsIfNotSet()
             ->children()

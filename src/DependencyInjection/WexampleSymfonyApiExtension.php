@@ -5,6 +5,8 @@ namespace Wexample\SymfonyApi\DependencyInjection;
 use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Wexample\SymfonyActivity\WexampleSymfonyActivityBundle;
+use Wexample\SymfonyApi\EventSubscriber\ApiTokenActivitySubscriber;
 use Wexample\SymfonyApi\Interface\HealthCheckInterface;
 use Wexample\SymfonyApi\OpenApi\ApiRouteDescriber;
 use Wexample\SymfonyApi\Service\UserTokenPasswordLoginService;
@@ -42,11 +44,28 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
         ] as $kind => [$clientLimiter, $ipLimiter]) {
             $rateLimit = $config[$kind]['rate_limit'];
 
-            $limiters[$clientLimiter] = [
+            $client = [
                 'policy' => 'sliding_window',
                 'limit' => $rateLimit['client']['limit'],
                 'interval' => $rateLimit['client']['interval'],
             ];
+
+            // With a burst window, the client's limiter is both: a request
+            // passes when neither is spent, and waits for the later of the two.
+            if ($rateLimit['burst']['enabled']) {
+                $limiters[$clientLimiter . '_allowance'] = $client;
+                $limiters[$clientLimiter . '_burst'] = [
+                    'policy' => 'sliding_window',
+                    'limit' => $rateLimit['burst']['limit'],
+                    'interval' => $rateLimit['burst']['interval'],
+                ];
+                $client = [
+                    'policy' => 'compound',
+                    'limiters' => [$clientLimiter . '_allowance', $clientLimiter . '_burst'],
+                ];
+            }
+
+            $limiters[$clientLimiter] = $client;
             $limiters[$ipLimiter] = [
                 'policy' => 'sliding_window',
                 'limit' => $rateLimit['ip_failures']['limit'],
@@ -83,6 +102,11 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
 
         $container->registerForAutoconfiguration(HealthCheckInterface::class)
             ->addTag(HealthCheckInterface::TAG);
+
+        // The token facts in the holders' histories, where there are histories.
+        if (in_array(WexampleSymfonyActivityBundle::class, $container->getParameter('kernel.bundles'), true)) {
+            $container->autowire(ApiTokenActivitySubscriber::class)->setAutoconfigured(true);
+        }
 
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);

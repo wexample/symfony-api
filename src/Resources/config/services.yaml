@@ -12,6 +12,8 @@ services:
 
     Wexample\SymfonyApi\EventSubscriber\:
         resource: '../../EventSubscriber/*'
+        # Registered by the extension, where symfony-activity is enabled.
+        exclude: '../../EventSubscriber/ApiTokenActivitySubscriber.php'
         tags: ['kernel.event_subscriber']
 
     Wexample\SymfonyApi\Controller\:
