@@ -3,8 +3,8 @@
 namespace Wexample\SymfonyApi\Api\Controller\Traits;
 
 use Doctrine\ORM\EntityRepository;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Wexample\SymfonyApi\Interface\IdentifierRepositoryInterface;
 use Wexample\SymfonyHelpers\Helper\DataHelper;
 use Wexample\SymfonyHelpers\Voter\AbstractEntityVoter;

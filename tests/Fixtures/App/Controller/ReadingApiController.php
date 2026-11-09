@@ -13,7 +13,6 @@ use Wexample\SymfonyApi\Api\Controller\Traits\EntityListApiControllerTrait;
 use Wexample\SymfonyApi\Api\Controller\Traits\EntityShowApiControllerTrait;
 use Wexample\SymfonyApi\Api\Controller\Traits\EntityUpdateApiControllerTrait;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Dto\ReadingDto;
-use Wexample\SymfonyApi\Tests\Fixtures\App\Entity\Reading;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Normalizer\ReadingNormalizer;
 use Wexample\SymfonyApi\Tests\Fixtures\App\Repository\ReadingRepository;
 
