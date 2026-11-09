@@ -26,6 +26,7 @@
     "wexample/symfony-loader": ">=27.0.0",
     "wexample/symfony-forms": ">=15.0.0",
     "wexample/symfony-content": ">=4.0.12",
+    "wexample/symfony-activity": ">=3.0.8",
     "doctrine/orm": "^3.0",
     "symfony/security-bundle": "^7.4",
     "symfony/validator": "^7.4",
