@@ -56,6 +56,7 @@ wexample_symfony_api:
     rate_limit:
       enabled: true
       client: { limit: 3600, interval: '1 hour' }       # requests per user
+      burst: { limit: 100, interval: '10 seconds' }     # optional, off by default
       ip_failures: { limit: 30, interval: '15 minutes' }
 
 # config/packages/security.yaml
@@ -77,6 +78,10 @@ security:
 ```
 
 `max_lifetime` caps every token of the kind: one issued without an expiration gets the latest one allowed, a later one is refused. `machine_token.max_lifetime` does the same for machine tokens.
+
+`burst` adds a short window to `client`: a flood is stopped within seconds instead of once the hour's allowance is spent. A request passes when neither window is spent, and a throttled one is told to wait for the later of the two. The same key exists under `machine_token`.
+
+With symfony-activity installed and its `security` category enabled, every token fact about a known holder goes to that holder's history as well (`security.user_token.throttled`, `security.user_token.refused`…). Refusals and throttlings of one token for one cause are merged with their repeats under the category's `merge_within`: a client flooding the api leaves one entry counting its occurrences, not a row per request.
 
 Use the login form's `user_checker`: an account switched off is refused on its tokens as on its password, journalled `client_disabled`. The limits are counted apart from the machine firewall's (`api_user_client`, `api_user_ip_failures`). With several providers, Symfony requires `provider` on each firewall even though the token handler loads the user itself.
 
@@ -125,6 +130,33 @@ php bin/console api:user-token:list <user>
 php bin/console api:user-token:revoke <token id|hint>
 php bin/console api:user-token:revoke <user> --all      # an administrator cutting a person off
 ```
+
+## Signing in with a password
+
+For a client that signs in without a page — a mobile app, a desktop tool — `UserTokenPasswordLoginService` issues a user token for an identifier and a password. It exists once a provider is named:
+
+```yaml
+wexample_symfony_api:
+  user_token:
+    password_login:
+      provider: app_user_provider                     # the security provider finding the account
+      user_checker: Wexample\SymfonyUser\Security\UserChecker   # the page firewall's: a disabled or locked account gets no token
+      lifetime: P30D                                  # null: the kind's max_lifetime
+      label: password login
+      rate_limit: { limit: 5, interval: '1 minute' }  # failures per identifier and address
+```
+
+```php
+try {
+    [$secret, $user] = $passwordLoginService->login($dto->login, $dto->password, $request->getClientIp());
+} catch (UserTokenLoginException $exception) {
+    // $exception->reason: invalid (unknown account, wrong password, refused by the checker — one answer for all) or throttled ($exception->retryAfter)
+}
+```
+
+The application keeps its own route and response: the service is the check, not the contract. An unknown identifier costs the time a wrong password does; a success forgets the failures; failures and throttlings reach the journal (`user_token.refused`, `user_token.throttled`, cause `password_login`).
+
+**It does not ask a second factor.** A password alone gets a token: an application requiring a second factor of its accounts enables this knowing it, or keeps tokens to be issued from a signed-in session (`routes_user_tokens.yaml`).
 
 ## Not covered
 

@@ -1,6 +1,6 @@
 # symfony_api
 
-Version: 16.0.4
+Version: 17.0.0
 
 A simple syntax to expose API in Symfony
 
