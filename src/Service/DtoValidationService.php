@@ -132,9 +132,8 @@ class DtoValidationService
         array $content,
         string $dtoClassType
     ) {
-        // Create a ReflectionClass instance to inspect all properties of the DTO class.
-        $reflection = new \ReflectionClass($dtoClassType);
-        $properties = $reflection->getProperties();
+        // Inspect all properties of the DTO class.
+        $properties = $this->getReflectionClass($dtoClassType)->getProperties();
 
         // Retrieve the list of required properties from the DTO.
         $requiredProperties = $dtoClassType::getRequiredProperties();
@@ -187,21 +186,25 @@ class DtoValidationService
                 continue;
             }
 
-            // Handle nullable: if value is null and type allows null, skip deeper validation
-            if ($propertyType->allowsNull() && null === $value) {
+            // Handle nullable: if value is null and type allows null, skip deeper validation.
+            // An untyped property takes anything, as `mixed` would: null among it.
+            if (null === $value && (null === $propertyType || $propertyType->allowsNull())) {
                 continue;
             }
 
-            // Normalize to an array of ReflectionNamedType
-            $typeRefs = $propertyType instanceof \ReflectionUnionType
-                ? $propertyType->getTypes()
-                : [$propertyType];
+            // Normalize to an array of ReflectionNamedType; null for an untyped
+            // property, which names no DTO but may still declare its items' (@All).
+            $typeRefs = match (true) {
+                null === $propertyType => [null],
+                $propertyType instanceof \ReflectionUnionType => $propertyType->getTypes(),
+                default => [$propertyType],
+            };
 
             foreach ($typeRefs as $typeRef) {
-                $typeName = $typeRef->getName();
+                $typeName = $typeRef?->getName();
 
                 // Nested DTO → recurse
-                if (is_subclass_of($typeName, AbstractDto::class)) {
+                if (null !== $typeName && is_subclass_of($typeName, AbstractDto::class)) {
                     $this->validateRawDataRecursive($value, $typeName);
                 } // Array of DTOs annotated with @All
                 elseif (is_array($value)) {
@@ -216,7 +219,7 @@ class DtoValidationService
 
                                 foreach ($value as $item) {
                                     // Skip null items if the item type allows null
-                                    if (null === $item && $typeRef->allowsNull()) {
+                                    if (null === $item && ($typeRef?->allowsNull() ?? true)) {
                                         continue;
                                     }
                                     if (! is_array($item)) {
@@ -251,6 +254,21 @@ class DtoValidationService
             $dtoClassType
         );
 
+        return $this->buildDto($content, $dtoClassType);
+    }
+
+    /**
+     * The DTO of content whose raw shape was validated already: that pass
+     * descends into the items of a collection, so its items are built here
+     * without being walked through again.
+     *
+     * @param class-string<AbstractDto> $dtoClassType
+     * @throws ReflectionException
+     */
+    private function buildDto(
+        array $content,
+        string $dtoClassType
+    ): AbstractDto {
         // Check for extra properties not defined in the DTO
         $this->validateExtraProperties($content, $dtoClassType);
 
@@ -318,7 +336,7 @@ class DtoValidationService
                         continue;
                     }
 
-                    $items[] = $this->createDto($itemContent, $itemDtoClass);
+                    $items[] = $this->buildDto($itemContent, $itemDtoClass);
                 }
             }
 

@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
 use LogicException;
+use ReflectionAttribute;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wexample\Helpers\Helper\ClassHelper;
@@ -27,6 +28,12 @@ abstract class AbstractApiController extends AbstractController
 {
     final public const ROUTES_PATH_PREFIX = VariableHelper::API;
     final public const ROUTES_NAME_PREFIX = VariableHelper::API;
+
+    /**
+     * Where the query options of the action are kept once read, for the rest
+     * of the request: one page of a list asks for several of them.
+     */
+    private const string REQUEST_ATTRIBUTE_QUERY_OPTIONS = '_api_query_options';
 
     public static function apiResponseSuccess(
         ?string $message = null,
@@ -187,10 +194,6 @@ abstract class AbstractApiController extends AbstractController
     }
 
     /**
-     * Orders the query as the request asks, within what the route's
-     * #[SortQueryOption] allows — or by its default.
-     */
-    /**
      * One page of a list, read off a query builder that already holds its
      * scope and its search: counted on that same query — a total counted
      * otherwise tells how many rows exist outside what the caller may see —,
@@ -259,6 +262,10 @@ abstract class AbstractApiController extends AbstractController
         );
     }
 
+    /**
+     * Orders the query as the request asks, within what the route's
+     * #[SortQueryOption] allows — or by its default.
+     */
     protected static function applyQueryOptionSort(
         Request $request,
         QueryBuilder $queryBuilder,
@@ -323,20 +330,38 @@ abstract class AbstractApiController extends AbstractController
         Request $request,
         string $name
     ) {
-        $methodClassPath = $request->attributes->get('_controller');
-
-        foreach (ClassHelper::getChildrenAttributes(
-            $methodClassPath,
-            AbstractQueryOption::class
-        ) as $attribute) {
-            $instance = $attribute->newInstance();
-
+        foreach (self::getMethodQueryOptions($request) as $instance) {
             if ($instance->key === $name) {
                 return $instance;
             }
         }
 
         return null;
+    }
+
+    /**
+     * The query options the action declares, read from its attributes once per
+     * request and kept on it, along with the action they were read for.
+     *
+     * @return list<AbstractQueryOption>
+     */
+    private static function getMethodQueryOptions(Request $request): array
+    {
+        $methodClassPath = $request->attributes->get('_controller');
+        $read = $request->attributes->get(self::REQUEST_ATTRIBUTE_QUERY_OPTIONS);
+
+        if (is_array($read) && $read[0] === $methodClassPath) {
+            return $read[1];
+        }
+
+        $instances = array_map(
+            static fn (ReflectionAttribute $attribute): AbstractQueryOption => $attribute->newInstance(),
+            ClassHelper::getChildrenAttributes($methodClassPath, AbstractQueryOption::class)
+        );
+
+        $request->attributes->set(self::REQUEST_ATTRIBUTE_QUERY_OPTIONS, [$methodClassPath, $instances]);
+
+        return $instances;
     }
 
     protected function getQueryOptionDateFilter(

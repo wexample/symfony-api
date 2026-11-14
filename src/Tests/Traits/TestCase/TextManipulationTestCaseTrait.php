@@ -5,6 +5,10 @@ namespace Wexample\SymfonyApi\Tests\Traits\TestCase;
 use JetBrains\PhpStorm\Pure;
 use Wexample\Helpers\Helper\ClassHelper;
 
+/**
+ * @deprecated A copy that drifted from the one symfony-testing ships, which
+ *             tests use instead: Wexample\SymfonyTesting\Traits\TextManipulationTestCaseTrait.
+ */
 trait TextManipulationTestCaseTrait
 {
     #[Pure]
