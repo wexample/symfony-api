@@ -1,8 +1,4 @@
 {
   "name": "@wexample/symfony-api",
-  "version": "0.1.35",
-  "peerDependencies": {
-    "@wexample/symfony-content": "*",
-    "@wexample/symfony-design-system": "*"
-  }
+  "version": "0.1.35"
 }
