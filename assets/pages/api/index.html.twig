@@ -1,5 +1,9 @@
 {%- extends '@front/layouts/private/layout.html.twig' -%}
 
+{#- Two columns per operation, its tables beside its code: the room of a
+    wide screen, which the reading measure halves too narrowly. -#}
+{%- set page_body_mode = 'large' -%}
+
 {#- The api's OpenAPI document drawn: one section per operation, what it
     takes and answers on one side, a call and its answer on the other. A
     preview shows the paths the application chose, nothing else. -#}
@@ -72,7 +76,7 @@
                                 type: parameter.in ~ ' · ' ~ parameter.type,
                                 required: parameter.required ? { type: 'neutral', label: '@page::required' | trans } : null,
                                 description: parameter.description,
-                            }), { fill: true }) }}
+                            }), { fill: true, scroll: true }) }}
                         {%- endif %}
 
                         {%- if operation.body and operation.body.fields is not empty %}
@@ -87,7 +91,7 @@
                                 type: field.type,
                                 required: field.required ? { type: 'neutral', label: '@page::required' | trans } : null,
                                 description: field.description,
-                            }), { fill: true }) }}
+                            }), { fill: true, scroll: true }) }}
                         {%- endif %}
 
                         <h4>{{ '@page::section_responses' | trans }}</h4>
@@ -97,7 +101,7 @@
                         ], operation.responses | map(response => {
                             code: response.code ~ '',
                             description: response.description,
-                        }), { fill: true }) }}
+                        }), { fill: true, scroll: true }) }}
                     </div>
                     <div class="doc-section--code stack--vertical">
                         {{ include('@WexampleSymfonyDesignSystemBundle/components/code-block/code-block.html.twig', { lang: 'bash', code: curl }) }}
