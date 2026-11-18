@@ -5,10 +5,7 @@ namespace Wexample\SymfonyApi\Controller\Pages;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Routing\RouterInterface;
-use Wexample\SymfonyApi\Interface\ApiDocumentationLinkInterface;
 use Wexample\SymfonyApi\Interface\ApiDocumentationSectionInterface;
-use Wexample\SymfonyApi\Interface\ApiDocumentationSectionLinkInterface;
 use Wexample\SymfonyApi\Service\ApiDocumentationService;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
@@ -27,23 +24,13 @@ final class ApiController extends AbstractPagesController
     final public const ROUTE_INDEX = VariableHelper::INDEX;
 
     /**
-     * The route of Swagger UI on the same document, when the application
-     * imports it (`routes_swagger.yaml`).
-     */
-    final public const string ROUTE_SWAGGER = 'api_doc_swagger';
-
-    /**
      * @param iterable<ApiDocumentationSectionInterface> $sections
-     * @param iterable<ApiDocumentationLinkInterface> $pages
      */
     #[Route(name: self::ROUTE_INDEX)]
     public function index(
         ApiDocumentationService $documentation,
-        RouterInterface $router,
         #[AutowireIterator(ApiDocumentationSectionInterface::TAG)]
         iterable $sections,
-        #[AutowireIterator(ApiDocumentationLinkInterface::TAG)]
-        iterable $pages,
     ): Response {
         $role = $documentation->getAccessRole();
         $preview = null !== $role && ! $this->isGranted($role);
@@ -54,23 +41,10 @@ final class ApiController extends AbstractPagesController
 
         $document = $documentation->getDocument();
         $shownSections = [];
-        $links = [];
 
         foreach ($sections as $section) {
             if ($section->isShown($preview)) {
                 $shownSections[] = ['template' => $section->getTemplate(), 'context' => $section->getContext($preview)];
-
-                // Reached from the toolbar too.
-                if ($section instanceof ApiDocumentationSectionLinkInterface) {
-                    $links[] = $section->getLink() + ['href' => '#' . $section->getAnchor()];
-                }
-            }
-        }
-
-        // The pages beside this one: the MCP server's, for one.
-        foreach ($pages as $page) {
-            if (null !== $link = $page->getLink($preview)) {
-                $links[] = $link;
             }
         }
 
@@ -81,11 +55,7 @@ final class ApiController extends AbstractPagesController
                 'groups' => null === $document ? [] : $documentation->getOperationGroups($document, $preview),
                 'documented' => null !== $document,
                 'preview' => $preview,
-                'swaggerUrl' => ! $preview && null !== $router->getRouteCollection()->get(self::ROUTE_SWAGGER)
-                    ? $router->generate(self::ROUTE_SWAGGER)
-                    : null,
                 'sections' => $shownSections,
-                'links' => $links,
             ]
         );
     }

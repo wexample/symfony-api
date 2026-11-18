@@ -15,17 +15,6 @@
     {%- endif -%}
 {%- endblock -%}
 
-{#- Where else the api is reached: Swagger UI on the same document, and what
-    the sections add — the MCP server's, for one. -#}
-{%- block page_toolbar_right -%}
-    {%- for link in links -%}
-        {{ button_link(link.icon, link.label, link.href, { class: 'button--flat' }) }}
-    {%- endfor -%}
-    {%- if swaggerUrl -%}
-        {{ button_link('ph:bold/play', '@page::swagger' | trans, swaggerUrl, { class: 'button' }) }}
-    {%- endif -%}
-{%- endblock -%}
-
 {#- An operation's verb: a category, not a state — no glyph —, in the
     colour every api documentation gives it. -#}
 {%- macro method(method) -%}

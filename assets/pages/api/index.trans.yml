@@ -3,7 +3,6 @@ en:
   page_icon: ph:bold/code
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -22,7 +21,6 @@ ar:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -41,7 +39,6 @@ bn:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -60,7 +57,6 @@ de:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -79,7 +75,6 @@ es:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -98,7 +93,6 @@ fa:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -117,7 +111,6 @@ fi:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -136,7 +129,6 @@ fr:
   page_icon: 'ph:bold/code'
 
   preview: 'Un aperçu : quelques routes de l''api, pour voir comment elle est documentée.'
-  swagger: 'Essayer les appels'
   undocumented: 'Aucune documentation : installer nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Dépréciée'
   secured: 'Authentification :'
@@ -155,7 +147,6 @@ he:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -174,7 +165,6 @@ hi:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -193,7 +183,6 @@ id:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -212,7 +201,6 @@ it:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -231,7 +219,6 @@ ja:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -250,7 +237,6 @@ ko:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -269,7 +255,6 @@ nl:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -288,7 +273,6 @@ pl:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -307,7 +291,6 @@ pt_BR:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -326,7 +309,6 @@ ru:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -345,7 +327,6 @@ th:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -364,7 +345,6 @@ tr:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -383,7 +363,6 @@ ur:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -402,7 +381,6 @@ vi:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
@@ -420,7 +398,6 @@ zh:
   page_title: API
   page_icon: 'ph:bold/code'
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'

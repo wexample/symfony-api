@@ -7,7 +7,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Wexample\SymfonyActivity\WexampleSymfonyActivityBundle;
 use Wexample\SymfonyApi\EventSubscriber\ApiTokenActivitySubscriber;
-use Wexample\SymfonyApi\Interface\ApiDocumentationLinkInterface;
 use Wexample\SymfonyApi\Interface\ApiDocumentationSectionInterface;
 use Wexample\SymfonyApi\Interface\HealthCheckInterface;
 use Wexample\SymfonyApi\OpenApi\ApiRouteDescriber;
@@ -106,8 +105,6 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             ->addTag(HealthCheckInterface::TAG);
         $container->registerForAutoconfiguration(ApiDocumentationSectionInterface::class)
             ->addTag(ApiDocumentationSectionInterface::TAG);
-        $container->registerForAutoconfiguration(ApiDocumentationLinkInterface::class)
-            ->addTag(ApiDocumentationLinkInterface::TAG);
 
         // The token facts in the holders' histories, where there are histories.
         if (in_array(WexampleSymfonyActivityBundle::class, $container->getParameter('kernel.bundles'), true)) {

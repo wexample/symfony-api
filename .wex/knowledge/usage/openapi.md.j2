@@ -65,7 +65,7 @@ php bin/console nelmio:apidoc:dump --area=v1 --format=json > docs/api/v1.json
 
 ## The api's page, and Swagger UI
 
-`/api/` draws the document of an area — one section per operation: its parameters, the fields of its body by their path (`items[].data.value`), its responses, a `curl` call and an example answer built from the schemas. Without nelmio, the page says so. Other packages add sections after the operations (`ApiDocumentationSectionInterface`, autoconfigured): a section reached from the page's toolbar as well implements `ApiDocumentationSectionLinkInterface`: its anchor (the id its template gives it) and the button's `{ icon, label }`. A page of their own beside this one is reached from the toolbar by `ApiDocumentationLinkInterface` (autoconfigured): `getLink(preview)` gives the button's `{ icon, label, href }`, or null for a reader who may not open it — symfony-api-mcp's MCP server page, `/api/doc/mcp`, beside Swagger UI's « Try the calls ».
+`/api/` draws the document of an area — one section per operation: its parameters, the fields of its body by their path (`items[].data.value`), its responses, a `curl` call and an example answer built from the schemas. Without nelmio, the page says so. Other packages add sections after the operations (`ApiDocumentationSectionInterface`, autoconfigured); symfony-api-mcp's MCP server has a page of its own, `/api/doc/mcp`. The page has no toolbar: the application's menu leads to it, to Swagger UI and to the MCP server's page.
 
 ```yaml
 wexample_symfony_api:
@@ -89,7 +89,7 @@ api_swagger:
 - { path: ^/api/doc, roles: ROLE_ADMIN }
 ```
 
-The page links to it for whoever reads the whole documentation. An area's patterns leave the page itself and Swagger UI out: `'^/api/(?!$|doc)'`.
+The application's menu links to it. An area's patterns leave the page itself and Swagger UI out: `'^/api/(?!$|doc)'`.
 
 The files `nelmio:apidoc:dump` writes are what goes to a third party.
 
