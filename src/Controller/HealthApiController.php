@@ -2,10 +2,10 @@
 
 namespace Wexample\SymfonyApi\Controller;
 
-use Wexample\SymfonyApi\Api\Attribute\ApiAccess;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Wexample\SymfonyApi\Api\Attribute\ApiAccess;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
 use Wexample\SymfonyApi\Service\HealthCheckService;
 
