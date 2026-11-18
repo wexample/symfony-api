@@ -2,7 +2,6 @@
 
 namespace Wexample\SymfonyApi\Controller;
 
-use Wexample\SymfonyApi\Api\Attribute\ApiAccess;
 use DateTimeImmutable;
 use DateTimeInterface;
 use InvalidArgumentException;
@@ -14,6 +13,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Wexample\SymfonyApi\Api\Attribute\ApiAccess;
 use Wexample\SymfonyApi\Api\Attribute\ValidateRequestContent;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
