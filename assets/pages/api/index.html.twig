@@ -1,60 +1,90 @@
 {%- extends '@front/layouts/private/layout.html.twig' -%}
 
+{#- The api's OpenAPI document drawn: one section per operation, what it
+    takes and answers on one side, a call and its answer on the other. A
+    preview shows the paths the application chose, nothing else. -#}
 {%- block page_body -%}
-    <div class="doc">
-        {% for apiRoute in apiRoutes %}
-            {% set api_url = api_build_example_url(apiRoute.name) %}
-            <div class="doc-section">
-                <div class="doc-section--description">
-                    <h2><a href="{{ apiRoute.path }}">{{ apiRoute.path }}</a></h2>
-                    {#- A route of another bundle has no description here unless
-                        someone wrote one: said when there is one, left out when
-                        there is not — a key printed as text tells nothing. -#}
-                    {% set description_key = 'WexampleSymfonyApiBundle.api.' ~ apiRoute.name ~ '::description' %}
-                    {% if trans_exists(description_key) %}
-                        <p>{{ description_key | trans }}</p>
-                    {% endif %}
+    {%- set host = app.request.schemeAndHttpHost -%}
+    <div class="doc api-doc">
+        <header class="api-doc--intro">
+            {%- if info %}
+                <p class="api-doc--title"><strong>{{ info.title }}</strong> <span class="api-doc--version">{{ info.version }}</span></p>
+                {%- if info.description is defined and info.description %}<p>{{ info.description }}</p>{% endif %}
+            {%- endif %}
+            {%- if preview %}<p class="api-doc--notice">{{ '@page::preview' | trans }}</p>{% endif %}
+            {%- if swaggerUrl %}<p><a href="{{ swaggerUrl }}">{{ '@page::swagger' | trans }}</a></p>{% endif %}
+        </header>
 
-                    {% if apiRoute.requirements is not empty %}
-                        <h3>{{ '@page::section_requirements' | trans }}</h3>
-                        <ul>
-                            {% for name,constraint in apiRoute.requirements %}
-                                <li>
-                                    <strong>{{ name }}</strong>
-                                    <p>{{ constraint }}</p>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+        {%- if not documented %}
+            <p class="api-doc--notice">{{ '@page::undocumented' | trans }}</p>
+        {%- endif %}
 
-                    {% if apiRoute.queryParameters is not empty %}
-                        <h3>{{ '@page::section_query' | trans }}</h3>
-                        <ul>
-                            {% for queryParameter in apiRoute.queryParameters %}
-                                <li>
-                                    <strong>{{ queryParameter }}</strong>
-                                    {#- What the route says of its own parameter, else
-                                        what the parameter means wherever it is taken —
-                                        a page or a length is the same on every route —
-                                        else nothing. -#}
-                                    {% set query_name = queryParameter | u.snake %}
-                                    {% set route_key = 'api.' ~ apiRoute.name ~ '::query.' ~ query_name %}
-                                    {% set generic_key = 'WexampleSymfonyApiBundle.api.query::' ~ query_name %}
-                                    {% if trans_exists(route_key) %}
-                                        <p>{{ route_key | trans }}</p>
-                                    {% elseif trans_exists(generic_key) %}
-                                        <p>{{ generic_key | trans }}</p>
-                                    {% endif %}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </div>
-                <div class="doc-section--code">
-                    <a target="_blank" href="{{ api_url }}">{{ api_url }}</a>
-                    {{ include('@WexampleSymfonyDesignSystemBundle/components/code-block/code-block.html.twig', {lang: 'bash', code: 'curl ' ~ api_url}) }}
-                </div>
-            </div>
-        {% endfor %}
+        {%- for group, operations in groups %}
+            <h2 class="api-doc--group">{{ group }}</h2>
+            {%- for operation in operations %}
+                {%- set curl = 'curl -X ' ~ operation.method ~ " '" ~ host ~ operation.path ~ "'"
+                    ~ (operation.security is not empty ? " \\\n  -H 'Authorization: Bearer $TOKEN'" : '')
+                    ~ (operation.body ? " \\\n  -H 'Content-Type: application/json' \\\n  -d '" ~ operation.body.example ~ "'" : '') -%}
+                {%- set success = operation.responses | filter(response => response.example) | first -%}
+                <section class="doc-section api-doc--operation{{ operation.deprecated ? ' api-doc--deprecated' }}" id="{{ operation.id }}">
+                    <div class="doc-section--description">
+                        <h3 class="api-doc--signature">
+                            <span class="api-doc--method api-doc--method-{{ operation.method | lower }}">{{ operation.method }}</span>
+                            <code>{{ operation.path }}</code>
+                        </h3>
+                        {%- if operation.deprecated %}<p class="api-doc--notice">{{ '@page::deprecated' | trans }}</p>{% endif %}
+                        {%- if operation.summary %}<p><strong>{{ operation.summary }}</strong></p>{% endif %}
+                        {%- if operation.description %}<p>{{ operation.description | nl2br }}</p>{% endif %}
+                        {%- if operation.security is not empty %}<p class="api-doc--meta">{{ '@page::secured' | trans }} <code>{{ operation.security | join(', ') }}</code></p>{% endif %}
+
+                        {%- if operation.parameters is not empty %}
+                            <h4>{{ '@page::section_parameters' | trans }}</h4>
+                            <table class="api-doc--table">
+                                {%- for parameter in operation.parameters %}
+                                    <tr>
+                                        <td><code>{{ parameter.name }}</code>{% if parameter.required %} <span class="api-doc--required">*</span>{% endif %}</td>
+                                        <td class="api-doc--meta">{{ parameter.in }} · {{ parameter.type }}</td>
+                                        <td>{{ parameter.description }}</td>
+                                    </tr>
+                                {%- endfor %}
+                            </table>
+                        {%- endif %}
+
+                        {%- if operation.body and operation.body.fields is not empty %}
+                            <h4>{{ '@page::section_body' | trans }}</h4>
+                            <table class="api-doc--table">
+                                {%- for field in operation.body.fields %}
+                                    <tr>
+                                        <td><code>{{ field.name }}</code>{% if field.required %} <span class="api-doc--required">*</span>{% endif %}</td>
+                                        <td class="api-doc--meta">{{ field.type }}</td>
+                                        <td>{{ field.description }}</td>
+                                    </tr>
+                                {%- endfor %}
+                            </table>
+                        {%- endif %}
+
+                        <h4>{{ '@page::section_responses' | trans }}</h4>
+                        <table class="api-doc--table">
+                            {%- for response in operation.responses %}
+                                <tr>
+                                    <td><code>{{ response.code }}</code></td>
+                                    <td colspan="2">{{ response.description }}</td>
+                                </tr>
+                            {%- endfor %}
+                        </table>
+                    </div>
+                    <div class="doc-section--code">
+                        {{ include('@WexampleSymfonyDesignSystemBundle/components/code-block/code-block.html.twig', { lang: 'bash', code: curl }) }}
+                        {%- if success %}
+                            {{ include('@WexampleSymfonyDesignSystemBundle/components/code-block/code-block.html.twig', { lang: 'json', code: success.example }) }}
+                        {%- endif %}
+                    </div>
+                </section>
+            {%- endfor %}
+        {%- endfor %}
+
+        {%- for section in sections %}
+            {{ include(section.template, { section: section.context }) }}
+        {%- endfor %}
     </div>
 {%- endblock -%}

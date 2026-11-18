@@ -63,24 +63,35 @@ nelmio_api_doc:
 php bin/console nelmio:apidoc:dump --area=v1 --format=json > docs/api/v1.json
 ```
 
-## Serving them, or not
+## The api's page, and Swagger UI
 
-nelmio serves nothing unless its routes are imported. An API description is reconnaissance material: import them in development only.
+`/api/` draws the document of an area — one section per operation: its parameters, the fields of its body by their path (`items[].data.value`), its responses, a `curl` call and an example answer built from the schemas. Without nelmio, the page says so. Other packages add sections after the operations (`ApiDocumentationSectionInterface`, autoconfigured): symfony-api-mcp shows the MCP server's tools.
 
 ```yaml
-# config/routes/nelmio_api_doc.yaml
-when@dev:
-  app.swagger_ui:
-    path: /api/doc/{area}
-    methods: GET
-    defaults: { _controller: nelmio_api_doc.controller.swagger_ui, area: default }
-  app.swagger:
-    path: /api/doc/{area}.json
-    methods: GET
-    defaults: { _controller: nelmio_api_doc.controller.swagger, area: default }
+wexample_symfony_api:
+  documentation:
+    area: default          # the nelmio area drawn
+    access_role: ROLE_ADMIN   # who reads the whole of it; null, everyone
+    preview_paths:         # what the others see — enough to see how a route reads
+      - '^/_api/demo-message/list$'
 ```
 
-The files written by the command are what goes to a third party.
+A reader lacking the role sees the preview's paths only, said to be a preview; with no preview, the page is refused to them.
+
+Swagger UI on the same document, to try the calls — an administrator's tool, protect it:
+
+```yaml
+# config/routes/….yaml
+api_swagger:
+    resource: '@WexampleSymfonyApiBundle/Resources/config/routes_swagger.yaml'   # /api/doc, /api/doc.json
+
+# config/packages/security.yaml — access_control
+- { path: ^/api/doc, roles: ROLE_ADMIN }
+```
+
+The page links to it for whoever reads the whole documentation. An area's patterns leave the page itself and Swagger UI out: `'^/api/(?!$|doc)'`.
+
+The files `nelmio:apidoc:dump` writes are what goes to a third party.
 
 ## What the tests hold it to
 

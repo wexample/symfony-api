@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Wexample\SymfonyActivity\WexampleSymfonyActivityBundle;
 use Wexample\SymfonyApi\EventSubscriber\ApiTokenActivitySubscriber;
+use Wexample\SymfonyApi\Interface\ApiDocumentationSectionInterface;
 use Wexample\SymfonyApi\Interface\HealthCheckInterface;
 use Wexample\SymfonyApi\OpenApi\ApiRouteDescriber;
 use Wexample\SymfonyApi\Service\UserTokenPasswordLoginService;
@@ -102,6 +103,8 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
 
         $container->registerForAutoconfiguration(HealthCheckInterface::class)
             ->addTag(HealthCheckInterface::TAG);
+        $container->registerForAutoconfiguration(ApiDocumentationSectionInterface::class)
+            ->addTag(ApiDocumentationSectionInterface::TAG);
 
         // The token facts in the holders' histories, where there are histories.
         if (in_array(WexampleSymfonyActivityBundle::class, $container->getParameter('kernel.bundles'), true)) {
@@ -145,6 +148,7 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
         }
 
         $batch = $config['batch'];
+        $container->setParameter('api_documentation', $config['documentation']);
         $container->setParameter('api_batch_record_class', $batch['record_class']);
         $container->setParameter('api_batch_max_items', $batch['max_items']);
         $container->setParameter('api_batch_retention', $batch['retention']);

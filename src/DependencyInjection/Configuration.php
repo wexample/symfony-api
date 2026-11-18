@@ -121,6 +121,28 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
+            // The page documenting the api, /api/, read from the OpenAPI
+            // document of an area.
+            ->arrayNode('documentation')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->scalarNode('area')->defaultValue('default')->end()
+            // Who reads the whole of it; null, everyone.
+            ->scalarNode('access_role')->defaultNull()->end()
+            // Path patterns shown to whoever lacks the role — enough to see
+            // how the api is documented, not the api. Empty, the page is
+            // refused to them.
+            ->arrayNode('preview_paths')
+            ->scalarPrototype()->end()
+            ->defaultValue([])
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end();
+
+        $treeBuilder->getRootNode()
+            ->children()
             ->arrayNode('openapi')
             ->addDefaultsIfNotSet()
             ->children()

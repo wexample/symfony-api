@@ -1,0 +1,12 @@
+# Swagger UI on the api's OpenAPI document, to try its calls: an
+# administrator's tool — protect it (`^/api/doc` in access_control). The
+# api's page links to it.
+api_doc_swagger:
+    path: /api/doc
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui, area: default }
+
+api_doc_json:
+    path: /api/doc.json
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger, area: default }

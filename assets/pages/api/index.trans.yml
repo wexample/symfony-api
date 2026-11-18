@@ -2,137 +2,296 @@ en:
   page_title: API
   page_icon: ph:bold/code
 
-  section_requirements: Path variables
-  section_query: Query parameters
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 ar:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'متطلبات المتغيرات المسار'
-  section_query: 'معلمات الاستعلام'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 bn:
   page_title: এপিআই
   page_icon: 'ph:bold/code'
-  section_requirements: 'পথ ভেরিয়েবল'
-  section_query: 'কোয়েরি প্যারামিটার'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 de:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: Pfadvariablen
-  section_query: Abfrageparameter
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 es:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Variables de ruta'
-  section_query: 'Parámetros de consulta'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 fa:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'متغیرهای مسیر'
-  section_query: 'پارامترهای جستجو'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 fi:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Polku muuttujat'
-  section_query: Kyselyparametrit
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 fr:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Variables de chemin'
-  section_query: 'Paramètres de requête'
+
+  preview: 'Un aperçu : quelques routes de l''api, pour voir comment elle est documentée.'
+  swagger: 'Essayer les appels (Swagger UI)'
+  undocumented: 'Aucune documentation : installer nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Dépréciée.'
+  secured: 'Authentification :'
+  section_parameters: 'Paramètres'
+  section_body: 'Corps de la requête'
+  section_responses: 'Réponses'
 
 he:
   page_title: 'ממשק API'
   page_icon: 'ph:bold/code'
-  section_requirements: 'משתני נתיב'
-  section_query: 'פרמטרי חיפוש'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 hi:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Path variables'
-  section_query: 'Query parameters'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 id:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Variabel jalur'
-  section_query: 'Parameter kueri'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 it:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Variabili di percorso'
-  section_query: 'Parametri di query'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 ja:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: パス変数
-  section_query: クエリパラメータ
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 ko:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: '경로 변수'
-  section_query: '쿼리 매개변수'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 nl:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: Padvariabelen
-  section_query: Vraagparameters
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 pl:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Zmienne ścieżki'
-  section_query: 'Parametry zapytania'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 pt_BR:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Variáveis de caminho'
-  section_query: 'Parâmetros de consulta'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 ru:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Переменные пути'
-  section_query: 'Параметры запроса'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 th:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: ตัวแปรในเส้นทาง
-  section_query: พารามิเตอร์การค้นหา
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 tr:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Yol değişkenleri'
-  section_query: 'Sorgu parametreleri'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 ur:
   page_title: 'اے پی آئی'
   page_icon: 'ph:bold/code'
-  section_requirements: 'راستے کی متغیرات'
-  section_query: 'سوال کے متغیرات'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 vi:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 'Biến đường dẫn'
-  section_query: 'Tham số truy vấn'
+
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
 
 zh:
   page_title: API
   page_icon: 'ph:bold/code'
-  section_requirements: 路径变量
-  section_query: 查询参数
+  preview: 'A preview: a few of the api''s routes, to see how it is documented.'
+  swagger: 'Try the calls (Swagger UI)'
+  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  deprecated: 'Deprecated.'
+  secured: 'Authentication:'
+  section_parameters: 'Parameters'
+  section_body: 'Request body'
+  section_responses: 'Responses'
