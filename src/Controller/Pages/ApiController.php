@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Wexample\SymfonyApi\Interface\ApiDocumentationSectionInterface;
+use Wexample\SymfonyApi\Interface\ApiDocumentationSectionLinkInterface;
 use Wexample\SymfonyApi\Service\ApiDocumentationService;
 use Wexample\SymfonyApi\Traits\SymfonyApiBundleClassTrait;
 use Wexample\SymfonyHelpers\Helper\VariableHelper;
@@ -49,10 +50,16 @@ final class ApiController extends AbstractPagesController
 
         $document = $documentation->getDocument();
         $shownSections = [];
+        $links = [];
 
         foreach ($sections as $section) {
             if ($section->isShown($preview)) {
                 $shownSections[] = ['template' => $section->getTemplate(), 'context' => $section->getContext($preview)];
+
+                // Reached from the toolbar too.
+                if ($section instanceof ApiDocumentationSectionLinkInterface) {
+                    $links[] = $section->getLink() + ['href' => '#' . $section->getAnchor()];
+                }
             }
         }
 
@@ -67,6 +74,7 @@ final class ApiController extends AbstractPagesController
                     ? $router->generate(self::ROUTE_SWAGGER)
                     : null,
                 'sections' => $shownSections,
+                'links' => $links,
             ]
         );
     }

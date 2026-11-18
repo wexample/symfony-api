@@ -3,295 +3,433 @@ en:
   page_icon: ph:bold/code
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 ar:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 bn:
   page_title: এপিআই
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 de:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 es:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 fa:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 fi:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 fr:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'Un aperçu : quelques routes de l''api, pour voir comment elle est documentée.'
-  swagger: 'Essayer les appels (Swagger UI)'
+  swagger: 'Essayer les appels'
   undocumented: 'Aucune documentation : installer nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Dépréciée.'
+  deprecated: 'Dépréciée'
   secured: 'Authentification :'
   section_parameters: 'Paramètres'
   section_body: 'Corps de la requête'
   section_responses: 'Réponses'
+  required: 'requis'
+  column:
+    name: 'Nom'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 he:
   page_title: 'ממשק API'
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 hi:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 id:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 it:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 ja:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 ko:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 nl:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 pl:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 pt_BR:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 ru:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 th:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 tr:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 ur:
   page_title: 'اے پی آئی'
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 vi:
   page_title: API
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'
 
 zh:
   page_title: API
   page_icon: 'ph:bold/code'
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  swagger: 'Try the calls (Swagger UI)'
+  swagger: 'Try the calls'
   undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
-  deprecated: 'Deprecated.'
+  deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
   section_body: 'Request body'
   section_responses: 'Responses'
+  required: 'required'
+  column:
+    name: 'Name'
+    type: 'Type'
+    description: 'Description'
+    code: 'Code'

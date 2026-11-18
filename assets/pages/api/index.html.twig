@@ -3,77 +3,103 @@
 {#- The api's OpenAPI document drawn: one section per operation, what it
     takes and answers on one side, a call and its answer on the other. A
     preview shows the paths the application chose, nothing else. -#}
+
+{#- The version of the document, beside the page's name. -#}
+{%- block header_title_aside -%}
+    {%- if info.version|default(null) -%}
+        {{ marker('neutral', info.version, { compact: true }) }}
+    {%- endif -%}
+{%- endblock -%}
+
+{#- Where else the api is reached: Swagger UI on the same document, and what
+    the sections add — the MCP server's, for one. -#}
+{%- block page_toolbar_right -%}
+    {%- for link in links -%}
+        {{ button_link(link.icon, link.label, link.href, { class: 'button--flat' }) }}
+    {%- endfor -%}
+    {%- if swaggerUrl -%}
+        {{ button_link('ph:bold/play', '@page::swagger' | trans, swaggerUrl, { class: 'button' }) }}
+    {%- endif -%}
+{%- endblock -%}
+
+{#- An operation's verb: a category, not a state — no glyph —, in the
+    colour every api documentation gives it. -#}
+{%- macro method(method) -%}
+    {%- set tones = { GET: 'cat-blue-jeans', POST: 'cat-grass', PUT: 'cat-sunflower', PATCH: 'cat-sunflower', DELETE: 'cat-bittersweet' } -%}
+    {{ marker(tones[method] ?? 'neutral', method, { compact: true }) }}
+{%- endmacro -%}
+
 {%- block page_body -%}
+    {%- import _self as api -%}
     {%- set host = app.request.schemeAndHttpHost -%}
-    <div class="doc api-doc">
-        <header class="api-doc--intro">
-            {%- if info %}
-                <p class="api-doc--title"><strong>{{ info.title }}</strong> <span class="api-doc--version">{{ info.version }}</span></p>
-                {%- if info.description is defined and info.description %}<p>{{ info.description }}</p>{% endif %}
-            {%- endif %}
-            {%- if preview %}<p class="api-doc--notice">{{ '@page::preview' | trans }}</p>{% endif %}
-            {%- if swaggerUrl %}<p><a href="{{ swaggerUrl }}">{{ '@page::swagger' | trans }}</a></p>{% endif %}
-        </header>
+    {%- if info.description|default(null) %}<p class="lead">{{ info.description }}</p>{% endif %}
+    {%- if preview -%}
+        {{ component(render_pass, '@WexampleSymfonyDesignSystemBundle/components/banner', { type: 'info', message: '@page::preview' | trans }) }}
+    {%- endif -%}
 
-        {%- if not documented %}
-            <p class="api-doc--notice">{{ '@page::undocumented' | trans }}</p>
-        {%- endif %}
+    {%- if not documented %}
+        <p class="empty">{{ '@page::undocumented' | trans }}</p>
+    {%- endif %}
 
+    <div class="doc">
         {%- for group, operations in groups %}
-            <h2 class="api-doc--group">{{ group }}</h2>
+            <h2>{{ group|first|upper ~ group|slice(1) }}</h2>
             {%- for operation in operations %}
                 {%- set curl = 'curl -X ' ~ operation.method ~ " '" ~ host ~ operation.path ~ "'"
                     ~ (operation.security is not empty ? " \\\n  -H 'Authorization: Bearer $TOKEN'" : '')
                     ~ (operation.body ? " \\\n  -H 'Content-Type: application/json' \\\n  -d '" ~ operation.body.example ~ "'" : '') -%}
                 {%- set success = operation.responses | filter(response => response.example) | first -%}
-                <section class="doc-section api-doc--operation{{ operation.deprecated ? ' api-doc--deprecated' }}" id="{{ operation.id }}">
+                <section class="doc-section" id="{{ operation.id }}">
                     <div class="doc-section--description">
-                        <h3 class="api-doc--signature">
-                            <span class="api-doc--method api-doc--method-{{ operation.method | lower }}">{{ operation.method }}</span>
+                        <h3 class="cluster">
+                            {{- api.method(operation.method) -}}
                             <code>{{ operation.path }}</code>
+                            {%- if operation.deprecated %}{{ marker('warning', '@page::deprecated' | trans, { compact: true }) }}{% endif -%}
                         </h3>
-                        {%- if operation.deprecated %}<p class="api-doc--notice">{{ '@page::deprecated' | trans }}</p>{% endif %}
                         {%- if operation.summary %}<p><strong>{{ operation.summary }}</strong></p>{% endif %}
                         {%- if operation.description %}<p>{{ operation.description | nl2br }}</p>{% endif %}
-                        {%- if operation.security is not empty %}<p class="api-doc--meta">{{ '@page::secured' | trans }} <code>{{ operation.security | join(', ') }}</code></p>{% endif %}
+                        {%- if operation.security is not empty %}<p class="text-secondary">{{ '@page::secured' | trans }} <code>{{ operation.security | join(', ') }}</code></p>{% endif %}
 
                         {%- if operation.parameters is not empty %}
                             <h4>{{ '@page::section_parameters' | trans }}</h4>
-                            <table class="api-doc--table">
-                                {%- for parameter in operation.parameters %}
-                                    <tr>
-                                        <td><code>{{ parameter.name }}</code>{% if parameter.required %} <span class="api-doc--required">*</span>{% endif %}</td>
-                                        <td class="api-doc--meta">{{ parameter.in }} · {{ parameter.type }}</td>
-                                        <td>{{ parameter.description }}</td>
-                                    </tr>
-                                {%- endfor %}
-                            </table>
+                            {{ data_table([
+                                { key: 'name', label: '@page::column.name' | trans, cell: 'code' },
+                                { key: 'type', label: '@page::column.type' | trans, secondary: true },
+                                { key: 'required', label: '', cell: 'status' },
+                                { key: 'description', label: '@page::column.description' | trans },
+                            ], operation.parameters | map(parameter => {
+                                name: parameter.name,
+                                type: parameter.in ~ ' · ' ~ parameter.type,
+                                required: parameter.required ? { type: 'neutral', label: '@page::required' | trans } : null,
+                                description: parameter.description,
+                            }), { fill: true }) }}
                         {%- endif %}
 
                         {%- if operation.body and operation.body.fields is not empty %}
                             <h4>{{ '@page::section_body' | trans }}</h4>
-                            <table class="api-doc--table">
-                                {%- for field in operation.body.fields %}
-                                    <tr>
-                                        <td><code>{{ field.name }}</code>{% if field.required %} <span class="api-doc--required">*</span>{% endif %}</td>
-                                        <td class="api-doc--meta">{{ field.type }}</td>
-                                        <td>{{ field.description }}</td>
-                                    </tr>
-                                {%- endfor %}
-                            </table>
+                            {{ data_table([
+                                { key: 'name', label: '@page::column.name' | trans, cell: 'code' },
+                                { key: 'type', label: '@page::column.type' | trans, secondary: true },
+                                { key: 'required', label: '', cell: 'status' },
+                                { key: 'description', label: '@page::column.description' | trans },
+                            ], operation.body.fields | map(field => {
+                                name: field.name,
+                                type: field.type,
+                                required: field.required ? { type: 'neutral', label: '@page::required' | trans } : null,
+                                description: field.description,
+                            }), { fill: true }) }}
                         {%- endif %}
 
                         <h4>{{ '@page::section_responses' | trans }}</h4>
-                        <table class="api-doc--table">
-                            {%- for response in operation.responses %}
-                                <tr>
-                                    <td><code>{{ response.code }}</code></td>
-                                    <td colspan="2">{{ response.description }}</td>
-                                </tr>
-                            {%- endfor %}
-                        </table>
+                        {{ data_table([
+                            { key: 'code', label: '@page::column.code' | trans, cell: 'code', width: 'xs' },
+                            { key: 'description', label: '@page::column.description' | trans },
+                        ], operation.responses | map(response => {
+                            code: response.code ~ '',
+                            description: response.description,
+                        }), { fill: true }) }}
                     </div>
-                    <div class="doc-section--code">
+                    <div class="doc-section--code stack--vertical">
                         {{ include('@WexampleSymfonyDesignSystemBundle/components/code-block/code-block.html.twig', { lang: 'bash', code: curl }) }}
                         {%- if success %}
                             {{ include('@WexampleSymfonyDesignSystemBundle/components/code-block/code-block.html.twig', { lang: 'json', code: success.example }) }}

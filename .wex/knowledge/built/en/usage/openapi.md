@@ -65,7 +65,7 @@ php bin/console nelmio:apidoc:dump --area=v1 --format=json > docs/api/v1.json
 
 ## The api's page, and Swagger UI
 
-`/api/` draws the document of an area — one section per operation: its parameters, the fields of its body by their path (`items[].data.value`), its responses, a `curl` call and an example answer built from the schemas. Without nelmio, the page says so. Other packages add sections after the operations (`ApiDocumentationSectionInterface`, autoconfigured): symfony-api-mcp shows the MCP server's tools.
+`/api/` draws the document of an area — one section per operation: its parameters, the fields of its body by their path (`items[].data.value`), its responses, a `curl` call and an example answer built from the schemas. Without nelmio, the page says so. Other packages add sections after the operations (`ApiDocumentationSectionInterface`, autoconfigured): symfony-api-mcp shows the MCP server's tools. A section reached from the page's toolbar as well implements `ApiDocumentationSectionLinkInterface`: its anchor (the id its template gives it) and the button's `{ icon, label }` — the MCP server's, beside Swagger UI's « Try the calls ».
 
 ```yaml
 wexample_symfony_api:
