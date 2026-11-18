@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\Controller;
 
+use Wexample\SymfonyApi\Api\Attribute\ApiAccess;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,6 +14,7 @@ use Wexample\SymfonyApi\Service\HealthCheckService;
  * probe passes, 503 otherwise. Routed only when the application imports
  * `routes_health.yaml`.
  */
+#[ApiAccess(ApiAccess::PUBLIC)]
 final class HealthApiController extends AbstractApiController
 {
     final public const string ROUTE_HEALTH = 'api_health';
