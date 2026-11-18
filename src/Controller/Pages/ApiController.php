@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
+use Wexample\SymfonyApi\Interface\ApiDocumentationLinkInterface;
 use Wexample\SymfonyApi\Interface\ApiDocumentationSectionInterface;
 use Wexample\SymfonyApi\Interface\ApiDocumentationSectionLinkInterface;
 use Wexample\SymfonyApi\Service\ApiDocumentationService;
@@ -33,6 +34,7 @@ final class ApiController extends AbstractPagesController
 
     /**
      * @param iterable<ApiDocumentationSectionInterface> $sections
+     * @param iterable<ApiDocumentationLinkInterface> $pages
      */
     #[Route(name: self::ROUTE_INDEX)]
     public function index(
@@ -40,6 +42,8 @@ final class ApiController extends AbstractPagesController
         RouterInterface $router,
         #[AutowireIterator(ApiDocumentationSectionInterface::TAG)]
         iterable $sections,
+        #[AutowireIterator(ApiDocumentationLinkInterface::TAG)]
+        iterable $pages,
     ): Response {
         $role = $documentation->getAccessRole();
         $preview = null !== $role && ! $this->isGranted($role);
@@ -60,6 +64,13 @@ final class ApiController extends AbstractPagesController
                 if ($section instanceof ApiDocumentationSectionLinkInterface) {
                     $links[] = $section->getLink() + ['href' => '#' . $section->getAnchor()];
                 }
+            }
+        }
+
+        // The pages beside this one: the MCP server's, for one.
+        foreach ($pages as $page) {
+            if (null !== $link = $page->getLink($preview)) {
+                $links[] = $link;
             }
         }
 
