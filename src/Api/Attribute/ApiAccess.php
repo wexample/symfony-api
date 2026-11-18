@@ -14,6 +14,9 @@ use Attribute;
  *   project read through a scope service, a signature checked —, the reason
  *   given.
  *
+ * On a parent class, it holds for every controller built on it — what the
+ * parent's code checks for all of them.
+ *
  * `ApiRouteAccessTestCaseTrait` reports every api route that declares
  * nothing: an access forgotten, or an access rule that no longer matches its
  * route.

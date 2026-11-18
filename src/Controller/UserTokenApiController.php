@@ -2,6 +2,7 @@
 
 namespace Wexample\SymfonyApi\Controller;
 
+use Wexample\SymfonyApi\Api\Attribute\ApiAccess;
 use DateTimeImmutable;
 use DateTimeInterface;
 use InvalidArgumentException;
@@ -31,6 +32,7 @@ use Wexample\SymfonyApi\Service\UserTokenService;
  * answering as missing until it sets `user_token.token_class`.
  */
 #[Route(path: '/_api/user-tokens', name: 'api_user_tokens_')]
+#[ApiAccess(ApiAccess::CONTROLLER, "the signed-in account's own tokens (#[CurrentUser]), on the session only")]
 final class UserTokenApiController extends AbstractApiController
 {
     public function __construct(

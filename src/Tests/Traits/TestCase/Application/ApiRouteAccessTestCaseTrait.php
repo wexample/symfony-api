@@ -64,14 +64,21 @@ trait ApiRouteAccessTestCaseTrait
 
     private function declaresAccess(string $class, ?string $method): bool
     {
-        $reflections = [new ReflectionClass($class)];
+        $action = null !== $method && method_exists($class, $method) ? new ReflectionMethod($class, $method) : null;
 
-        if (null !== $method && method_exists($class, $method)) {
-            $reflections[] = new ReflectionMethod($class, $method);
+        // #[IsGranted] counts where Symfony reads it: the controller's class
+        // and its action, not a parent class.
+        if ([] !== (new ReflectionClass($class))->getAttributes(IsGranted::class)
+            || [] !== ($action?->getAttributes(IsGranted::class) ?? [])
+            || [] !== ($action?->getAttributes(ApiAccess::class) ?? [])
+        ) {
+            return true;
         }
 
-        foreach ($reflections as $reflection) {
-            if ([] !== $reflection->getAttributes(IsGranted::class) || [] !== $reflection->getAttributes(ApiAccess::class)) {
+        // #[ApiAccess] says what the code does: a parent class saying it for
+        // every controller built on it holds.
+        for ($reflection = new ReflectionClass($class); $reflection; $reflection = $reflection->getParentClass()) {
+            if ([] !== $reflection->getAttributes(ApiAccess::class)) {
                 return true;
             }
         }
