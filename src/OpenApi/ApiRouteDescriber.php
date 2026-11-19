@@ -484,7 +484,13 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
             return;
         }
 
-        Util::modifyAnnotationValue($schema, 'type', $this->getQueryType($constraint));
+        $type = $this->getQueryType($constraint);
+        Util::modifyAnnotationValue($schema, 'type', $type);
+
+        // A list sent as `key[]=…&key[]=…`: its items, plain values.
+        if ('array' === $type) {
+            Util::getChild($schema, OA\Items::class, ['type' => 'string']);
+        }
     }
 
     private function setJsonBody(OA\Operation $operation, array $schema): void
@@ -541,6 +547,7 @@ class ApiRouteDescriber implements RouteDescriberInterface, ModelRegistryAwareIn
             [] !== array_intersect($type, ['int', 'integer']) => 'integer',
             [] !== array_intersect($type, ['float', 'numeric']) => 'number',
             [] !== array_intersect($type, ['bool', 'boolean']) => 'boolean',
+            [] !== array_intersect($type, ['array', 'iterable']) => 'array',
             default => 'string',
         };
     }

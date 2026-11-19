@@ -178,6 +178,9 @@ class ApiDocumentationTest extends WebTestCase
         $this->assertSame('string', $parameters['date']['type']);
         $this->assertMatchesRegularExpression('/' . $parameters['date']['pattern'] . '/', '2026-10-05 14:30');
         $this->assertDoesNotMatchRegularExpression('/' . $parameters['date']['pattern'] . '/', '05/10/2026');
+        // A list, said as one: not a string a client could not send a list as.
+        $this->assertSame('array', $parameters['tags']['type']);
+        $this->assertSame('string', $parameters['tags']['items']['type']);
     }
 
     /**

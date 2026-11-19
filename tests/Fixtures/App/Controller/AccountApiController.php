@@ -6,6 +6,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Wexample\SymfonyApi\Api\Attribute\ApiResponseData;
+use Symfony\Component\Validator\Constraints\Type;
+use Wexample\SymfonyApi\Api\Attribute\QueryOption\CustomQueryOption;
 use Wexample\SymfonyApi\Api\Attribute\QueryOption\DateQueryOption;
 use Wexample\SymfonyApi\Api\Class\ApiResponse;
 use Wexample\SymfonyApi\Api\Controller\AbstractApiController;
@@ -19,6 +21,7 @@ class AccountApiController extends AbstractApiController
 {
     #[Route(path: 'account', name: 'account', methods: ['GET'])]
     #[DateQueryOption]
+    #[CustomQueryOption(key: 'tags', constraint: new Type(type: 'array'))]
     #[ApiResponseData(AccountDto::class)]
     public function account(#[CurrentUser] UserInterface $user): ApiResponse
     {
