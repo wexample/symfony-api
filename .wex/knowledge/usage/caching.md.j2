@@ -17,6 +17,6 @@ What happened is on the main request — a tool's call being a sub-request of th
 
 ## Dropping what is kept
 
-`ApiCacheDoctrineListener` drops, at every flush, the answers read from any class the flush inserts, updates or deletes — or from one of their parents —: an answer is never older than its data, whatever `maxAge` says. `ApiCacheService::invalidateEntities()` does the same for what does not go through Doctrine.
+`ApiCacheDoctrineListener` drops, at every flush, the answers read from any class the flush inserts, updates or deletes — or from one of their parents —: an answer is never older than its data, whatever `maxAge` says. Only the classes some `#[ApiCache]` names are looked at, gathered from the controllers when the container is built (`ApiCacheEntitiesCompilerPass`, the parameter `api_cache_entities`): a flush writing anything else costs nothing. `ApiCacheService::invalidateEntities()` does the same for what does not go through Doctrine.
 
 A call answered from the cache still counts against the caller's rate limit (`usage/rate-limits`).

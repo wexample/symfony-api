@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Wexample\SymfonyApi\DependencyInjection\Compiler\ApiCacheEntitiesCompilerPass;
 use Wexample\SymfonyHelpers\Class\AbstractBundle;
 use Wexample\SymfonyHelpers\Helper\BundleHelper;
 use Wexample\SymfonyHelpers\Interface\LoaderBundleInterface;
@@ -15,6 +16,8 @@ class WexampleSymfonyApiBundle extends AbstractBundle implements LoaderBundleInt
         parent::build($container);
 
         SecurityBundleHelper::assertRegistered($container, static::class);
+
+        $container->addCompilerPass(new ApiCacheEntitiesCompilerPass());
     }
 
     public static function getLoaderFrontPaths(): array
