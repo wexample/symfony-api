@@ -135,7 +135,8 @@ abstract class AbstractApiTokenHandler implements AccessTokenHandlerInterface
         if ($this->rateLimitEnabled) {
             // A holder on a plan is limited by it rather than by its kind.
             $plan = $client instanceof ApiRateLimitPlanHolderInterface ? $client->getApiRateLimitPlan() : null;
-            $limit = (null === $plan
+            $limit = (
+                null === $plan
                 ? $this->clientLimiter->create($client->getUserIdentifier())
                 : $this->plans->create($plan, $client->getUserIdentifier())
             )->consume();
