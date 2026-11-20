@@ -11,6 +11,7 @@ use Wexample\SymfonyApi\Entity\AbstractApiToken;
 use Wexample\SymfonyApi\Enum\MachineSecurityEventType;
 use Wexample\SymfonyApi\Enum\MachineTokenRefusalCause;
 use Wexample\SymfonyApi\Exception\MachineTokenRefusedException;
+use Wexample\SymfonyApi\Service\ApiRateLimitPlanService;
 use Wexample\SymfonyApi\Service\MachineTokenService;
 
 /**
@@ -38,6 +39,7 @@ class MachineTokenHandler extends AbstractApiTokenHandler
         RateLimiterFactoryInterface $clientLimiter,
         #[Autowire(service: 'limiter.' . WexampleSymfonyApiExtension::LIMITER_MACHINE_IP_FAILURES)]
         RateLimiterFactoryInterface $ipFailuresLimiter,
+        ApiRateLimitPlanService $plans,
     ) {
         parent::__construct(
             $machineTokenService,
@@ -47,6 +49,7 @@ class MachineTokenHandler extends AbstractApiTokenHandler
             $rateLimitEnabled,
             $clientLimiter,
             $ipFailuresLimiter,
+            $plans,
         );
     }
 

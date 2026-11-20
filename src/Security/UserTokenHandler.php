@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Wexample\SymfonyApi\DependencyInjection\WexampleSymfonyApiExtension;
 use Wexample\SymfonyApi\Enum\UserTokenSecurityEventType;
+use Wexample\SymfonyApi\Service\ApiRateLimitPlanService;
 use Wexample\SymfonyApi\Service\UserTokenService;
 
 /**
@@ -29,6 +30,7 @@ class UserTokenHandler extends AbstractApiTokenHandler
         RateLimiterFactoryInterface $clientLimiter,
         #[Autowire(service: 'limiter.' . WexampleSymfonyApiExtension::LIMITER_USER_IP_FAILURES)]
         RateLimiterFactoryInterface $ipFailuresLimiter,
+        ApiRateLimitPlanService $plans,
     ) {
         parent::__construct(
             $userTokenService,
@@ -38,6 +40,7 @@ class UserTokenHandler extends AbstractApiTokenHandler
             $rateLimitEnabled,
             $clientLimiter,
             $ipFailuresLimiter,
+            $plans,
         );
     }
 

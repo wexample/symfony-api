@@ -3,6 +3,7 @@
 namespace Wexample\SymfonyApi\DependencyInjection;
 
 use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberInterface;
+use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Wexample\SymfonyActivity\WexampleSymfonyActivityBundle;
@@ -10,6 +11,7 @@ use Wexample\SymfonyApi\EventSubscriber\ApiTokenActivitySubscriber;
 use Wexample\SymfonyApi\Interface\ApiDocumentationSectionInterface;
 use Wexample\SymfonyApi\Interface\HealthCheckInterface;
 use Wexample\SymfonyApi\OpenApi\ApiRouteDescriber;
+use Wexample\SymfonyApi\Service\ApiRateLimitPlanService;
 use Wexample\SymfonyApi\Service\UserTokenPasswordLoginService;
 use Wexample\SymfonyHelpers\DependencyInjection\AbstractWexampleSymfonyExtension;
 
@@ -24,6 +26,11 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
     final public const string LIMITER_USER_IP_FAILURES = 'api_user_ip_failures';
 
     final public const string LIMITER_USER_PASSWORD_LOGIN = 'api_user_password_login';
+
+    final public const string LIMITER_ANONYMOUS = 'api_anonymous';
+
+    /** Followed by the plan's name. */
+    final public const string LIMITER_PLAN_PREFIX = 'api_plan_';
 
     /**
      * The two limiters of each token firewall, declared in the framework
@@ -81,9 +88,35 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             'interval' => $passwordLogin['rate_limit']['interval'],
         ];
 
+        $limiters = [...$limiters, ...self::windowLimiters(self::LIMITER_ANONYMOUS, $config['anonymous_rate_limit']['windows'])];
+
+        foreach ($config['rate_limit_plans'] as $plan => $windows) {
+            $limiters = [...$limiters, ...self::windowLimiters(self::LIMITER_PLAN_PREFIX . $plan, $windows)];
+        }
+
         $container->prependExtensionConfig('framework', [
             'rate_limiter' => $limiters,
         ]);
+    }
+
+    /**
+     * A limiter for one window, a compound of one per window for several: a
+     * call passes when none is spent.
+     *
+     * @param list<array{limit: int, interval: string}> $windows
+     * @return array<string, array<string, mixed>>
+     */
+    private static function windowLimiters(string $name, array $windows): array
+    {
+        $limiters = [];
+
+        foreach (array_values($windows) as $index => $window) {
+            $limiters[$name . '_' . $index] = ['policy' => 'sliding_window', 'limit' => $window['limit'], 'interval' => $window['interval']];
+        }
+
+        return 1 === count($limiters)
+            ? [$name => reset($limiters)]
+            : $limiters + [$name => ['policy' => 'compound', 'limiters' => array_keys($limiters)]];
     }
 
     public function load(
@@ -133,6 +166,18 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
             $container->setParameter('api_' . $kind . '_rate_limit_enabled', $token['rate_limit']['enabled']);
         }
         $container->setParameter('api_machine_token_roles', $config['machine_token']['roles']);
+
+        $anonymous = $config['anonymous_rate_limit'];
+        $container->setParameter('api_anonymous_rate_limit_enabled', $anonymous['enabled'] && [] !== $anonymous['windows']);
+        $container->setParameter('api_anonymous_rate_limit_paths', $anonymous['paths']);
+        $container->setParameter('api_anonymous_rate_limit_excluded_routes', $anonymous['excluded_routes']);
+
+        $plans = [];
+        foreach (array_keys($config['rate_limit_plans']) as $plan) {
+            $plans[$plan] = new Reference('limiter.' . self::LIMITER_PLAN_PREFIX . $plan);
+        }
+        $container->getDefinition(ApiRateLimitPlanService::class)
+            ->setArgument('$limiters', ServiceLocatorTagPass::register($container, $plans));
 
         // A password login, only where the application names the provider.
         $passwordLogin = $config['user_token']['password_login'];

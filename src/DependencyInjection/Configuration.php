@@ -143,6 +143,54 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
+            // The calls carrying no token, a sliding window or several per
+            // address: what keeps a public api's load in hand. A token's
+            // calls are its kind's `rate_limit`, or its holder's plan's.
+            ->arrayNode('anonymous_rate_limit')
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode('enabled')->defaultTrue()->end()
+            ->arrayNode('paths')
+            ->scalarPrototype()->end()
+            ->defaultValue(['^/api/'])
+            ->end()
+            ->arrayNode('excluded_routes')
+            ->scalarPrototype()->end()
+            ->defaultValue(['api_health'])
+            ->end()
+            ->arrayNode('windows')
+            ->arrayPrototype()
+            ->children()
+            ->integerNode('limit')->isRequired()->min(1)->end()
+            ->scalarNode('interval')->isRequired()->end()
+            ->end()
+            ->end()
+            ->defaultValue([
+                ['limit' => 60, 'interval' => '1 minute'],
+                ['limit' => 2000, 'interval' => '1 day'],
+            ])
+            ->end()
+            ->end()
+            ->end()
+            // Named sets of windows a token's holder is limited by instead of
+            // its kind's `rate_limit.client`, when it says one
+            // (ApiRateLimitPlanHolderInterface): a free plan, a paid one.
+            ->arrayNode('rate_limit_plans')
+            ->useAttributeAsKey('name')
+            ->arrayPrototype()
+            ->arrayPrototype()
+            ->children()
+            ->integerNode('limit')->isRequired()->min(1)->end()
+            ->scalarNode('interval')->isRequired()->end()
+            ->end()
+            ->end()
+            ->end()
+            ->defaultValue([])
+            ->end()
+            ->end();
+
+        $treeBuilder->getRootNode()
+            ->children()
             ->arrayNode('openapi')
             ->addDefaultsIfNotSet()
             ->children()

@@ -14,7 +14,9 @@ use Wexample\SymfonyApi\Enum\UserTokenSecurityEventType;
 use Wexample\SymfonyApi\Exception\MachineTokenRefusedException;
 use Wexample\SymfonyApi\Exception\MachineTokenThrottledException;
 use Wexample\SymfonyApi\Helper\MachineTokenHelper;
+use Wexample\SymfonyApi\Interface\ApiRateLimitPlanHolderInterface;
 use Wexample\SymfonyApi\Service\AbstractApiTokenService;
+use Wexample\SymfonyApi\Service\ApiRateLimitPlanService;
 
 /**
  * Resolves the bearer token of a token firewall to its holder, for the native
@@ -43,6 +45,12 @@ abstract class AbstractApiTokenHandler implements AccessTokenHandlerInterface
      */
     public const string REQUEST_ATTRIBUTE_HANDLER = '_wexample_api_token_handler';
 
+    /**
+     * The limit the call was counted against, for the X-RateLimit headers of
+     * its answer (ApiRateLimitSubscriber).
+     */
+    public const string REQUEST_ATTRIBUTE_RATE_LIMIT = '_wexample_api_rate_limit';
+
     public function __construct(
         protected readonly AbstractApiTokenService $tokenService,
         protected readonly RequestStack $requestStack,
@@ -51,6 +59,7 @@ abstract class AbstractApiTokenHandler implements AccessTokenHandlerInterface
         protected readonly bool $rateLimitEnabled,
         protected readonly RateLimiterFactoryInterface $clientLimiter,
         protected readonly RateLimiterFactoryInterface $ipFailuresLimiter,
+        protected readonly ApiRateLimitPlanService $plans,
     ) {
     }
 
@@ -124,7 +133,13 @@ abstract class AbstractApiTokenHandler implements AccessTokenHandlerInterface
         $this->checkHolder($token, $hint);
 
         if ($this->rateLimitEnabled) {
-            $limit = $this->clientLimiter->create($client->getUserIdentifier())->consume();
+            // A holder on a plan is limited by it rather than by its kind.
+            $plan = $client instanceof ApiRateLimitPlanHolderInterface ? $client->getApiRateLimitPlan() : null;
+            $limit = (null === $plan
+                ? $this->clientLimiter->create($client->getUserIdentifier())
+                : $this->plans->create($plan, $client->getUserIdentifier())
+            )->consume();
+            $request?->attributes->set(self::REQUEST_ATTRIBUTE_RATE_LIMIT, $limit);
 
             if (! $limit->isAccepted()) {
                 throw new MachineTokenThrottledException(MachineTokenThrottledException::LIMIT_CLIENT, $limit->getRetryAfter(), $client);
