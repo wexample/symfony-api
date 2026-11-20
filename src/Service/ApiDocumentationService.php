@@ -43,7 +43,8 @@ final readonly class ApiDocumentationService
     }
 
     /**
-     * The document, or null when nelmio is not installed or has no such area.
+     * The document, or null when NelmioApiDocBundle is not registered in the
+     * application or has no such area.
      */
     public function getDocument(): ?array
     {

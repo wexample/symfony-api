@@ -3,7 +3,7 @@ en:
   page_icon: ph:bold/code
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -21,7 +21,7 @@ ar:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -39,7 +39,7 @@ bn:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -57,7 +57,7 @@ de:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -75,7 +75,7 @@ es:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -93,7 +93,7 @@ fa:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -111,7 +111,7 @@ fi:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -129,7 +129,7 @@ fr:
   page_icon: 'ph:bold/code'
 
   preview: 'Un aperçu : quelques routes de l''api, pour voir comment elle est documentée.'
-  undocumented: 'Aucune documentation : installer nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'Aucune documentation : enregistrer NelmioApiDocBundle dans config/bundles.php et configurer son area (usage/openapi).'
   deprecated: 'Dépréciée'
   secured: 'Authentification :'
   section_parameters: 'Paramètres'
@@ -147,7 +147,7 @@ he:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -165,7 +165,7 @@ hi:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -183,7 +183,7 @@ id:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -201,7 +201,7 @@ it:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -219,7 +219,7 @@ ja:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -237,7 +237,7 @@ ko:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -255,7 +255,7 @@ nl:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -273,7 +273,7 @@ pl:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -291,7 +291,7 @@ pt_BR:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -309,7 +309,7 @@ ru:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -327,7 +327,7 @@ th:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -345,7 +345,7 @@ tr:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -363,7 +363,7 @@ ur:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -381,7 +381,7 @@ vi:
   page_icon: 'ph:bold/code'
 
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'
@@ -398,7 +398,7 @@ zh:
   page_title: API
   page_icon: 'ph:bold/code'
   preview: 'A preview: a few of the api''s routes, to see how it is documented.'
-  undocumented: 'No documentation: install nelmio/api-doc-bundle (usage/openapi).'
+  undocumented: 'No documentation: register NelmioApiDocBundle in config/bundles.php and configure its area (usage/openapi).'
   deprecated: 'Deprecated'
   secured: 'Authentication:'
   section_parameters: 'Parameters'

@@ -2,7 +2,7 @@
 
 namespace Wexample\SymfonyApi\DependencyInjection;
 
-use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberInterface;
+use Nelmio\ApiDocBundle\NelmioApiDocBundle;
 use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -201,8 +201,10 @@ class WexampleSymfonyApiExtension extends AbstractWexampleSymfonyExtension
         $container->setParameter('api_versions', $config['versions']);
         $container->setParameter('api_openapi_bearer_paths', $config['openapi']['bearer_paths']);
 
-        // The documentation bridge, only where NelmioApiDocBundle is installed.
-        if (interface_exists(RouteDescriberInterface::class)) {
+        // The documentation bridge: what this package's attributes mean to
+        // NelmioApiDocBundle — a dependency, an api having its documentation —,
+        // once the application registers it.
+        if (in_array(NelmioApiDocBundle::class, $container->getParameter('kernel.bundles'), true)) {
             $container->register(ApiRouteDescriber::class, ApiRouteDescriber::class)
                 ->setAutowired(true)
                 ->addTag('nelmio_api_doc.route_describer', ['priority' => -300]);
