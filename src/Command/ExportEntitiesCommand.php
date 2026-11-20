@@ -75,15 +75,21 @@ class ExportEntitiesCommand extends Command
 
             unset($data['visibility']);
 
-            // Flatten pseudocode items wrapper — extract the entity class directly
+            // Flatten pseudocode items wrapper — extract the entity class directly.
+            // The package an entity ships from is said beside the items, and is
+            // what tells the js generators to import it rather than write it.
+            $package = $data['package'] ?? null;
             if (isset($data['items'][0])) {
                 $data = $data['items'][0];
             }
 
             $data['name'] = basename($yamlFile, '.yml');
+            if (null !== $package) {
+                $data = ['name' => $data['name'], 'package' => $package] + $data;
+            }
             $data = $this->describeHierarchy($data);
 
-            file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n");
+            file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n");
             $exported++;
         }
 
