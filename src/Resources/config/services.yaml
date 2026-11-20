@@ -16,6 +16,10 @@ services:
         exclude: '../../EventSubscriber/ApiTokenActivitySubscriber.php'
         tags: ['kernel.event_subscriber']
 
+    # Doctrine's listeners, registered by their #[AsDoctrineListener].
+    Wexample\SymfonyApi\EventListener\:
+        resource: '../../EventListener/*'
+
     Wexample\SymfonyApi\Controller\:
         resource: '../../Controller/*'
         tags: ['controller.service_arguments']
