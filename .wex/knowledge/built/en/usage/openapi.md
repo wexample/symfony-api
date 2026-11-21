@@ -1,9 +1,10 @@
 ## OpenAPI documents
 
-The package does not generate documentation itself: `nelmio/api-doc-bundle` does, from the routes and the DTOs, and this package teaches it what its own attributes mean. Install it and the bridge — `ApiRouteDescriber` — registers itself; without it, nothing changes.
+The package does not generate documentation itself: `nelmio/api-doc-bundle` does, from the routes and the DTOs, and this package teaches it what its own attributes mean (`ApiRouteDescriber`). An api has its documentation, private or not: nelmio comes with the package, and the application registers it.
 
-```bash
-composer require nelmio/api-doc-bundle
+```php
+// config/bundles.php
+Nelmio\ApiDocBundle\NelmioApiDocBundle::class => ['all' => true],
 ```
 
 ## What is described without writing anything
@@ -65,7 +66,7 @@ php bin/console nelmio:apidoc:dump --area=v1 --format=json > docs/api/v1.json
 
 ## The api's page, and Swagger UI
 
-`/api/` draws the document of an area — one section per operation: its parameters, the fields of its body by their path (`items[].data.value`), its responses, a `curl` call and an example answer built from the schemas. Without nelmio, the page says so. Other packages add sections after the operations (`ApiDocumentationSectionInterface`, autoconfigured); symfony-api-mcp's MCP server has a page of its own, `/api/doc/mcp`. The page has no toolbar: the application's menu leads to it, to Swagger UI and to the MCP server's page.
+`/api/` draws the document of an area — one section per operation: its parameters, the fields of its body by their path (`items[].data.value`), its responses, a `curl` call and an example answer built from the schemas. Without NelmioApiDocBundle registered, the page says so. Other packages add sections after the operations (`ApiDocumentationSectionInterface`, autoconfigured); symfony-api-mcp's MCP server has a page of its own, `/api/doc/mcp`. The page has no toolbar: the application's menu leads to it, to Swagger UI and to the MCP server's page.
 
 ```yaml
 wexample_symfony_api:
